@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "View Electron Density";
+}
+@model Leucippus.Models.ElectronDensity;
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post">
+    Enter ccp4/pdb code:
+    <input asp-for="PdbCode" style="width:160px;height:20px" value="@ViewBag.PdbCode"/>
+    <br />
+    Enter xyz coordinates:
+    <input asp-for="XX" style="width:50px;height:20px" value="@ViewBag.XX" />
+    <input asp-for="YY" style="width:50px;height:20px" value="@ViewBag.YY" />
+    <input asp-for="ZZ" style="width:50px;height:20px" value="@ViewBag.ZZ" />
+    <input type="submit" />
+</form>
+
+<hr />
+<p>Explain Electron Density - dimensions and features</p>
+<p>@ViewBag.Info</p>
+<hr />
+<div>
+    @{
+        if (ViewBag.Viewer is Array)
+        {
+            // Display multiple charts
+            for (int i = 0; i < ViewBag.Viewer.Length; ++i)
+            {
+                @:@Html.Raw(ViewBag.Viewer[i].RenderHTML())
+            }
+        }
+        else
+        {
+            // Display one chart only
+            @:@Html.Raw(ViewBag.Viewer.RenderHTML())
+        }
+    }
+</div>
+

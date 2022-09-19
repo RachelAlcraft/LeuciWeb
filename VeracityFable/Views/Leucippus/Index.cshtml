@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Leucippus</h2>
+
+<h3>Input Family Relationships</h3>
+<fieldset>
+        <legend>Electron Density</legend>
+    @using (Ajax.BeginForm("GenieDisplay", "Genie", new AjaxOptions { UpdateTargetId = "genieDetails" }))
+    {
+                          
+                <p>Enter family relatiopshops, a line per persion, with the following headings, delimmitted with a semicolon<br>
+                <b>Name;Birth;Location;Death;Location;Lived Location;Relationsips(where relationships are colon delim lists of Name and Relationship - David,Father:Sara,Mother:Joss,Brother:);</b>
+                <textarea rows="20" cols="50" style="width:800px" name="genieList">@ViewBag.GenieList</textarea></p>
+            
+        <button>Calculate</button>  
+             
+        
+    }   
+</fieldset>

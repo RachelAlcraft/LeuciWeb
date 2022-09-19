@@ -348,7 +348,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-Leucippus/wwwroot/App_Data/*.cpp4
 Leucippus/wwwroot/App_Data/1ejg.ccp4
-Leucippus/wwwroot/App_Data/4rek.ccp4
-*.ccp4

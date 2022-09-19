@@ -1,0 +1,65 @@
+﻿@model VeracityFable.Models.SchoolModel
+
+@{
+    ViewBag.Title = "Leucippus";
+}
+
+<h1>AlloAlgoForm</h1>
+<p>The form below is populated with sample data to assist you in getting the correct format. Please simply replace with the data of your choice.</p>
+<h3>Explanation of Sample Data</h3>
+<p>
+    In this entirely fictional world we have 3 schools.
+    <br />Rosy Lane School is small, oversubscribed, and surrounded by social class 1 (this is an entirely arbitrary num,ber I made up, it is for indicative information only).
+    <br />Lolnew Schoo is large, less popular but sufficient.
+    <br />Plane School is unpopular and in the middle of a troubled area.
+    <br />The three schools are all very close to each other and they have polarised groups which means the people in the area do not mix well.
+</p>
+
+<p>----------------------------------------------------------------------------------</p>
+<h3>Input Form to Calculate Allo Algo</h3>
+<fieldset>
+    <legend>Calculate Allo Algo</legend>
+    @using (Ajax.BeginForm("CalcAlloAlgoForm", "AlloAlgo", new AjaxOptions { UpdateTargetId = "divInterestDeatils" }))
+    {
+
+
+        <div style="width:300px;">
+
+            <p>
+                <li>@Html.Label("RandomRadius")</li>
+                <textarea name="randomRadius" style="width:30px;height:20px">@ViewBag.RandomRadius</textarea>
+            </p>
+
+            <p>
+                <li>@Html.Label("SiblingMax")</li>
+                <textarea name="siblingMax" style="width:30px;height:20px">@ViewBag.SiblingMax</textarea>
+            </p>
+            <p>
+                <li>@Html.Label("MaxChoices")</li>
+                <textarea name="maxChoices" style="width:30px;height:20px">@ViewBag.MaxChoices</textarea>
+            </p>
+
+        </div>
+
+
+        <div style="width:300px;">
+            <p>
+                Enter the list of schools with the following headings, delimtted with a semi colon<br>
+                <b>SchoolName;NumberPlaces;IsOverSubscribed;</b><br>
+                <textarea rows="3" cols="50" name="schoolList">@ViewBag.SchoolList</textarea>
+            </p>
+        </div>
+
+
+        <p>
+            Enter list of pupil applications, a line per choice, with the following headings, delimmitted with a semicolon<br>
+            <b>PupilName;SchoolChoice;ChoiceNumber;DistanceFromSchool;SpecialReason;Sibling;SocialBracket;</b><i><br />(nb a choice of -1 means it has not been chosen but it is a viable school within the specified area)</i><br>
+            <textarea rows="20" cols="50" style="width:800px" name="pupilList">@ViewBag.PupilList</textarea>
+        </p>
+
+        <button>Calculate</button>
+
+
+    }
+</fieldset>
+

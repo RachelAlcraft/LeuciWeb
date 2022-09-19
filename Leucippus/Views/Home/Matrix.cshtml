@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "View Electron Density";
+}
+
+<div style="font:bold 18pt verdana;">
+    @ViewBag.Title
+</div>
+<hr style="border:solid 1px #000080; background:#000080" />
+<div>
+    @{
+        if (ViewBag.Viewer is Array)
+        {
+            // Display multiple charts
+            for (int i = 0; i < ViewBag.Viewer.Length; ++i)
+            {
+                @:@Html.Raw(ViewBag.Viewer[i].RenderHTML())
+            }
+        }
+        else
+        {
+            // Display one chart only
+            @:@Html.Raw(ViewBag.Viewer.RenderHTML())
+        }
+    }
+</div>
