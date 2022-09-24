@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewData["Title"] = "Matrix";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Matrix</h1>
+<p>
+X-Plane:<input type="range" min="1" max="100" value=@ViewBag.XX><br/>
+Y-Plane:<input type="range" min="1" max="100" value=@ViewBag.YY><br/>
+Z-Plane:<input type="range" min="1" max="100" value=@ViewBag.ZZ>
+</p>
+
+
+
+<div id="myCountour" style="width:100%;max-width:1200px"></div>
+<div id="detes"></div>
+<div id="myDiv" style="width:100%;max-width:120px"></div>
+
+
+<script>
+    var jx = @Html.Raw(Json.Serialize(@ViewBag.MtxX));
+    var jy = @Html.Raw(Json.Serialize(@ViewBag.MtxY));
+    var jz = @Html.Raw(Json.Serialize(@ViewBag.MtxZ));    
+    document.getElementById("detes").innerHTML = "<p>Details:<br/>X:" + String(jx.length) + "<br/>Y:" + String(jy.length) + "<br/>Z:" + String(jz.length)+  "</p>";
+    
+    var x = [];
+    var y = [];
+    var z = [];
+    var zHist = []
+
+    var size = jx.length
+    
+    for (var i = 0; i < size; i ++) {
+	    x[i] = jx[i];
+        y[i] = jy[i];
+        z[i] = new Array(size);
+    }            
+    var count = 0;
+    for (var i = 0; i < size; i ++) {
+        for (var j = 0; j < size; j ++) {
+	    z[i][j] = jz[count];
+        zHist[count] = jz[count];
+        count = count+1;
+        }
+    }
+
+    var trace = {
+    x: zHist,
+    type: 'histogram',
+    };
+    var data = [trace];
+    Plotly.newPlot('myDiv', data);
+    
+    var data = [ {
+		z: z,
+		x: x,
+		y: y,
+		type: 'contour'
+	    }
+    ];
+
+    var layout = {
+        title: '',
+        xaxis: {        
+        showgrid: false,
+        zeroline: false
+        },
+        yaxis: {
+        scaleanchor: 'x',
+        scaleratio: 1
+        }
+    };
+    
+    Plotly.newPlot('myCountour', data,layout);
+</script>

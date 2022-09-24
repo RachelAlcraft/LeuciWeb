@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Plotly Plot</h1>
+<!--https://plotly.com/javascript/contour-plots/#simple-contour-plot-->
+<!--<input type="hidden" value="@ViewBag.Xs" id="xxss" />-->
+<div id="myDiv" style="width:100%;max-width:700px"></div>
+<script>
+var size = 100, x = new Array(size), y = new Array(size), z = new Array(size), i, j;
+
+for(var i = 0; i < size; i++) {
+	x[i] = y[i] = -2 * Math.PI + 4 * Math.PI * i / size;
+  	z[i] = new Array(size);
+}
+for(var i = 0; i < size; i++) {
+  	for(j = 0; j < size; j++) {
+    	var r2 = x[i]*x[i] + y[j]*y[j];
+    	z[i][j] = Math.sin(x[i]) * Math.cos(y[j]) * Math.sin(r2) / Math.log(r2+1);
+ 	}
+}
+var data = [ {
+		z: z,
+		x: x,
+		y: y,
+		type: 'contour'
+	}
+];
+Plotly.newPlot('myDiv', data);
+</script>

@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    function AlertName(name) {
+        alert('You clicked ' + name + "!");
+    }    
+</script>
+<div>    
+    <table class="table table-bordered table-condensed">
+        <tr>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Action</th>
+        </tr>        
+            <tr>
+                <td>
+                    <a onclick="AlertName('@String.Format("{0} {1}", "rae", "al")')" href="#">@String.Format("{0} {1}", "rae", "al")</a>
+                </td>
+                <td>
+                    RAE
+                </td>
+                <td>@Html.ActionLink("Edit", "edit", new { id = 12 })</td>
+            </tr>        
+    </table>
+</div>
+

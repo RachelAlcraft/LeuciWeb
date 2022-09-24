@@ -11,13 +11,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ChartDirector.Net" Version="7.0.0" />
+    <PackageReference Include="Deedle" Version="2.5.0" />
+    <PackageReference Include="FSharp.Data" Version="5.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Plotly.NET" Version="3.0.1" />
+    <PackageReference Include="Plotly.NET.CSharp" Version="0.8.0" />
+    <PackageReference Include="ScottPlot" Version="4.1.58" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 

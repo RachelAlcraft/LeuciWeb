@@ -1,6 +1,7 @@
 ﻿using ChartDirector;
 using Leucippus.Models;
 using Microsoft.AspNetCore.Mvc;
+using Plotly.NET;
 using System.Diagnostics;
 
 namespace Leucippus.Controllers
