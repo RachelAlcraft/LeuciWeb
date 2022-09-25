@@ -10,38 +10,41 @@
 <h5>Interactive matrix explorer - planes</h5>
 
 
-<span>
+<table style="border:none;">
+    <tr>
+    <td style="border:none;">
 @using (Html.BeginForm("Matrix", "Plotly", FormMethod.Post))
     {
-        <table cellpadding="0" cellspacing="0">
-            <tr>
+        <table cellpadding="0" cellspacing="0" style="background-color:PowderBlue">
+            <tr style="height:25%">
                 <th colspan="2" align="center">Protein Structure</th>
             </tr>
-            <tr>
+            <tr style="height:25%">
                 <td>PdbCode: </td>
                 <td>
-                    <input type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
+                    <input type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode width="20px"">
                 </td>
             </tr>
-            <tr>
+            <tr style="height:25%">
                 <td>Layer: </td>
                 <td>
-                    <input type="text" id="layer" name="layer" value=@ViewBag.Layer>
+                    <input type="text" id="layer" name="layer" value=@ViewBag.Layer width="20px"">
                 </td>
             </tr>            
-            <tr>
+            <tr style="height:25%;background-color:Crimson;">
                 <td></td>
                 <td><input type="submit" value="Submit"/></td>
             </tr>
         </table>
     }
+    </td>
+    <td style="border:none;">
 
-
-<table>
-    <tr>
+<table cellpadding="0" cellspacing="0" style="background-color:PowderBlue">
+    <tr style="height:25%">
         <th>Click to choose plane</th><th>Click to increment layer</th>
     </tr>
-    <tr>
+    <tr style="height:25%">
         <td>
             @Html.ActionLink(
     linkText: "XY Plane",
@@ -105,23 +108,29 @@
     )
         </td>
     </tr>
-    <tr>
+    <tr style="height:25%">
         <td>Chosen plane= @ViewBag.Plane</td><td>Chosen layer= @ViewBag.Layer / @ViewBag.LayerMax</td>        
     </tr>
+    
 </table>
-</span>
+</td>
+</tr>
+</table>
 
 </div>
 <br/>
 
 
-<table><tr>
-    <td><div id="myCountour" style="width:40%"></div></td>    
-    <td><div id="myDiv" style="width:40%"></div></td>    
-</tr></table>
+<div><div>
+    <div><div id="myCountour" style="width:40%"></div></div>    
+    <hr/>
+    <div><div id="myDiv" style="width:40%"></div></div>    
+</div></div>
 <div id="detes">
     <hr/>
     <h3>Details about @ViewBag.PdbCode electron density</h3>
+    <a href=@ViewBag.EbiLink>EBI Link to @ViewBag.PdbCode</a>
+    <br/>    
     @ViewBag.Info
 </div>
 
@@ -131,6 +140,8 @@
     var jy = @Html.Raw(Json.Serialize(@ViewBag.MtxY));
     var jz = @Html.Raw(Json.Serialize(@ViewBag.MtxZ));    
     var jv = @Html.Raw(Json.Serialize(@ViewBag.MtxV));    
+    var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
+    var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));    
             
     var layoutH = {
         autosize: true,
@@ -140,6 +151,14 @@
     var traceH = {
     x: jz,
     type: 'histogram',
+    nbinsx: 50,
+    marker: {
+        color: "LightGreen",
+        line: {
+            color:  "Silver", 
+            width: 1
+        }
+    }
     };
     var dataH = [traceH];
     Plotly.newPlot('myDiv', dataH,layoutH);
@@ -148,9 +167,16 @@
 		z: jv,
 		x: jx,
 		y: jy,
-		type: 'contour'
-	    }
-    ];
+		type: 'contour',
+        colorscale: [[0,'DarkRed'],[0.01,'Crimson'],[0.5,'LightGreen'],[1,'AliceBlue'],],
+        reversescale : true,
+        autocontour: false,
+        contours: {
+            start: minv,
+            end: maxv,
+            size: (maxv-minv)/10
+        }	    
+    }];
 
     var layout = {
         autosize: true,

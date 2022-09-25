@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting.Internal;
+using NuGet.Packaging;
 using System;
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Net.Mime;
@@ -12,6 +14,8 @@ namespace Leucippus.Models
     public class ElectronDensity
     {
         public string? PdbCode { get; set; }
+        public string? EbiLink { get; set; }
+        public string? Ccp4Link { get; set; }
         public Ccp4? ccp4 { get; set; }
         public string? Info { get; set; }
         public double XX { get; set; }
@@ -25,12 +29,14 @@ namespace Leucippus.Models
         public int Layer;
         public int LayerMax;
         public string Plane;
+        public double MinV;
+        public double MaxV;
 
         public ElectronDensity(string pdb)
         {
-            PdbCode = pdb;            
+            PdbCode = pdb;
+            EbiLink = "https://www.ebi.ac.uk/pdbe/entry/pdb/" + PdbCode;            
         }
-
         public async Task DownloadAsync()
         { 
             string edFilePath = "wwwroot/App_Data/" + PdbCode + ".ccp4";
@@ -79,6 +85,9 @@ namespace Leucippus.Models
                     int eX = ccp4.MyMatrix.GetLength(0);
                     int eY = ccp4.MyMatrix.GetLength(1);
                     int eZ = ccp4.MyMatrix.GetLength(2);
+                    MinV = 0;
+                    MaxV = 0;
+
                     
                     int endX = 0;                    
                     int endY = 0;
@@ -137,10 +146,17 @@ namespace Leucippus.Models
                                 val = ccp4.MyMatrix[y,layer,x];                            
                             MtxC[y*MtxA.Length+x] = val;
                             MtxD[y][x] = val;
+                            MinV = Math.Min(MinV, val);
+                            MaxV = Math.Max(MaxV, val);
+                            //MaxV += val;
                         }
                     }
+                    //int pos = (int)(MtxC.Length - MtxC.Length / 100);
+                    //Array.Sort(MtxC);
+                    //MaxV = MtxC[pos]; //percential the cap on density
                     Layer = layer;
                     Plane = plane;
+                    
                 }
             }
         }

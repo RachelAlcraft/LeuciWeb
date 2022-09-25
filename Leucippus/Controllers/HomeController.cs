@@ -9,7 +9,7 @@ namespace Leucippus.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        ElectronDensity ed = new ElectronDensity("1ejg");
+        ElectronDensity ed = new ElectronDensity("6eex");
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -21,7 +21,7 @@ namespace Leucippus.Controllers
             return View();
         }
 
-        public IActionResult Explore(string PdbCode="1ejg",double XX=25, double YY=25, double ZZ=25)
+        public IActionResult Explore(string PdbCode="6eex",double XX=25, double YY=25, double ZZ=25)
         {
             ed = new ElectronDensity(PdbCode);
             ed.PdbCode = PdbCode;

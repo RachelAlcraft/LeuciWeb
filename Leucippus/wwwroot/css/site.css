@@ -20,12 +20,16 @@ body {
 }
 
 table, th, td {
-    border: 1px solid;
+    border: none;
     text-align: center;
     margin-bottom: 10px;
     padding: 4px;
 }
 th {
-    background-color:Crimson;
+    background-color: Crimson;
     color: AliceBlue;
+    border: 1px solid;
+}
+td {        
+    border: 1px solid;
 }

@@ -15,7 +15,7 @@ namespace Leucippus.Controllers
             return View();            
         }
 
-        public IActionResult Matrix(string pdbcode = "1ejg", int layer = 0, string plane="XY")
+        public IActionResult Matrix(string pdbcode = "6eex", int layer = 0, string plane="XY")
         {
             //https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_element_innerhtml            
             bool newCalcs = true;
@@ -50,9 +50,12 @@ namespace Leucippus.Controllers
                 ViewBag.MtxV = ed.MtxD;
             }
             ViewBag.PdbCode = ed.PdbCode;
+            ViewBag.EbiLink = ed.EbiLink;
             ViewBag.Plane = ed.Plane;
             ViewBag.Layer = ed.Layer;
-            ViewBag.LayerMax = ed.LayerMax;
+            ViewBag.LayerMax = ed.LayerMax-1;
+            ViewBag.MinV = ed.MinV;
+            ViewBag.MaxV = ed.MaxV;
 
             return View();
         }
