@@ -23,6 +23,7 @@ namespace Leucippus.Controllers
 
         public IActionResult Explore(string PdbCode="1ejg",double XX=25, double YY=25, double ZZ=25)
         {
+            ed = new ElectronDensity(PdbCode);
             ed.PdbCode = PdbCode;
             ed.XX = XX;
             ed.YY = YY;
@@ -33,9 +34,10 @@ namespace Leucippus.Controllers
             ViewBag.XX = ed.XX;
             ViewBag.YY = ed.YY;
             ViewBag.ZZ = ed.ZZ;
+            ed.calculateWholeLayer("XY", 25);
 
             MatrixView mtx = new MatrixView();
-            mtx.Create(ViewBag.Viewer = new RazorChartViewer(HttpContext, "chart1"),ed.MtxX,ed.MtxY,ed.MtxZ,PdbCode);
+            mtx.Create(ViewBag.Viewer = new RazorChartViewer(HttpContext, "chart1"),ed.MtxA,ed.MtxB,ed.MtxC,PdbCode);
 
             return View();
         }

@@ -2,9 +2,35 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Leucippus</h1>
-    <p>Exploration of electron density (placeholder)</a>.</p>
+<div class="text-left">
+    <h1>Leucippus</h1>
+    <p>An explorative application to explore electron density in ultra-high-resolution x-ray crystal structures</p>
+    <hr/>
+    <p>3 plot styles have been assessed - see menu</p>
+    <ul>                        
+    <li>
+        <div>
+         <a class="nav-link text-dark" asp-area="" asp-controller="Plotly" asp-action="Matrix">Plotly.js</a>
+         This is the proposed solution as it is a widely used open source plotting library that is fast and fully featured. The JavaScript is straightforward to integrate with C#.
+         </div>
+    </li>
+    <hr/>
+    <li>
+        <div>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Explore">CSharp</a>
+        This is fast and simple but C# libraries tend to be closed and less featured so not preferred.
+        </div>
+   </li>
+   <hr/>
+   <li>
+       <div>
+      <a class="nav-link text-dark" asp-area="" asp-controller="Python" asp-action="Index">Python</a>
+      This is simply too slow, python integration could be used only if something was really necessary.
+      </div>
+   </li>   
+   <hr/>
+   </ul>
+    
 </div>
 
 

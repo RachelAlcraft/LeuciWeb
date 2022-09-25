@@ -4,64 +4,157 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Matrix</h1>
-<p>
-X-Plane:<input type="range" min="1" max="100" value=@ViewBag.XX><br/>
-Y-Plane:<input type="range" min="1" max="100" value=@ViewBag.YY><br/>
-Z-Plane:<input type="range" min="1" max="100" value=@ViewBag.ZZ>
-</p>
+<h1>Electron Density Matrix Explorer - @ViewBag.PdbCode</h1>
+<hr/>
+<div>
+<h5>Interactive matrix explorer - planes</h5>
 
 
+<span>
+@using (Html.BeginForm("Matrix", "Plotly", FormMethod.Post))
+    {
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <th colspan="2" align="center">Protein Structure</th>
+            </tr>
+            <tr>
+                <td>PdbCode: </td>
+                <td>
+                    <input type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
+                </td>
+            </tr>
+            <tr>
+                <td>Layer: </td>
+                <td>
+                    <input type="text" id="layer" name="layer" value=@ViewBag.Layer>
+                </td>
+            </tr>            
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Submit"/></td>
+            </tr>
+        </table>
+    }
 
-<div id="myCountour" style="width:100%;max-width:1200px"></div>
-<div id="detes"></div>
-<div id="myDiv" style="width:100%;max-width:120px"></div>
+
+<table>
+    <tr>
+        <th>Click to choose plane</th><th>Click to increment layer</th>
+    </tr>
+    <tr>
+        <td>
+            @Html.ActionLink(
+    linkText: "XY Plane",
+    actionName: "Matrix",
+    controllerName: "Plotly",
+    routeValues: new {
+        pdbcode = @ViewBag.PdbCode,
+        plane = "XY", 
+        layer = @ViewBag.Layer
+    },
+    htmlAttributes: null
+    )
+    <span> ~ </span>
+    @Html.ActionLink(
+    linkText: "YZ Plane",
+    actionName: "Matrix",
+    controllerName: "Plotly",
+    routeValues: new {
+        pdbcode = @ViewBag.PdbCode,
+        plane = "YZ", 
+        layer = @ViewBag.Layer
+    },
+    htmlAttributes: null
+    )
+    <span> ~ </span>
+    @Html.ActionLink(
+    linkText: "ZX Plane",
+    actionName: "Matrix",
+    controllerName: "Plotly",
+    routeValues: new {
+        pdbcode = @ViewBag.PdbCode,
+        plane = "ZX", 
+        layer = @ViewBag.Layer
+    },
+    htmlAttributes: null
+    )
+        </td>
+        <td>
+            @Html.ActionLink(
+    linkText: " - 1",
+    actionName: "Matrix",
+    controllerName: "Plotly",
+    routeValues: new {
+        pdbcode = @ViewBag.PdbCode,
+        plane = @ViewBag.Plane, 
+        layer = @ViewBag.Layer - 1
+    },
+    htmlAttributes: null
+    )
+    <span> ~ </span>
+    @Html.ActionLink(
+    linkText: " + 1",
+    actionName: "Matrix",
+    controllerName: "Plotly",
+    routeValues: new {
+        pdbcode = @ViewBag.PdbCode,
+        plane = @ViewBag.Plane, 
+        layer = @ViewBag.Layer + 1
+    },
+    htmlAttributes: null
+    )
+        </td>
+    </tr>
+    <tr>
+        <td>Chosen plane= @ViewBag.Plane</td><td>Chosen layer= @ViewBag.Layer / @ViewBag.LayerMax</td>        
+    </tr>
+</table>
+</span>
+
+</div>
+<br/>
+
+
+<table><tr>
+    <td><div id="myCountour" style="width:40%"></div></td>    
+    <td><div id="myDiv" style="width:40%"></div></td>    
+</tr></table>
+<div id="detes">
+    <hr/>
+    <h3>Details about @ViewBag.PdbCode electron density</h3>
+    @ViewBag.Info
+</div>
 
 
 <script>
     var jx = @Html.Raw(Json.Serialize(@ViewBag.MtxX));
     var jy = @Html.Raw(Json.Serialize(@ViewBag.MtxY));
     var jz = @Html.Raw(Json.Serialize(@ViewBag.MtxZ));    
-    document.getElementById("detes").innerHTML = "<p>Details:<br/>X:" + String(jx.length) + "<br/>Y:" + String(jy.length) + "<br/>Z:" + String(jz.length)+  "</p>";
-    
-    var x = [];
-    var y = [];
-    var z = [];
-    var zHist = []
+    var jv = @Html.Raw(Json.Serialize(@ViewBag.MtxV));    
+            
+    var layoutH = {
+        autosize: true,
+        title: 'Electron density values in this plane'     
+    };
 
-    var size = jx.length
-    
-    for (var i = 0; i < size; i ++) {
-	    x[i] = jx[i];
-        y[i] = jy[i];
-        z[i] = new Array(size);
-    }            
-    var count = 0;
-    for (var i = 0; i < size; i ++) {
-        for (var j = 0; j < size; j ++) {
-	    z[i][j] = jz[count];
-        zHist[count] = jz[count];
-        count = count+1;
-        }
-    }
-
-    var trace = {
-    x: zHist,
+    var traceH = {
+    x: jz,
     type: 'histogram',
     };
-    var data = [trace];
-    Plotly.newPlot('myDiv', data);
+    var dataH = [traceH];
+    Plotly.newPlot('myDiv', dataH,layoutH);
     
     var data = [ {
-		z: z,
-		x: x,
-		y: y,
+		z: jv,
+		x: jx,
+		y: jy,
 		type: 'contour'
 	    }
     ];
 
     var layout = {
-        title: '',
+        autosize: true,
+        title: 'Contour plot of electron density plane',
         xaxis: {        
         showgrid: false,
         zeroline: false

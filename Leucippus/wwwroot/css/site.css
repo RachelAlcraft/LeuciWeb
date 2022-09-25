@@ -15,6 +15,17 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: cornflowerblue;
+    background-color: PowderBlue;
     color: crimson
+}
+
+table, th, td {
+    border: 1px solid;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 4px;
+}
+th {
+    background-color:Crimson;
+    color: AliceBlue;
 }

@@ -12,20 +12,23 @@ namespace Leucippus.Models
     public class ElectronDensity
     {
         public string? PdbCode { get; set; }
+        public Ccp4? ccp4 { get; set; }
         public string? Info { get; set; }
         public double XX { get; set; }
         public double YY { get; set; }
         public double ZZ { get; set; }
-        public double[] MtxX = new double[0];
-        public double[] MtxY = new double[0];
-        public double[] MtxZ = new double[0];
+        public double[] MtxA = new double[0];
+        public double[] MtxB = new double[0];
+        public double[] MtxC = new double[0];
+        public double[][] MtxD;
+        //Variables to view the plane with no interpolation
+        public int Layer;
+        public int LayerMax;
+        public string Plane;
 
         public ElectronDensity(string pdb)
         {
-            PdbCode = pdb;
-            XX = 25;
-            YY = 25;
-            ZZ = 25;
+            PdbCode = pdb;            
         }
 
         public async Task DownloadAsync()
@@ -56,49 +59,90 @@ namespace Leucippus.Models
             }
             if (haveED)
             {
-                Ccp4 cp = new Ccp4();
-                byte[] fileInBinary = cp.ReadBinaryFile(edFilePath);
-                cp.createWords(fileInBinary);
-                Info = cp.w01_NX.ToString() + "-" + cp.w02_NY.ToString() + "-" + cp.w03_NZ.ToString();
+                ccp4 = new Ccp4();
+                byte[] fileInBinary = ccp4.ReadBinaryFile(edFilePath);
+                ccp4.createWords(fileInBinary);
+                Info = ccp4.w01_NX.ToString() + "-" + ccp4.w02_NY.ToString() + "-" + ccp4.w03_NZ.ToString();
 
-                int minLength = Math.Min(cp.MyMatrix.GetLength(0), cp.MyMatrix.GetLength(1));
+                int minLength = Math.Min(ccp4.MyMatrix.GetLength(0), ccp4.MyMatrix.GetLength(1));
                 minLength = Math.Min(minLength,50);
 
-                if (cp.Ready)
-                {
-                    int startX = Math.Min((int)XX,(int)(cp.MyMatrix.GetLength(0)-minLength));
-                    int startY = Math.Min((int)YY, (int)(cp.MyMatrix.GetLength(1) - minLength));                    
-                    int posZ = Math.Min((int)ZZ,cp.MyMatrix.GetLength(2));
-                    int endX = Math.Min(startX+minLength,cp.MyMatrix.GetLength(0));
-                    int endY = Math.Min(startY+minLength, cp.MyMatrix.GetLength(0));
-                    
-                    MtxX = new double[endX-startX];
-                    for (int i = startX; i < endX; i++)
-                    {
-                        MtxX[i-startX] = i;
-                    }
-                    MtxY = new double[endY-startY];
-                    for (int i = startY; i < endY; i++)
-                    {
-                        MtxY[i-startY] = i;
-                    }                                        
-                    MtxZ = new double[MtxX.Length * MtxY.Length];
-
-                    int zIndex = posZ;
-
                 
-                    for (int yIndex = 0; yIndex < MtxY.Length; ++yIndex)
+            }            
+        }
+        public void calculateWholeLayer(string plane, int layer)
+        {
+            if (ccp4 != null)
+            {
+                if (ccp4.Ready)
+                {                    
+                    int eX = ccp4.MyMatrix.GetLength(0);
+                    int eY = ccp4.MyMatrix.GetLength(1);
+                    int eZ = ccp4.MyMatrix.GetLength(2);
+                    
+                    int endX = 0;                    
+                    int endY = 0;
+                    if (layer < 0)                    
+                        layer = 0;
+
+                    if (plane == "XY")
                     {
-                        double y = MtxY[yIndex];
-                        for (int xIndex = 0; xIndex < MtxX.Length; ++xIndex)
-                        {
-                            double x = MtxX[xIndex];
-                            double z = cp.MyMatrix[xIndex, yIndex,zIndex];
-                            MtxZ[yIndex * MtxY.Length + xIndex] = z;
+                        endX = eX;
+                        endY = eY;
+                        LayerMax = eZ;
+                        if (layer >= eZ)                        
+                            layer = eZ - 1;                        
+                    }
+                    else if (plane == "YZ")
+                    {
+                        endX = eY;
+                        endY = eZ;
+                        LayerMax = eX;
+                        if (layer >= eX)                        
+                            layer = eX - 1;                        
+                    }
+                    else if (plane == "ZX")
+                    {
+                        endX = eZ;
+                        endY = eX;
+                        LayerMax = eY;
+                        if (layer >= eY)                        
+                            layer = eY - 1;                        
+                    }
+
+                    MtxA = new double[endX];
+                    for (int i = 0; i < endX; i++)
+                    {
+                        MtxA[i] = i;
+                    }
+                    MtxB = new double[endY];
+                    for (int i = 0; i < endY; i++)
+                    {
+                        MtxB[i] = i;
+                    }
+                    MtxC = new double[MtxA.Length * MtxB.Length];
+                    MtxD = new double[MtxB.Length][];
+
+                    for (int y = 0; y < MtxB.Length; ++y)
+                    {
+                        MtxD[y] = new double[MtxA.Length];
+                        for (int x = 0; x < MtxA.Length; ++x)
+                        {                            
+                            double val = 0;
+                            if (plane == "XY")                            
+                                val = ccp4.MyMatrix[x,y,layer];                            
+                            else if (plane == "YZ")
+                                val = ccp4.MyMatrix[layer,x,y];                            
+                            else if (plane == "ZX")
+                                val = ccp4.MyMatrix[y,layer,x];                            
+                            MtxC[y*MtxA.Length+x] = val;
+                            MtxD[y][x] = val;
                         }
                     }
+                    Layer = layer;
+                    Plane = plane;
                 }
-            }            
-        }                
+            }
+        }
     }
 }
