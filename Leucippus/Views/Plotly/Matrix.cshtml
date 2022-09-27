@@ -153,7 +153,7 @@
     type: 'histogram',
     nbinsx: 50,
     marker: {
-        color: "LightGreen",
+        color: "Crimson",
         line: {
             color:  "Silver", 
             width: 1
@@ -162,19 +162,41 @@
     };
     var dataH = [traceH];
     Plotly.newPlot('myDiv', dataH,layoutH);
+
+    var minc = minv
+    var maxc = 3
+    var size = (maxc - minc)/10
+    var zero_frac = 0.001    
+    var cs = []
+    if (minc < 0){
+        zero_frac = (0 - minc) / (maxc-minc)
+        var lev1 = zero_frac + 0.1*(1-zero_frac)
+        var lev2 = zero_frac + 0.3*(1-zero_frac)
+        var lev3 = zero_frac + 0.5*(1-zero_frac)
+        cs =  [[0,'RosyBrown'],[String(zero_frac+0.001),'AliceBlue'],[String(lev1),'LightBlue'],[String(lev2),'CornflowerBlue'],[String(lev3),'Crimson'],[1,'rgb(100, 0, 0)']]
+    }
+    else{
+        cs =  [[0,'AliceBlue'],[0.25,'LightBlue'],[0.5,'CornflowerBlue'],[0.75,'Crimson'],[1,'rgb(100, 0, 0)']]
+    }
+    cs =  [[0,'AliceBlue'],[0.25,'LightBlue'],[0.5,'CornflowerBlue'],[0.75,'Crimson'],[1,'rgb(100, 0, 0)']]
+    
     
     var data = [ {
 		z: jv,
 		x: jx,
 		y: jy,
 		type: 'contour',
-        colorscale: [[0,'DarkRed'],[0.01,'Crimson'],[0.5,'LightGreen'],[1,'AliceBlue'],],
-        reversescale : true,
+        colorscale: cs,
+        reversescale : false,
         autocontour: false,
+        line : {
+            width:0.5,            
+            color:'DimGray'
+        },
         contours: {
-            start: minv,
-            end: maxv,
-            size: (maxv-minv)/10
+            start: minc,
+            end: maxc,
+            size: size            
         }	    
     }];
 
