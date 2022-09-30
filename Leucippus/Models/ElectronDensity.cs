@@ -32,6 +32,8 @@ namespace Leucippus.Models
         public double MinV;
         public double MaxV;
 
+        DllInterface dllI = new DllInterface();
+
         public ElectronDensity(string pdb)
         {
             PdbCode = pdb;
