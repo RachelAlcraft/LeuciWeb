@@ -1,0 +1,188 @@
+﻿@{
+    ViewData["Title"] = "Slice";
+    Layout = "~/Views/Shared/_LayoutDensity.cshtml";
+}
+
+<h1>Slice though Density Matrix - @ViewBag.PdbCode</h1>
+<hr />
+<div>    
+    <table style="border:none;">
+        <tr>
+            <td style="border:none;">
+                @using (Html.BeginForm("Slice", "Plotly", FormMethod.Post))
+                {
+                    <table cellpadding="0" cellspacing="0"><!-- style="background-color:PowderBlue">-->
+                        <tr>
+                            <th colspan="1" align="center"><input type="submit" value="Submit" /></th>
+                            <th colspan="1" align="center">X</th>
+                            <th colspan="1" align="center">Y</th>
+                            <th colspan="1" align="center">X</th>
+                        </tr>                        
+                        <tr>
+                            <td>central</td>
+                            <td><input type="text" id="cx" name="cx" value=@ViewBag.cx></td>
+                            <td><input type="text" id="cy" name="cy" value=@ViewBag.cy></td>
+                            <td><input type="text" id="cz" name="cz" value=@ViewBag.cz></td>
+                        </tr>
+                        <tr>
+                            <td>linear</td>
+                            <td><input type="text" id="lx" name="lx" value=@ViewBag.lx></td>
+                            <td><input type="text" id="ly" name="ly" value=@ViewBag.ly></td>
+                            <td><input type="text" id="lz" name="lz" value=@ViewBag.lz></td>
+                        </tr>
+                        <tr>
+                            <td>planar</td>
+                            <td><input type="text" id="px" name="px" value=@ViewBag.px></td>
+                            <td><input type="text" id="py" name="py" value=@ViewBag.py></td>
+                            <td><input type="text" id="pz" name="pz" value=@ViewBag.pz></td>
+                        </tr>                                                                        
+                    </table>
+                }
+            </td>            
+        </tr>
+    </table>
+
+</div>
+<br />
+
+<hr />
+<div>
+    <table width="100%">
+    <tr>    
+        <td>Density<br/><div id="myCountour"></div></td>        
+        <td>Radiant<br/><div id="myCountourRad"></div></td>
+        <td>Laplacian<br/><div id="myCountourLap"></div></td>    
+    </tr>
+    </table>
+</div>
+<hr />
+
+<script>
+    var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
+    var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
+    var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
+    var jvr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadiant));
+    var jvl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
+    var minv = -2
+    var maxv = 10    
+    var minl = @Html.Raw(Json.Serialize(@ViewBag.MinLaplacian));
+    var maxl = @Html.Raw(Json.Serialize(@ViewBag.MaxLaplacian));
+    var minc = -1
+    var maxc = 5
+    var size = (maxc - minc) / 20
+    var zero_frac = 0.001
+    var zero_frac_lap = 0.001
+    var cs = []
+    if (minc < 0) {
+        zero_frac = (0 - minc) / (maxc - minc)
+        var lev1 = zero_frac + 0.1 * (1 - zero_frac)
+        var lev2 = zero_frac + 0.3 * (1 - zero_frac)
+        var lev3 = zero_frac + 0.5 * (1 - zero_frac)
+        cs = [[0, 'DimGray'], [String(zero_frac + 0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]        
+   }
+    else {
+        cs = [[0, 'AliceBlue'], [0.25, 'LightBlue'], [0.5, 'CornflowerBlue'], [0.75, 'Crimson'], [1, 'rgb(100, 0, 0)']]
+    }
+    <!--cs = [[0, 'AliceBlue'], [0.25, 'LightBlue'], [0.5, 'CornflowerBlue'], [0.75, 'Crimson'], [1, 'rgb(100, 0, 0)']]-->
+
+    if (minl < 0){
+        zero_frac_lap = (0 - minl) / (maxl - minl)        
+        cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'Snow'], [1, 'Crimson']]
+   }
+   else{
+        cs_lap = [[0, 'CornflowerBlue'], [0.5, 'Snow'], [1, 'Crimson']]
+
+   }
+
+
+
+    var data = [{
+        z: jv,
+        x: jx,
+        y: jy,
+        type: 'contour',
+        colorscale: cs,
+        reversescale: false,
+        autocontour: false,
+        line: {
+            width: 0.5,
+            color: 'DimGray'
+        },
+        contours: {
+            start: minc,
+            end: maxc,
+            size: size
+        },
+        showscale:false,
+        colorbar: {
+            thickness: 15,
+        }
+    }];
+
+    var dataR = [{
+        z: jvr,
+        x: jx,
+        y: jy,
+        type: 'heatmap',
+        colorscale: 'Greys',
+        reversescale: false,
+        autocontour: true,
+        line: {
+            width: 0,
+            color: 'DimGray'
+        },        
+        showscale: false,
+        colorbar: {
+            thickness: 15,
+        }
+    }];
+
+    var dataL = [{
+        z: jvl,
+        x: jx,
+        y: jy,
+        type: 'contour',
+        colorscale: cs_lap,
+        reversescale: true,
+        autocontour: true,
+        line: {
+            width: 0.5,
+            color: 'DimGray'
+        },        
+        showscale: false,
+        colorbar: {
+            thickness: 15,
+        }
+    }];
+    
+    var layout = {
+        grid: { rows: 1, columns: 1, pattern: 'independent' },
+        autosize: true,
+        title: '',
+        showlegend: false,        
+        xaxis: {
+            showgrid: false,
+            zeroline: false,
+            visible: false,
+        },
+        yaxis: {
+            scaleanchor: 'x',
+            scaleratio: 1,
+            visible: false,
+        },
+        margin: {
+            l: 50,
+            r: 50,
+            b: 100,
+            t: 100,
+            pad: 4
+        }
+    };
+
+    var config = { responsive: true }
+
+    Plotly.newPlot('myCountour', data, layout, config);
+    Plotly.newPlot('myCountourRad', dataR, layout, config);
+    Plotly.newPlot('myCountourLap', dataL, layout, config);
+    
+</script>

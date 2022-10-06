@@ -1,139 +1,112 @@
 ﻿
 @{
     ViewData["Title"] = "Matrix";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutDensity.cshtml";
 }
 
-<h1>Electron Density Matrix Explorer - @ViewBag.PdbCode</h1>
+<h1>Raw Density Matrix - @ViewBag.PdbCode</h1>
 <hr/>
 <div>
 <h5>Interactive matrix explorer - planes</h5>
 
-
-<table style="border:none;">
-    <tr>
-    <td style="border:none;">
 @using (Html.BeginForm("Matrix", "Plotly", FormMethod.Post))
     {
-        <table cellpadding="0" cellspacing="0" style="background-color:PowderBlue">
+        <table cellpadding="0" cellspacing="0"><!-- style="background-color:PowderBlue">-->
             <tr style="height:25%">
-                <th colspan="2" align="center">Protein Structure</th>
-            </tr>
-            <tr style="height:25%">
-                <td>PdbCode: </td>
+                <th colspan="1" align="center">Layer</th>
+                <th>Click to choose plane</th>
+                <th>Click to increment layer</th>
+            </tr>            
+            <tr style="height:25%">                
                 <td>
-                    <input type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode width="20px"">
+                    <input type="text" id="layer" name="layer" align="center" value=@ViewBag.Layer>
                 </td>
-            </tr>
-            <tr style="height:25%">
-                <td>Layer: </td>
                 <td>
-                    <input type="text" id="layer" name="layer" value=@ViewBag.Layer width="20px"">
+                                @Html.ActionLink(
+                            linkText: "XY Plane",
+                            actionName: "Matrix",
+                            controllerName: "Plotly",
+                            routeValues: new {
+                            pdbcode = @ViewBag.PdbCode,
+                            plane = "XY",
+                            layer = @ViewBag.Layer
+                            },
+                            htmlAttributes: null
+                            )
+                                <span> ~ </span>
+                                @Html.ActionLink(
+                            linkText: "YZ Plane",
+                            actionName: "Matrix",
+                            controllerName: "Plotly",
+                            routeValues: new {
+                            pdbcode = @ViewBag.PdbCode,
+                            plane = "YZ",
+                            layer = @ViewBag.Layer
+                            },
+                            htmlAttributes: null
+                            )
+                                <span> ~ </span>
+                                @Html.ActionLink(
+                            linkText: "ZX Plane",
+                            actionName: "Matrix",
+                            controllerName: "Plotly",
+                            routeValues: new {
+                            pdbcode = @ViewBag.PdbCode,
+                            plane = "ZX",
+                            layer = @ViewBag.Layer
+                            },
+                            htmlAttributes: null
+                            )
+                </td>
+                <td>
+                                @Html.ActionLink(
+                            linkText: " - 1",
+                            actionName: "Matrix",
+                            controllerName: "Plotly",
+                            routeValues: new {
+                            pdbcode = @ViewBag.PdbCode,
+                            plane = @ViewBag.Plane,
+                            layer = @ViewBag.Layer - 1
+                            },
+                            htmlAttributes: null
+                            )
+                                <span> ~ </span>
+                                @Html.ActionLink(
+                            linkText: " + 1",
+                            actionName: "Matrix",
+                            controllerName: "Plotly",
+                            routeValues: new {
+                            pdbcode = @ViewBag.PdbCode,
+                            plane = @ViewBag.Plane,
+                            layer = @ViewBag.Layer + 1
+                            },
+                            htmlAttributes: null
+                            )
                 </td>
             </tr>            
-            <tr style="height:25%;background-color:Crimson;">
-                <td></td>
-                <td><input type="submit" value="Submit"/></td>
+            <tr><!-- style="height:25%;background-color:Crimson;">-->
+                <td><input type="submit" value="Jump to"/></td>
+                <td>Chosen plane= @ViewBag.Plane</td>
+                <td>Chosen layer= @ViewBag.Layer / @ViewBag.LayerMax</td>
             </tr>
         </table>
     }
-    </td>
-    <td style="border:none;">
-
-<table cellpadding="0" cellspacing="0" style="background-color:PowderBlue">
-    <tr style="height:25%">
-        <th>Click to choose plane</th><th>Click to increment layer</th>
-    </tr>
-    <tr style="height:25%">
-        <td>
-            @Html.ActionLink(
-    linkText: "XY Plane",
-    actionName: "Matrix",
-    controllerName: "Plotly",
-    routeValues: new {
-        pdbcode = @ViewBag.PdbCode,
-        plane = "XY", 
-        layer = @ViewBag.Layer
-    },
-    htmlAttributes: null
-    )
-    <span> ~ </span>
-    @Html.ActionLink(
-    linkText: "YZ Plane",
-    actionName: "Matrix",
-    controllerName: "Plotly",
-    routeValues: new {
-        pdbcode = @ViewBag.PdbCode,
-        plane = "YZ", 
-        layer = @ViewBag.Layer
-    },
-    htmlAttributes: null
-    )
-    <span> ~ </span>
-    @Html.ActionLink(
-    linkText: "ZX Plane",
-    actionName: "Matrix",
-    controllerName: "Plotly",
-    routeValues: new {
-        pdbcode = @ViewBag.PdbCode,
-        plane = "ZX", 
-        layer = @ViewBag.Layer
-    },
-    htmlAttributes: null
-    )
-        </td>
-        <td>
-            @Html.ActionLink(
-    linkText: " - 1",
-    actionName: "Matrix",
-    controllerName: "Plotly",
-    routeValues: new {
-        pdbcode = @ViewBag.PdbCode,
-        plane = @ViewBag.Plane, 
-        layer = @ViewBag.Layer - 1
-    },
-    htmlAttributes: null
-    )
-    <span> ~ </span>
-    @Html.ActionLink(
-    linkText: " + 1",
-    actionName: "Matrix",
-    controllerName: "Plotly",
-    routeValues: new {
-        pdbcode = @ViewBag.PdbCode,
-        plane = @ViewBag.Plane, 
-        layer = @ViewBag.Layer + 1
-    },
-    htmlAttributes: null
-    )
-        </td>
-    </tr>
-    <tr style="height:25%">
-        <td>Chosen plane= @ViewBag.Plane</td><td>Chosen layer= @ViewBag.Layer / @ViewBag.LayerMax</td>        
-    </tr>
     
-</table>
-</td>
-</tr>
-</table>
-
 </div>
 <br/>
 
 
-<div><div>
-    <div><div id="myCountour" style="width:40%"></div></div>    
+<div>
+    <div>
+    <div>
+        <div id="myCountour" style="width:40%"></div>
+        </div>    
     <hr/>
-    <div><div id="myDiv" style="width:40%"></div></div>    
-</div></div>
-<div id="detes">
-    <hr/>
-    <h3>Details about @ViewBag.PdbCode electron density</h3>
-    <a href=@ViewBag.EbiLink>EBI Link to @ViewBag.PdbCode</a>
-    <br/>    
-    @ViewBag.Info
-</div>
-
+    <div>
+        <div id="myDiv" style="width:40%"></div>
+        </div>    
+    </div>
+    </div>
 
 <script>
     var jx = @Html.Raw(Json.Serialize(@ViewBag.MtxX));

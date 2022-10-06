@@ -9,7 +9,7 @@ namespace Leucippus.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        ElectronDensity ed = new ElectronDensity("6eex");
+        //ElectronDensity ed = new ElectronDensity("6eex");
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -23,25 +23,35 @@ namespace Leucippus.Controllers
 
         public IActionResult Explore(string PdbCode="6eex",double XX=25, double YY=25, double ZZ=25)
         {
-            ed = new ElectronDensity(PdbCode);
-            ed.PdbCode = PdbCode;
-            ed.XX = XX;
-            ed.YY = YY;
-            ed.ZZ = ZZ;
-            ed.DownloadAsync();            
-            ViewBag.Info = ed.Info;
-            ViewBag.PdbCode = ed.PdbCode;
-            ViewBag.XX = ed.XX;
-            ViewBag.YY = ed.YY;
-            ViewBag.ZZ = ed.ZZ;
-            ed.calculateWholeLayer("XY", 25);
+            //ed = new ElectronDensity(PdbCode);
+            //ed.PdbCode = PdbCode;
+            //ed.XX = XX;
+            //ed.YY = YY;
+            //ed.ZZ = ZZ;
+            //ed.DownloadAsync();            
+            //ViewBag.Info = ed.Info;
+            //ViewBag.PdbCode = ed.PdbCode;
+            //ViewBag.XX = ed.XX;
+            //ViewBag.YY = ed.YY;
+            //ViewBag.ZZ = ed.ZZ;
+            //ed.calculateWholeLayer("XY", 25);
 
-            MatrixView mtx = new MatrixView();
-            mtx.Create(ViewBag.Viewer = new RazorChartViewer(HttpContext, "chart1"),ed.MtxA,ed.MtxB,ed.MtxC,PdbCode);
+            //MatrixView mtx = new MatrixView();
+            //mtx.Create(ViewBag.Viewer = new RazorChartViewer(HttpContext, "chart1"),ed.MtxA,ed.MtxB,ed.MtxC,PdbCode);
 
             return View();
         }
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult About()
+        {         
+            return View();
+        }
+
+        public IActionResult Help()
         {
             return View();
         }

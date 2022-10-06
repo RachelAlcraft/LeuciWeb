@@ -15,7 +15,7 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: PowderBlue;
+    background-color: honeydew;
     color: crimson
 }
 
@@ -26,10 +26,21 @@ table, th, td {
     padding: 4px;
 }
 th {
-    background-color: Crimson;
-    color: AliceBlue;
-    border: 1px solid;
+    background-color: WhiteSmoke;
+    color: DarkSlateGray;
+    border: 0.5px solid;
 }
-td {        
-    border: 1px solid;
+td {
+    border: 0.5px solid;
+    background-color: GhostWhite;
+    color: DarkSlateGray;
 }
+
+.navbar-collapse {
+    background-color: DarkSlateGray;
+}
+
+.nav-link {
+    background-color: transparent;
+}
+

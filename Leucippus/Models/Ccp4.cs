@@ -7,7 +7,8 @@ namespace Leucippus.Models
         public bool Ready = false;
         public int w01_NX = 0; //Column dim, the fastest changing axis
         public int w02_NY = 0; //Row dim, the fastest changing axis
-        public int w03_NZ = 0; //Sector dim, the slowest changing axis
+        public int w03_NZ = 0; //Sector dim, the slowest changing axis        
+        public int w04_MODE = 0;
         public int w05_NXSTART = 0;
         public int w06_NYSTART = 0;
         public int w07_NZSTART = 0;
@@ -43,6 +44,7 @@ namespace Leucippus.Models
         private string _id;
 
         public double[,,] MyMatrix = new double[0, 0, 0];
+        public double[] MyVector = new double[0];
 
 
 
@@ -122,7 +124,7 @@ namespace Leucippus.Models
             w01_NX = bytesToInt(fileInBinary, 0); // 1
             w02_NY = bytesToInt(fileInBinary, 4); // 2
             w03_NZ = bytesToInt(fileInBinary, 8); // 3
-            int MODE = bytesToInt(fileInBinary, 12); // 4
+            w04_MODE = bytesToInt(fileInBinary, 12); // 4
             w05_NXSTART = bytesToInt(fileInBinary, 16); // 5
             w06_NYSTART = bytesToInt(fileInBinary, 20); // 6
             w07_NZSTART = bytesToInt(fileInBinary, 24); // 7
@@ -164,7 +166,8 @@ namespace Leucippus.Models
             string LABEL9 = bytesToString(fileInBinary, 864, 80); // 65
             string LABEL10 = bytesToString(fileInBinary, 944, 80); // 66
 
-            double[,,] SampleMatrix = new double[w03_NZ, w02_NY, w01_NX];
+            MyMatrix = new double[w03_NZ, w02_NY, w01_NX];
+            MyVector = new double[w03_NZ * w02_NY * w01_NX];
             int len = w01_NX * w02_NY * w03_NZ;
             if (fileInBinary.Length - (4 * len) > 0)
             {
@@ -181,7 +184,8 @@ namespace Leucippus.Models
                         for (int k = 0; k < w01_NX; ++k)
                         {
                             double val = theMatrixData[count];
-                            SampleMatrix[i, j, k] = val;
+                            MyMatrix[i, j, k] = val;
+                            MyVector[count] = val;
 
                             w20_DMIN = Math.Min(w20_DMIN, val);
                             w21_DMAX = Math.Max(w21_DMAX, val);
@@ -241,8 +245,7 @@ namespace Leucippus.Models
                 InfoDim = Convert.ToString(w01_NX) + ":" + Convert.ToString(w02_NY) + ":" + Convert.ToString(w03_NZ);
                 InfoCellLengths = Convert.ToString(Math.Round(w11_CELLA_X / w08_MX, 2)) + ":" + Convert.ToString(Math.Round(w12_CELLA_Y / w09_MY, 2)) + ":" + Convert.ToString(Math.Round(w13_CELLA_Z / w10_MZ, 2));
                 InfoCellAngles = Convert.ToString(Math.Round(w14_CELLB_X, 0)) + ":" + Convert.ToString(Math.Round(w15_CELLB_Y, 0)) + ":" + Convert.ToString(Math.Round(w16_CELLB_Z, 0));
-            }
-            MyMatrix = SampleMatrix;
+            }            
 
         }
 

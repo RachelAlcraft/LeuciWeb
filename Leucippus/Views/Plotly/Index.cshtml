@@ -1,32 +1,37 @@
 ﻿
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutDensity.cshtml";
 }
 
-<h1>Plotly Plot</h1>
-<!--https://plotly.com/javascript/contour-plots/#simple-contour-plot-->
-<!--<input type="hidden" value="@ViewBag.Xs" id="xxss" />-->
-<div id="myDiv" style="width:100%;max-width:700px"></div>
-<script>
-var size = 100, x = new Array(size), y = new Array(size), z = new Array(size), i, j;
+<h1>Electron Density Matrix Explorer - @ViewBag.PdbCode</h1>
+<hr />
 
-for(var i = 0; i < size; i++) {
-	x[i] = y[i] = -2 * Math.PI + 4 * Math.PI * i / size;
-  	z[i] = new Array(size);
+@using (Html.BeginForm("Index", "Plotly", FormMethod.Post))
+{
+    <table cellpadding="0" cellspacing="0">
+        <tr style="height:25%">
+            <th colspan="1" align="center">Protein Structure</th>
+        </tr>
+        <tr style="height:30px;" />            
+            <td>
+                <span>
+                PdbCode:
+                    <input type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode style="height:30px;" />
+                    <input type="image" src="~/images/search.png" style="height:30px;vertical-align:text-bottom" />
+                </span>
+        </td>        
+    </table>
 }
-for(var i = 0; i < size; i++) {
-  	for(j = 0; j < size; j++) {
-    	var r2 = x[i]*x[i] + y[j]*y[j];
-    	z[i][j] = Math.sin(x[i]) * Math.cos(y[j]) * Math.sin(r2) / Math.log(r2+1);
- 	}
-}
-var data = [ {
-		z: z,
-		x: x,
-		y: y,
-		type: 'contour'
-	}
-];
-Plotly.newPlot('myDiv', data);
-</script>
+<hr />
+<div>
+    Explore the structure with the top menu items <i>Slice</i> to look at real space contour slices, or <i>Matrix</i> to explore the raw matrix data.
+</div>
+
+<hr />
+<div id="detes">
+    <h3>Details about @ViewBag.PdbCode electron density</h3>
+    <a href=@ViewBag.EbiLink>EBI Link to @ViewBag.PdbCode</a>
+    <br />
+    @Html.Raw(@ViewBag.Info)
+</div>

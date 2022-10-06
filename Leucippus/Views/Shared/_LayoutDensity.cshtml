@@ -19,10 +19,16 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between"><!-- style="background-color:Crimson;color:AliceBlue;">-->
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between"><!--style="background-color:Crimson;color:AliceBlue;">-->
                     <ul class="navbar-nav flex-grow-1">                        
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Plotly" asp-action="Index">Explorer</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Plotly" asp-action="Index"><br/>Explorer</a>
+                        </li>
+                        <li class="nav-item"><!--style="background-color:SlateBlue">-->
+                            <a class="nav-link text-light" asp-area="" asp-controller="Plotly" asp-action="Slice"><br />Slice</a>
+                        </li>
+                        <li class="nav-item"><!--style="background-color:SlateBlue">-->
+                            <a class="nav-link text-light" asp-area="" asp-controller="Plotly" asp-action="Matrix"><br />Matrix</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About</a>
