@@ -1,10 +1,12 @@
 ﻿using ChartDirector;
 using Leucippus.Models;
+using LeuciShared;
 using Microsoft.AspNetCore.Mvc;
 using ScottPlot;
 using System.Collections.Generic;
 using System.Numerics;
 using static Plotly.NET.StyleParam;
+
 
 namespace Leucippus.Controllers
 {
@@ -16,6 +18,7 @@ namespace Leucippus.Controllers
         //int _layer = 0;
         public async Task <IActionResult> Index(string pdbcode = "")
         {
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode);
             if (!MatrixServer.Instance.init)
             {
                 pdbcode = "6eex";

@@ -5,53 +5,49 @@
 
 <h1>Slice though Density Matrix - @ViewBag.PdbCode</h1>
 <hr />
-<div>    
-    <table style="border:none;">
-        <tr>
-            <td style="border:none;">
-                @using (Html.BeginForm("Slice", "Plotly", FormMethod.Post))
-                {
-                    <table cellpadding="0" cellspacing="0"><!-- style="background-color:PowderBlue">-->
-                        <tr>
-                            <th colspan="1" align="center"><input type="submit" value="Submit" /></th>
-                            <th colspan="1" align="center">X</th>
-                            <th colspan="1" align="center">Y</th>
-                            <th colspan="1" align="center">X</th>
-                        </tr>                        
-                        <tr>
-                            <td>central</td>
-                            <td><input type="text" id="cx" name="cx" value=@ViewBag.cx></td>
-                            <td><input type="text" id="cy" name="cy" value=@ViewBag.cy></td>
-                            <td><input type="text" id="cz" name="cz" value=@ViewBag.cz></td>
-                        </tr>
-                        <tr>
-                            <td>linear</td>
-                            <td><input type="text" id="lx" name="lx" value=@ViewBag.lx></td>
-                            <td><input type="text" id="ly" name="ly" value=@ViewBag.ly></td>
-                            <td><input type="text" id="lz" name="lz" value=@ViewBag.lz></td>
-                        </tr>
-                        <tr>
-                            <td>planar</td>
-                            <td><input type="text" id="px" name="px" value=@ViewBag.px></td>
-                            <td><input type="text" id="py" name="py" value=@ViewBag.py></td>
-                            <td><input type="text" id="pz" name="pz" value=@ViewBag.pz></td>
-                        </tr>                                                                        
-                    </table>
-                }
-            </td>            
-        </tr>
-    </table>
+<div>                
+    @using (Html.BeginForm("Slice", "Plotly", FormMethod.Post))
+    {
+        <table cellpadding="0" cellspacing="0" style="width:400px;table-layout: fixed;">
+            <tr>
+                <th style="width:100px;" colspan="1" align="center"><input type="submit" value="Submit" /></th>
+                <th style="width:100px;" colspan="1" align="center">Atom</th>
+                <th style="width:100px;" colspan="1" align="center">(x,y,z)</th>
+                <th style="width:100px;" colspan="1" align="center">Z</th>
+                <th style="width:100px;" colspan="1" align="center">Controls</th>
+            </tr>                        
+            <tr>
+                <td>central</td>
+                <td><input style="width:80px;" type="text" id="cx" name="cx" value=@ViewBag.cx></td>
+                <td><input style="width:80px;" type="text" id="cy" name="cy" value=@ViewBag.cy></td>
+                <td><input style="width:80px;" type="text" id="cz" name="cz" value=@ViewBag.cz></td>
+                <td rowspan="3">toggle gap/width<br/>move in<br/>rotate</td>
+            </tr>
+            <tr>
+                <td>linear</td>
+                <td><input style="width:80px;" type="text" id="lx" name="lx" value=@ViewBag.lx></td>
+                <td><input style="width:80px;" type="text" id="ly" name="ly" value=@ViewBag.ly></td>
+                <td><input style="width:80px;" type="text" id="lz" name="lz" value=@ViewBag.lz></td>                
+            </tr>
+            <tr>
+                <td>planar</td>
+                <td><input style="width:80px;" type="text" id="px" name="px" value=@ViewBag.px></td>
+                <td><input style="width:80px;" type="text" id="py" name="py" value=@ViewBag.py></td>
+                <td><input style="width:80px;" type="text" id="pz" name="pz" value=@ViewBag.pz></td>
+            </tr>                                                                        
+        </table>
+    }            
 
 </div>
 <br />
 
 <hr />
 <div>
-    <table width="100%">
+    <table>
     <tr>    
-        <td>Density<br/><div id="myCountour"></div></td>        
-        <td>Radiant<br/><div id="myCountourRad"></div></td>
-        <td>Laplacian<br/><div id="myCountourLap"></div></td>    
+        <td style="width: 450px;">Density<br/><div id="myCountour"></div></td>   
+        <td style="width: 450px;">Radiant<br/><div id="myCountourRad"></div></td>
+        <td style="width: 450px;">Laplacian<br/><div id="myCountourLap"></div></td>        
     </tr>
     </table>
 </div>

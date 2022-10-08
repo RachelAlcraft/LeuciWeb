@@ -1,0 +1,42 @@
+﻿# Leucippus todo list
+
+## to do
+### Dev
+Technical
+32 bit problem, 
+- Whether or not the plan is upgraded I still need to manage memory for cryo-em structures so need to solve it
+- Take a subsection of the cube with a buffer for navigation and update it if necessary
+
+C++ or C# - 
+- maybe I have over complicated it, stick to the simplest thing, use-ability the most important thing
+- but it would be useful to have a console app for batch runs too so some way to keep that in mind, a shared library with clear interface at the least
+
+Slice screen
+- Enable typing in chimera style atoms, eg A:708@N
+- Resolve to coordinates that can be changed
+- If the coordinates no longer match the atom grey it out
+- No need to browse pdb file, but a link could be useful.
+- For nearest neighbour, don’t display Radiant and Laplaciam
+- For linear don’t display Laplacian
+- Look at what coot does interpolation-wise
+- Toggle 3 (or 4) colours
+- Toggle contour or heat map
+- Toggle width and granularity (restrict on ratio)
+- Hover to show nearest atom (over take the current hover box somehow)
+- Columns are “Arom” and “(x,y,z)”
+
+User logging
+- Some sort of log is needed to record what functionality is most used 
+- Perhaps each new connect gets an id which is used as part of the session state and for logging
+
+
+
+
+
+### Ideas
+o	Didn’t discuss much about matrix, but it is a useful to have, and didn’t discuss much about the adjusted pdb files
+
+---
+## Done
+
+

@@ -1,8 +1,11 @@
-﻿namespace Leucippus.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LeuciShared
 {
-    // This takes the dimensions of a cube
-    // and given a point returns the 3d coords around it
-    // or the 1d list around it
     public class Cubelet
     {
         private int _a;
@@ -44,7 +47,7 @@
          * 
          * 
          */
-        public Cubelet (int a, int b, int c)
+        public Cubelet(int a, int b, int c)
         {
             _a = a;
             _b = b;
@@ -63,10 +66,10 @@
             //int div = 5 / 3; //quotient is 1
             //int mod = 5 % 3; //remainder is 2
             int x = i / (_b * _c);
-            int newi = i - (x* _b * _c);
+            int newi = i - (x * _b * _c);
             int y = newi % (_a);
-            int z = newi - (y * _b);                        
-            return new int[] { x,y,z };
+            int z = newi - (y * _b);
+            return new int[] { x, y, z };
         }
     }
 }

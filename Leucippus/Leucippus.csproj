@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="ChartDirector.Net" Version="7.0.0" />
     <PackageReference Include="Deedle" Version="2.5.0" />
-	<PackageReference Include="LeuciDll"/>
+	<PackageReference Include="LeuciDll" />
     <PackageReference Include="FSharp.Data" Version="5.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.9" />
@@ -36,10 +36,13 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\App_Data\" />
+    <Folder Include="wwwroot\NewFolder1\" />
+    <Folder Include="wwwroot\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LeuciDll\LeuciDll.vcxproj" />
+    <ProjectReference Include="..\LeuciShared\LeuciShared.csproj" />
   </ItemGroup>
 
 </Project>

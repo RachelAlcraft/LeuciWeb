@@ -9,6 +9,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LeuciDll", "LeuciDll\LeuciD
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LeuciPlus", "LeuciPlus\LeuciPlus.vcxproj", "{32F7C2EE-443F-4130-8ABF-65562BC733B9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CC31A1F7-C499-4677-84CC-6791A24B0918}"
+	ProjectSection(SolutionItems) = preProject
+		Documents\todo.md = Documents\todo.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeuciShared", "LeuciShared\LeuciShared.csproj", "{7C28537C-9CCE-4DF0-B793-3686C23B0866}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +90,26 @@ Global
 		{32F7C2EE-443F-4130-8ABF-65562BC733B9}.Release|x64.Build.0 = Release|x64
 		{32F7C2EE-443F-4130-8ABF-65562BC733B9}.Release|x86.ActiveCfg = Release|Win32
 		{32F7C2EE-443F-4130-8ABF-65562BC733B9}.Release|x86.Build.0 = Release|Win32
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|ARM.Build.0 = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Debug|x86.Build.0 = Debug|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|ARM.ActiveCfg = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|ARM.Build.0 = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|ARM64.Build.0 = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|x64.Build.0 = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C28537C-9CCE-4DF0-B793-3686C23B0866}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
