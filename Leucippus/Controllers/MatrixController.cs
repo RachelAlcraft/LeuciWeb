@@ -10,7 +10,7 @@ using static Plotly.NET.StyleParam;
 
 namespace Leucippus.Controllers
 {
-    public class PlotlyController : Controller
+    public class MatrixController : Controller
     {
         //ElectronDensity ed = new ElectronDensity("");
         //string _pdbcode = "";
@@ -40,7 +40,7 @@ namespace Leucippus.Controllers
             return View();            
         }
         
-        public async Task<IActionResult> Matrix(string pdbcode = "", int layer = -1, string plane="")
+        public async Task<IActionResult> Plane(string pdbcode = "", int layer = -1, string plane="")
         {            
             //https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_element_innerhtml            
             bool newCalcs = true;
