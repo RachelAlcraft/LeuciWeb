@@ -63,7 +63,7 @@
             }
             ed.Layer = 0;
             ed.Plane = "XY";
-            ed.getSlice();            
+            ed.getSlice(5,0.1);            
                     
         }
         

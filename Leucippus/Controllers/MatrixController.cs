@@ -122,9 +122,17 @@ namespace Leucippus.Controllers
         public async Task<IActionResult> Slice(string pdbcode = "", 
             double cx = -1, double cy = -1, double cz = -1,
             double lx = -1, double ly = -1, double lz = -1, 
-            double px = -1, double py = -1, double pz = -1)
+            double px = -1, double py = -1, double pz = -1,
+            string denplot ="", string radplot="", string lapplot = "",
+            double width = -1, double gap = -1)
         {
-            bool recalc = true;
+            ViewBagMatrix.Instance.DenPlot = denplot;
+            ViewBagMatrix.Instance.RadPlot = radplot;
+            ViewBagMatrix.Instance.LapPlot = lapplot;
+            ViewBagMatrix.Instance.Width = width;
+            ViewBagMatrix.Instance.Gap = gap;
+
+            bool recalc = ViewBagMatrix.Instance.Refresh;
             if (!MatrixServer.Instance.init)
             {
                 if (pdbcode == "")
@@ -153,7 +161,7 @@ namespace Leucippus.Controllers
                     px = MatrixServer.Instance.ed.PX;
                     py = MatrixServer.Instance.ed.PY;
                     pz = MatrixServer.Instance.ed.PZ;
-                    recalc = false;
+                    //recalc = false;
                 }
                 else
                 {
@@ -172,7 +180,7 @@ namespace Leucippus.Controllers
             //if (MatrixServer.Instance.ed.SliceAxis.Length == 0)
                 //recalc = true;
             if (recalc)
-                MatrixServer.Instance.ed.getSlice();
+                MatrixServer.Instance.ed.getSlice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap);
             ViewBag.SliceDensity = MatrixServer.Instance.ed.SliceDensity;
             ViewBag.SliceRadiant = MatrixServer.Instance.ed.SliceRadiant;
             ViewBag.SliceLaplacian = MatrixServer.Instance.ed.SliceLaplacian;
@@ -190,9 +198,14 @@ namespace Leucippus.Controllers
 
             ViewBag.PdbCode = MatrixServer.Instance.ed.PdbCode;
 
+            ViewBag.DenPlot = ViewBagMatrix.Instance.DenPlot;
+            ViewBag.RadPlot = ViewBagMatrix.Instance.RadPlot;
+            ViewBag.LapPlot = ViewBagMatrix.Instance.LapPlot;
+            ViewBag.Width = ViewBagMatrix.Instance.Width;
+            ViewBag.Gap = ViewBagMatrix.Instance.Gap;
 
-            
 
+            ViewBagMatrix.Instance.Reset();
             return View();
         }
 

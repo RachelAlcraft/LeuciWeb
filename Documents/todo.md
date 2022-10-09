@@ -29,6 +29,8 @@ Slice screen
 - Toggle width and granularity (restrict on ratio)
 - Hover to show nearest atom (over take the current hover box somehow)
 - Columns are “Arom” and “(x,y,z)”
+- Make it so you can see atoms int he hover data - this link is probably the best: https://plotly.com/python/hover-text-and-formatting/ for the heatmap towards the bottom, 
+looks like I might need to do it only for heat map, and make contour the z value only.
 
 User logging
 - Some sort of log is needed to record what functionality is most used 

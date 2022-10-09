@@ -8,20 +8,75 @@
 <div>                
     @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
     {
-        <table cellpadding="0" cellspacing="0" style="width:400px;table-layout: fixed;">
+        <table cellpadding="0" cellspacing="0" style="width:700px;table-layout: fixed;">
             <tr>
                 <th style="width:100px;" colspan="1" align="center"><input type="submit" value="Submit" /></th>
                 <th style="width:100px;" colspan="1" align="center">Atom</th>
                 <th style="width:100px;" colspan="1" align="center">(x,y,z)</th>
                 <th style="width:100px;" colspan="1" align="center">Z</th>
-                <th style="width:100px;" colspan="1" align="center">Controls</th>
+                <th style="width:300px;" colspan="1" align="center">Controls</th>
             </tr>                        
             <tr>
                 <td>central</td>
                 <td><input style="width:80px;" type="text" id="cx" name="cx" value=@ViewBag.cx></td>
                 <td><input style="width:80px;" type="text" id="cy" name="cy" value=@ViewBag.cy></td>
                 <td><input style="width:80px;" type="text" id="cz" name="cz" value=@ViewBag.cz></td>
-                <td rowspan="3">toggle gap/width<br/>move in<br/>rotate</td>
+                <td rowspan="3" style="height:30px;text-align:justify"/>
+                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {
+                    <span>
+                        Width(Å)=
+                    <input style="width:60px;" type="text" id="width" name="width" value=@ViewBag.Width>                        
+                    <input type="image" src="~/images/calc.png" style="height:18px;vertical-align:text-bottom" />
+                        [
+                    @Html.ActionLink(
+                    linkText: "+0.5",
+                    actionName: "Slice",
+                    controllerName: "Matrix",
+                    routeValues: new {
+                    width = "-2",
+                    },
+                    htmlAttributes: null
+                    )
+                    ,
+                    @Html.ActionLink(
+                    linkText: "-0.5",
+                    actionName: "Slice",
+                    controllerName: "Matrix",
+                    routeValues: new {
+                    width = "-3",
+                    },
+                    htmlAttributes: null
+                    )
+                    ]<br/>
+                    </span>
+                    <span>
+                        Gap (Å)  =
+                    <input style="width:60px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>                        
+                    <input type="image" src="~/images/calc.png" style="height:18px;vertical-align:text-bottom" />
+                        [
+                    @Html.ActionLink(
+                    linkText: "+0.01",
+                    actionName: "Slice",
+                    controllerName: "Matrix",
+                    routeValues: new {
+                    gap = "-2",
+                    },
+                    htmlAttributes: null
+                    )
+                    ,
+                    @Html.ActionLink(
+                    linkText: "-0.01",
+                    actionName: "Slice",
+                    controllerName: "Matrix",
+                    routeValues: new {
+                    gap = "-3",
+                    },
+                    htmlAttributes: null
+                    )
+                    ]
+                    </span>                                                                                
+                }
             </tr>
             <tr>
                 <td>linear</td>
@@ -44,10 +99,59 @@
 <hr />
 <div>
     <table>
-    <tr>    
-        <td style="width: 450px;">Density<br/><div id="myCountour"></div></td>   
-        <td style="width: 450px;">Radiant<br/><div id="myCountourRad"></div></td>
-        <td style="width: 450px;">Laplacian<br/><div id="myCountourLap"></div></td>        
+    <tr>
+            <td style="width: 450px;">Density
+                <br /><div id="myCountour"></div>
+                <br />
+                @Html.ActionLink(
+                linkText: "Toggle Plot",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                denplot = "+1",
+                },
+                htmlAttributes: null
+                )                        
+            </td>
+            <td style="width: 450px;">Density
+                <br/><div id="myCountour2"></div>
+                <br/>
+                @Html.ActionLink(
+                linkText: "Toggle Plot",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {                
+                denplot = "+1",                
+                },
+                htmlAttributes: null
+                )                        
+            </td>   
+            <td style="width: 450px;">Radiant
+                <br/><div id="myCountourRad"></div>
+                <br />
+                @Html.ActionLink(
+                linkText: "Toggle Plot",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                radplot = "+1",
+                },
+                htmlAttributes: null
+                )
+            </td>
+            <td style="width: 450px;">Laplacian
+                <br/><div id="myCountourLap"></div>
+                <br />
+                @Html.ActionLink(
+                linkText: "Toggle Plot",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                lapplot = "+1",
+                },
+                htmlAttributes: null
+                )
+                </td>        
     </tr>
     </table>
 </div>
@@ -90,13 +194,41 @@
 
    }
 
+   var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
+   var radplot = @Html.Raw(Json.Serialize(@ViewBag.RadPlot));
+   var lapplot = @Html.Raw(Json.Serialize(@ViewBag.LapPlot));
+   
+
 
 
     var data = [{
         z: jv,
         x: jx,
         y: jy,
-        type: 'contour',
+        type: denplot,
+        colorscale: cs,
+        reversescale: false,
+        autocontour: false,
+        line: {
+            width: 0.5,
+            color: 'DimGray'
+        },
+        contours: {
+            start: minc,
+            end: maxc,
+            size: size
+        },
+        showscale:false,
+        colorbar: {
+            thickness: 15,
+        }
+    }];
+
+    var data2 = [{
+        z: jv,
+        x: jx,
+        y: jy,
+        type: denplot,
         colorscale: cs,
         reversescale: false,
         autocontour: false,
@@ -119,7 +251,7 @@
         z: jvr,
         x: jx,
         y: jy,
-        type: 'heatmap',
+        type: radplot,
         colorscale: 'Greys',
         reversescale: false,
         autocontour: true,
@@ -137,7 +269,7 @@
         z: jvl,
         x: jx,
         y: jy,
-        type: 'contour',
+        type: lapplot,
         colorscale: cs_lap,
         reversescale: true,
         autocontour: true,
@@ -178,6 +310,7 @@
     var config = { responsive: true }
 
     Plotly.newPlot('myCountour', data, layout, config);
+    Plotly.newPlot('myCountour2', data2, layout, config);
     Plotly.newPlot('myCountourRad', dataR, layout, config);
     Plotly.newPlot('myCountourLap', dataL, layout, config);
     

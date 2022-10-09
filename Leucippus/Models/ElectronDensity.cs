@@ -109,10 +109,8 @@ namespace Leucippus.Models
                 minLength = Math.Min(minLength,50);                  
             }            
         }
-        public void getSlice()
-        {
-            double width = 5;
-            double gap = 0.1;
+        public void getSlice(double width, double gap)
+        {            
             int nums = (int)(width / gap) + 1;
 
             if (dllI == null)
