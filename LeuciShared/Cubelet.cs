@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +13,8 @@ namespace LeuciShared
         private int _a;
         private int _b;
         private int _c;
+        public int Layer { get; set; }
+        public string Plane { get; set; }
         /*
          * If this structure was init as 4,3,2
          * it would be 3 points wide, 4 high and 5 deep, (points not width)
@@ -71,5 +75,99 @@ namespace LeuciShared
             int z = newi - (y * _b);
             return new int[] { x, y, z };
         }
+
+        public List<int[]> getPlaneCoords(string plane, int layer)
+        {
+            List<int[]> coords = new List<int[]>();
+            int eX = _a;
+            int eY = _b;
+            int eZ = _c;
+
+            int endX = 0;
+            int endY = 0;
+            if (layer < 0)
+                layer = 0;
+
+            int layermax = 0;
+
+            if (plane == "XY")
+            {
+                endX = eX;
+                endY = eY;
+                layermax = eZ;
+                if (layer >= eZ)
+                    layer = eZ - 1;
+            }
+            else if (plane == "YZ")
+            {
+                endX = eY;
+                endY = eZ;
+                layermax = eX;
+                if (layer >= eX)
+                    layer = eX - 1;
+            }
+            else if (plane == "ZX")
+            {
+                endX = eZ;
+                endY = eX;
+                layermax = eY;
+                if (layer >= eY)
+                    layer = eY - 1;
+            }
+
+            Layer = layer;
+            Plane = plane;
+            
+            for (int x = 0; x < endX; ++x)
+            {
+                for (int y = 0; y < endY; ++y)
+                {
+                    if (plane == "XY")                    
+                        coords.Add(new int[] { x, y, layer });                   
+                    else if (plane == "YZ")
+                        coords.Add(new int[] { layer, x, y});
+                    else if (plane == "ZX")
+                        coords.Add(new int[] { y, layer, x});            
+                }
+            }
+            return coords;
+        }
+        public int[] getPlaneDims(string plane, int layer)
+        {
+            int[] dims = new int[2] { 0, 0 };                        
+            if (plane == "XY")
+            {
+                dims[0]= _a;
+                dims[1] = _b;                
+            }
+            else if (plane == "YZ")
+            {
+                dims[0] = _b;
+                dims[1] = _c;                
+            }
+            else if (plane == "ZX")
+            {
+                dims[0] = _c;
+                dims[1] = _a;                
+            }
+            return dims;
+        }
+
+        public double[][] makeSquare(double[] doubles, int[] XY)
+        {
+            double[][] ret = new double[XY[0]][];//, XY[1]];
+            int count = 0;
+            for (int a = 0; a < XY[0]; ++a)
+            {
+                ret[a] = new double[XY[1]];
+                for (int b = 0; b < XY[1]; ++b)
+                {
+                    ret[a][b] = doubles[count];
+                    ++count;
+                }
+            }
+            return ret;
+        }
     }
+    
 }

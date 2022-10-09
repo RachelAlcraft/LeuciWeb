@@ -13,6 +13,9 @@ namespace LeuciShared
         // https://csharpindepth.com/Articles/Singleton 4th version implementation of Singleton
 
         private static readonly DensitySingleton instance = new DensitySingleton();
+        static DensitySingleton()
+        {
+        }
         private DensitySingleton()
         {
         }
@@ -25,12 +28,16 @@ namespace LeuciShared
             }
         }
 
-        private string _pdbcode = "6eex";
+        private string _pdbcode = "";
         private DensityMatrix _dm;
 
         public async Task<DensityMatrix> getMatrix(string pdbcode)
         {
-            if (pdbcode == _pdbcode || pdbcode == "")
+            bool calc = false;
+            if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
+                calc = true;
+
+            if (!calc)
             {
                 return _dm;
             }

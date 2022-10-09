@@ -13,12 +13,18 @@ namespace Leucippus.Controllers
     public class MatrixController : Controller
     {
         //ElectronDensity ed = new ElectronDensity("");
-        //string _pdbcode = "";
+        //string _pdbcode = ViewBagMatrix.Instance.PdbCode;        
         //string _plane = "";
         //int _layer = 0;
-        public async Task <IActionResult> Index(string pdbcode = "")
+
+        public async Task <IActionResult> Index(string pdbcode = "", string emcode = "")
         {
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode);
+            ViewBagMatrix.Instance.PdbCode = pdbcode;
+            ViewBagMatrix.Instance.EmCode = emcode;            
+            
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.EmCode);
+            ViewBagMatrix.Instance.Info = dm.Info;
+
             if (!MatrixServer.Instance.init)
             {
                 pdbcode = "6eex";
@@ -33,42 +39,47 @@ namespace Leucippus.Controllers
                 await MatrixServer.Instance.setPdbCode(pdbcode);                
             }
 
-            ViewBag.PdbCode = MatrixServer.Instance.ed.PdbCode;
-            ViewBag.Info = MatrixServer.Instance.ed.Info;
+            ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
+            ViewBag.EmCode = ViewBagMatrix.Instance.EmCode;
+            ViewBag.Info = ViewBagMatrix.Instance.Info;
             ViewBag.EbiLink = MatrixServer.Instance.ed.EbiLink;
+
+            
 
             return View();            
         }
         
-        public async Task<IActionResult> Plane(string pdbcode = "", int layer = -1, string plane="")
+        public async Task<IActionResult> Plane(int layer = -1, string plane="")
         {            
             //https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_element_innerhtml            
             bool newCalcs = true;
-            
+
+            ViewBagMatrix.Instance.Plane = plane;
+            ViewBagMatrix.Instance.Layer = layer;
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.EmCode);
+            dm.calculatePlane(ViewBagMatrix.Instance.Plane, ViewBagMatrix.Instance.Layer);
+
             if (!MatrixServer.Instance.init)
-            {
-                pdbcode = "6eex";
+            {                
                 layer = 0;
                 plane = "XY";
-                await MatrixServer.Instance.setPdbCode("6eex");                
+                await MatrixServer.Instance.setPdbCode(ViewBagMatrix.Instance.EmCode);                
                 newCalcs = true;
 
             }
             else
-            {
-                if (pdbcode == "")
-                    pdbcode = MatrixServer.Instance.PdbCode;
+            {                
                 if (plane == "")
                     plane = MatrixServer.Instance.ed.Plane;
                 if (layer == -1)
                     layer = MatrixServer.Instance.ed.Layer;
             }
-            if (pdbcode == "" && layer == -1 && plane == "")            
+            if (ViewBagMatrix.Instance.EmCode == "" && layer == -1 && plane == "")            
                 newCalcs = false;
                                                                                         
-            if (MatrixServer.Instance.PdbCode != pdbcode)
+            if (MatrixServer.Instance.PdbCode != ViewBagMatrix.Instance.EmCode)
             {
-                await MatrixServer.Instance.setPdbCode(pdbcode);
+                await MatrixServer.Instance.setPdbCode(ViewBagMatrix.Instance.EmCode);
                 newCalcs = true;
             }
             else
@@ -93,6 +104,12 @@ namespace Leucippus.Controllers
             ViewBag.MtxY = MatrixServer.Instance.ed.MtxB;
             ViewBag.MtxZ = MatrixServer.Instance.ed.MtxC;
             ViewBag.MtxV = MatrixServer.Instance.ed.MtxD;
+            
+            ViewBag.MtxX2 = dm.MatA;
+            ViewBag.MtxY2 = dm.MatB;
+            ViewBag.MtxZ2 = dm.MatC;
+            ViewBag.MtxV2 = dm.MatD;
+
             ViewBag.PdbCode = MatrixServer.Instance.ed.PdbCode;            
             ViewBag.Plane = MatrixServer.Instance.ed.Plane;
             ViewBag.Layer = MatrixServer.Instance.ed.Layer;

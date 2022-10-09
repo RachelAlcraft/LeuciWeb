@@ -7,6 +7,7 @@ Technical
 - Whether or not the plan is upgraded I still need to manage memory for cryo-em structures so need to solve it
 - Take a subsection of the cube with a buffer for navigation and update it if necessary
 - ALso take a slice for the plane navigation
+- Consider using only C# and no C++ due to the problem with managed/unmanaged in 32 bit
 - the first easy test will be - can it work for cryo-em matrices (locally)? IE the highest res structure 7a6a
 -- note the ed is not so easy to find, this one's link is emd_11668.map.gz - same format once unzipped
 

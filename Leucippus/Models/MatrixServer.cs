@@ -6,6 +6,9 @@
         // https://csharpindepth.com/Articles/Singleton 4th version implementation of Singleton
 
         private static readonly MatrixServer instance = new MatrixServer();
+        static MatrixServer()
+        {
+        }
         private MatrixServer() 
         { 
         }

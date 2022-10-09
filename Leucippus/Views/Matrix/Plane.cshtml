@@ -9,7 +9,7 @@
 <div>
 <h5>Interactive matrix explorer - planes</h5>
 
-@using (Html.BeginForm("Matrix", "Plotly", FormMethod.Post))
+@using (Html.BeginForm("Plane", "Matrix", FormMethod.Post))
     {
         <table cellpadding="0" cellspacing="0"><!-- style="background-color:PowderBlue">-->
             <tr style="height:25%">
@@ -95,18 +95,18 @@
 </div>
 <br/>
 
-
-<div>
-    <div>
     <div>
         <div id="myCountour" style="width:40%"></div>
-        </div>    
     <hr/>
-    <div>
         <div id="myDiv" style="width:40%"></div>
-        </div>    
     </div>
+
+    <div>
+        <div id="myCountour2" style="width:40%"></div>    
+    <hr />    
+        <div id="myDiv2" style="width:40%"></div>    
     </div>
+    
 
 <script>
     var jx = @Html.Raw(Json.Serialize(@ViewBag.MtxX));
@@ -114,7 +114,14 @@
     var jz = @Html.Raw(Json.Serialize(@ViewBag.MtxZ));    
     var jv = @Html.Raw(Json.Serialize(@ViewBag.MtxV));    
     var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
-    var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));    
+    var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
+    
+
+    var jx2 = @Html.Raw(Json.Serialize(@ViewBag.MtxX2));
+    var jy2 = @Html.Raw(Json.Serialize(@ViewBag.MtxY2));
+    var jz2 = @Html.Raw(Json.Serialize(@ViewBag.MtxZ2));    
+    var jv2 = @Html.Raw(Json.Serialize(@ViewBag.MtxV2));    
+
             
     var layoutH = {
         autosize: true,
@@ -135,6 +142,28 @@
     };
     var dataH = [traceH];
     Plotly.newPlot('myDiv', dataH,layoutH);
+
+    var layoutH2 = {
+        autosize: true,
+        title: 'Electron density values in this plane'
+    };
+
+    var traceH2 = {
+        x: jz2,
+        type: 'histogram',
+        nbinsx: 50,
+        marker: {
+            color: "Crimson",
+            line: {
+                color: "Silver",
+                width: 1
+            }
+        }
+    };
+    var dataH2 = [traceH2];
+    Plotly.newPlot('myDiv2', dataH2, layoutH2);
+
+
 
     var minc = minv
     var maxc = 3
@@ -187,4 +216,39 @@
     };
     
     Plotly.newPlot('myCountour', data,layout);
+
+
+    var data2 = [{
+        z: jv2,
+        x: jx2,
+        y: jy2,
+        type: 'contour',
+        colorscale: cs,
+        reversescale: false,
+        autocontour: false,
+        line: {
+            width: 0.5,
+            color: 'DimGray'
+        },
+        contours: {
+            start: minc,
+            end: maxc,
+            size: size
+        }
+    }];
+
+    var layout2 = {
+        autosize: true,
+        title: 'Contour plot of electron density plane',
+        xaxis: {
+            showgrid: false,
+            zeroline: false
+        },
+        yaxis: {
+            scaleanchor: 'x',
+            scaleratio: 1
+        }
+    };
+
+    Plotly.newPlot('myCountour2', data2, layout2);
 </script>

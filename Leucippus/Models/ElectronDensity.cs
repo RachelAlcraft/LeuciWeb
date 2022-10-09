@@ -173,23 +173,23 @@ namespace Leucippus.Models
                             layer = eY - 1;                        
                     }
 
-                    MtxA = new double[endX];
-                    for (int i = 0; i < endX; i++)
+                    MtxA = new double[endY];
+                    for (int i = 0; i < endY; i++)
                     {
                         MtxA[i] = i;
                     }
-                    MtxB = new double[endY];
-                    for (int i = 0; i < endY; i++)
+                    MtxB = new double[endX];
+                    for (int i = 0; i < endX; i++)
                     {
                         MtxB[i] = i;
                     }
                     MtxC = new double[MtxA.Length * MtxB.Length];
                     MtxD = new double[MtxB.Length][];
 
-                    for (int y = 0; y < MtxB.Length; ++y)
+                    for (int x = 0; x < MtxB.Length; ++x)
                     {
-                        MtxD[y] = new double[MtxA.Length];
-                        for (int x = 0; x < MtxA.Length; ++x)
+                        MtxD[x] = new double[MtxA.Length];
+                        for (int y = 0; y < MtxA.Length; ++y)
                         {                            
                             double val = 0;
                             if (plane == "XY")                            
@@ -198,8 +198,8 @@ namespace Leucippus.Models
                                 val = ccp4.MyMatrix[layer,x,y];                            
                             else if (plane == "ZX")
                                 val = ccp4.MyMatrix[y,layer,x];                            
-                            MtxC[y*MtxA.Length+x] = val;
-                            MtxD[y][x] = val;
+                            MtxC[x*MtxA.Length+y] = val;
+                            MtxD[x][y] = val;
                             MinV = Math.Min(MinV, val);
                             MaxV = Math.Max(MaxV, val);
                             //MaxV += val;
