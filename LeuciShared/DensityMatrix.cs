@@ -53,10 +53,10 @@ namespace LeuciShared
             _emcode = emcode;
             string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
             await DownloadAsync(edFile);
-            _densityBinary = new DensityBinary(edFile);         
-            _A = Convert.ToInt32(_densityBinary.Words["03_NZ"]);
-            _B = Convert.ToInt32(_densityBinary.Words["02_NY"]);
-            _C = Convert.ToInt32(_densityBinary.Words["01_NX"]);
+            _densityBinary = new DensityBinary(edFile);
+            _A = _densityBinary.Z3_cap;//Convert.ToInt32(_densityBinary.Words["03_NZ"]);
+            _B = _densityBinary.Y2_cap;//Convert.ToInt32(_densityBinary.Words["02_NY"]);
+            _C = _densityBinary.X1_cap;//Convert.ToInt32(_densityBinary.Words["01_NX"]);
             Info = _densityBinary.Info;            
             _cublet = new Cubelet(_A, _B, _C);
             //_interpMap = new Nearest(_densityBinary.getShortList(), _C, _B, _A);
@@ -100,8 +100,18 @@ namespace LeuciShared
         {
             //TODO check if it needs to be recalced
             List<int[]> coords = _cublet.getPlaneCoords(plane, layer);
-            int[] XY = _cublet.getPlaneDims(plane, layer);
-            double[] doubles = _densityBinary.makePlane(coords);
+            int[] XY = _cublet.getPlaneDims(plane, layer);      
+            //double[] doubles = _densityBinary.makePlane(coords);
+
+            double[] doubles = new double[coords.Count];
+            for (int i = 0; i < coords.Count; ++i)
+            {
+                int[] coord = coords[i];
+                doubles[i] = _interpMap.getExactValue(coord[0], coord[1], coord[2]);
+            }
+
+
+
             MatD = _cublet.makeSquare(doubles, XY);
             MatA = new double[XY[1]];
             MatB = new double[XY[0]];
