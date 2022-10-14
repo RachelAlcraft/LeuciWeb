@@ -1,10 +1,10 @@
 ﻿namespace Leucippus.Models
 {
-    public class EdMatrix
+    /*public class EdMatrix
     {
-        /*
-        * Specifically to handle 3x3 matrices for 3d coordinates
-        */
+        
+        // Specifically to handle 3x3 matrices for 3d coordinates
+        
         public double[,] matrix;
         public EdMatrix(double[,] inmatrix)
         {
@@ -19,7 +19,7 @@
         public EdVector getColumn(int col)
         {
             EdVector colv = new EdVector();
-            colv.vector[0] = matrix[0, col];
+            colv. vector[0] = matrix[0, col];
             colv.vector[1] = matrix[1, col];
             colv.vector[2] = matrix[2, col];
             return colv;
@@ -29,7 +29,7 @@
         {//http://mlwiki.org/index.php/Matrix-Vector_Multiplication            
             EdVector Ax = getColumn(0).scale(v.x);
             EdVector Ay = getColumn(1).scale(v.y);
-            EdVector Az = getColumn(2).scale(v.z);
+            EdVector Az = getColumn(2).scale(v.z); 
             EdVector A = Ax.add(Ay).add(Az);
             return A;
         }
@@ -126,5 +126,5 @@
                 return det;
             }
         }
-    }
+    }*/
 }

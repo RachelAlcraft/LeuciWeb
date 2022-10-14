@@ -63,7 +63,7 @@ namespace LeuciShared
             int x_bit = z;
             int y_bit = _a + y;
             int z_bit = (_a * _b) + x;
-            return x_bit + y_bit + x_bit;
+            return x_bit + y_bit + z_bit;
         }
         public int[] get3D(int i)
         {

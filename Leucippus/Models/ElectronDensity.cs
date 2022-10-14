@@ -11,7 +11,7 @@ using System.Xml.XPath;
 
 namespace Leucippus.Models
 {
-    public class ElectronDensity
+    /*public class ElectronDensityXXX
     {
         public string PdbCode { get; set; }
         public string? EbiLink { get; set; }
@@ -212,5 +212,5 @@ namespace Leucippus.Models
                 }
             }
         }
-    }
+    }*/
 }

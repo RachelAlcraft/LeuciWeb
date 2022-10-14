@@ -1,19 +1,19 @@
 ﻿namespace Leucippus.Models
 {
     using System;
-    public sealed class MatrixServer
+    /*public sealed class MatrixServerXXX
     {
         // https://csharpindepth.com/Articles/Singleton 4th version implementation of Singleton
 
-        private static readonly MatrixServer instance = new MatrixServer();
-        static MatrixServer()
+        private static readonly MatrixServerXXX instance = new MatrixServerXXX();
+        static MatrixServerXXX()
         {
         }
-        private MatrixServer() 
+        private MatrixServerXXX() 
         { 
         }
 
-        public static MatrixServer Instance
+        public static MatrixServerXXX Instance
         {
             get
             {                
@@ -67,5 +67,5 @@
                     
         }
         
-    }
+    }*/
 }

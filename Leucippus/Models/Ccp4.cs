@@ -2,7 +2,7 @@
 
 namespace Leucippus.Models
 {
-    public class Ccp4
+    /*public class Ccp4XXX
     {
         public bool Ready = false;
         public int w01_NX = 0; //Column dim, the fastest changing axis
@@ -299,7 +299,7 @@ namespace Leucippus.Models
             vCRS.vector[2] /= w10_MZ;
             _origin = _orthoMat.multiply(vCRS);            
         }
-    }
+    }*/
 
 
 }

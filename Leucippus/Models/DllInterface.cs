@@ -6,7 +6,7 @@
     using System.Runtime.InteropServices;
 
     
-    
+    /*
 
 
     public class DllInterface
@@ -95,7 +95,7 @@
 
         public double[][] getSlice(double width, double gap)
         {
-            int nums = (int)(width / gap) + 1;
+            int nums = (int)(width / gap);
             double[][] slice = new double[nums][];
             for (uint i=0; i<nums;++i)
             {
@@ -108,7 +108,7 @@
 
         public double[][] getRadiantSlice(double width, double gap)
         {
-            int nums = (int)(width / gap) + 1;
+            int nums = (int)(width / gap);
             double[][] slice = new double[nums][];
             for (uint i = 0; i < nums; ++i)
             {
@@ -121,7 +121,7 @@
 
         public double[][] getLaplacianSlice(double width, double gap)
         {
-            int nums = (int)(width / gap) + 1;
+            int nums = (int)(width / gap);
             double[][] slice = new double[nums][];
             for (uint i = 0; i < nums; ++i)
             {
@@ -140,6 +140,6 @@
             return axis;
         }
 
-    }
+    }*/
     
 }

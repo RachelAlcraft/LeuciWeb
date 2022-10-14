@@ -64,8 +64,8 @@ void density_words(
         w14_CELLB_X, w15_CELLB_Y, w16_CELLB_Z,
         w17_MAPC, w18_MAPR, w19_MAPS);
 
-    interpMap_ = new Thevenaz(matrix_, cp4_->W01_NC, cp4_->W02_NR, cp4_->W03_NS);
-    //interpMap_ = new Nearest(matrix_, cp4_->W01_NC, cp4_->W02_NR, cp4_->W03_NS);
+    //interpMap_ = new Thevenaz(matrix_, cp4_->W01_NC, cp4_->W02_NR, cp4_->W03_NS);
+    interpMap_ = new Nearest(matrix_, cp4_->W01_NC, cp4_->W02_NR, cp4_->W03_NS);
 
 }
 
@@ -74,21 +74,25 @@ void create_slice(double cx, double cy, double cz, double lx, double ly, double 
     slice_density_.clear();
     slice_radiant_.clear();
     slice_laplacian_.clear();
-    int nums = int(width / gap) + 1;
-    int halfLength = (nums-1) / 2;
+    int nums = int(width / gap);
+    int halfLength = int((nums) / 2);
     
     VectorThree central(cx, cy, cz);
     VectorThree linear(lx, ly, lz);
     VectorThree planar(px, py, pz);
     SpaceTransformation space(central, linear, planar);
     
-    for (int i = -1 * halfLength; i <= halfLength; ++i)
+    //for (int i = -1 * halfLength; i <= halfLength; ++i)
+    for (int m = 0; m <nums; ++m)
     {
+        int i = m - halfLength;
         vector<double> row_d;
         vector<double> row_r;
         vector<double> row_l;
-        for (int j = -1 * halfLength; j <= halfLength; ++j)
+        //for (int j = -1 * halfLength; j <= halfLength; ++j)
+        for (int n = 0; n < nums; ++n)
         {
+            int j = n - halfLength;
             double x0 = (i * gap);
             double y0 = (j * gap);
             double z0 = 0;

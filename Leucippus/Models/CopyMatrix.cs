@@ -2,7 +2,7 @@
 
 namespace Leucippus.Models
 {
-    public class CopyMatrix
+    /*public class CopyMatrix
     {        
         private EdMatrix edmatrix = new EdMatrix();
         public CopyMatrix()
@@ -30,6 +30,6 @@ namespace Leucippus.Models
 
         }
 
-    }
+    }*/
 
 }

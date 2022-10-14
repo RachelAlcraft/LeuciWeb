@@ -1,10 +1,10 @@
 ﻿namespace Leucippus.Models
 {
-    public class EdVector
+    /*public class EdVector
     {
-        /*
-        * This class is specially for 3d coordinates
-        */
+        
+        // This class is specially for 3d coordinates
+        
         public double[] vector = new double[4];
         public EdVector(Double vx, Double vy, Double vz)
         {
@@ -151,5 +151,5 @@
         }
 
 
-    }
+    }*/
 }

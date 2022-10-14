@@ -1,5 +1,6 @@
 ﻿
 
+using LeuciShared;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -66,7 +67,12 @@ namespace Leucippus.Models
                     _emcode = value;
                 }
             }
-        }
+        }        
+        public string EbiLink
+        {
+            get { return "https://www.ebi.ac.uk/pdbe/entry/pdb/" + PdbCode;  }
+            
+        }        
         private string _info = "";
         public string Info
         {
@@ -165,6 +171,26 @@ namespace Leucippus.Models
                 }
             }
         }
+        private string _planeplot = "contour";
+        public string PlanePlot
+        {
+            get { return _planeplot; }
+            set
+            {
+                if (value == "+1")
+                {
+                    if (_planeplot == "contour")
+                        _planeplot = "heatmap";
+                    else
+                        _planeplot = "contour";
+                }
+                else if (value != "")
+                {
+                    _planeplot = value;
+                }
+
+            }
+        }
 
         private double _gap = 0.1;
         public double Gap
@@ -237,6 +263,54 @@ namespace Leucippus.Models
                 _width = Math.Round(_width, 4);
                 _gap = Math.Round(_gap, 4);
             }
+        }
+                  
+        // Handle setting the central-linear-planar
+        public VectorThree Central = new VectorThree(2.939, 9.67, 18.422);
+        private string _centralatom = "";
+        public void SetCentral(double cx, double cy, double cz, string ca)
+        {
+            // TODO we need to figure out the distance between the atom and the points and decide if it is the same, return it if so or blank if not
+            // TODO and we need to know which has changed and which has not
+
+            // meanwhile:
+            if (cx != -1)
+                Central.A = cx;
+            if (cy != -1)
+                Central.B = cy;
+            if (cz != -1)
+                Central.C = cz;
+        }
+        public VectorThree Linear = new VectorThree(3.567, 9.168, 19.706);
+        private string _linearatom = "";
+        public void SetLinear(double lx, double ly, double lz, string la)
+        {
+            // TODO we need to figure out the distance between the atom and the points and decide if it is the same, return it if so or blank if not
+            // TODO and we need to know which has changed and which has not
+
+            // meanwhile:
+            if (lx != -1)
+                Linear.A = lx;
+            if (ly != -1)
+                Linear.B = ly;
+            if (lz != -1)
+                Linear.C = lz;
+        }
+        
+        public VectorThree Planar = new VectorThree(1.823, 10.185, 18.428);
+        private string _planaratom = "";
+        public void SetPlanar(double px, double py, double pz, string pa)
+        {
+            // TODO we need to figure out the distance between the atom and the points and decide if it is the same, return it if so or blank if not
+            // TODO and we need to know which has changed and which has not
+
+            // meanwhile:
+            if (px != -1)
+                Planar.A = px;
+            if (py != -1)
+                Planar.B = py;
+            if (pz != -1)
+                Planar.C = pz;
         }
 
     }
