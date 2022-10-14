@@ -25,12 +25,12 @@ namespace LeuciShared
         public string Info = "";
 
 
-        private DensityBinary? _densityBinary;
-        private Cubelet? _cublet;        
-        public double[] MatA;
-        public double[] MatB;
-        public double[] MatC;
-        public double[][] MatD;
+        private DensityBinary _densityBinary;
+        private Cubelet _cublet;        
+        public double[] MatA = new double[0];
+        public double[] MatB = new double[0];
+        public double[] MatC = new double[0];
+        public double[][] MatD = new double[0][];
         public double MinV = 0;
         public double MaxV = 0;
 
@@ -38,10 +38,7 @@ namespace LeuciShared
         public double[][]? SliceDensity;
         public double[][]? SliceRadiant;
         public double[][]? SliceLaplacian;
-        public double[]? SliceAxis;
-        //private List<List<double>> _slice_density = new List<List<double>>();
-        //static List<List<double>> _slice_radiant = new List<List<double>>();
-        //static List<List<double>> _slice_laplacian = new List<List<double>>();
+        public double[]? SliceAxis;       
         private Interpolator _interpMap;
 
         public static async Task<DensityMatrix> CreateAsync(string pdbcode)
@@ -56,10 +53,7 @@ namespace LeuciShared
             _emcode = emcode;
             string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
             await DownloadAsync(edFile);
-            _densityBinary = new DensityBinary(edFile);
-            //_A = Convert.ToInt32(_densityBinary.Words["08_MX"]);
-            //_B = Convert.ToInt32(_densityBinary.Words["09_MY"]);
-            //_C = Convert.ToInt32(_densityBinary.Words["10_MZ"]);
+            _densityBinary = new DensityBinary(edFile);         
             _A = Convert.ToInt32(_densityBinary.Words["03_NZ"]);
             _B = Convert.ToInt32(_densityBinary.Words["02_NY"]);
             _C = Convert.ToInt32(_densityBinary.Words["01_NX"]);
@@ -129,10 +123,7 @@ namespace LeuciShared
         }
         
         public void create_slice(double width, double gap, VectorThree central, VectorThree linear, VectorThree planar)            
-        {
-            //_slice_density.Clear();
-            //_slice_radiant.Clear();
-            //_slice_laplacian.Clear();
+        {            
             int nums = Convert.ToInt32(width / gap);
             int halfLength = Convert.ToInt32((nums) / 2);
             
@@ -165,21 +156,13 @@ namespace LeuciShared
                     VectorThree transformed = space.applyTransformation(new VectorThree(x0, y0, z0));
                     VectorThree crs = _densityBinary.getCRSFromXYZ(transformed);
                     double density = _interpMap.getValue(crs.A, crs.B, crs.C);
-                    SliceDensity[m][n] = density;                                        
-                    //row_d.Add(density);
+                    SliceDensity[m][n] = density;                                                            
                     double radiant = _interpMap.getRadiant(crs.A, crs.B, crs.C);
-                    SliceRadiant[m][n] = radiant;
-                    //row_r.Add(radiant);
+                    SliceRadiant[m][n] = radiant;                    
                     double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
-                    SliceLaplacian[m][n] = laplacian;
-                    //row_l.Add(laplacian);
-                }
-                //_slice_density.Add(row_d);
-                //_slice_radiant.Add(row_r);
-                //_slice_laplacian.Add(row_l);
-            }
-
-            
+                    SliceLaplacian[m][n] = laplacian;                    
+                }                
+            }            
         }
         
     }

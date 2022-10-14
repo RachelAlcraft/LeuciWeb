@@ -22,23 +22,7 @@ namespace Leucippus.Controllers
         }
 
         public IActionResult Explore(string PdbCode="6eex",double XX=25, double YY=25, double ZZ=25)
-        {
-            //ed = new ElectronDensity(PdbCode);
-            //ed.PdbCode = PdbCode;
-            //ed.XX = XX;
-            //ed.YY = YY;
-            //ed.ZZ = ZZ;
-            //ed.DownloadAsync();            
-            //ViewBag.Info = ed.Info;
-            //ViewBag.PdbCode = ed.PdbCode;
-            //ViewBag.XX = ed.XX;
-            //ViewBag.YY = ed.YY;
-            //ViewBag.ZZ = ed.ZZ;
-            //ed.calculateWholeLayer("XY", 25);
-
-            //MatrixView mtx = new MatrixView();
-            //mtx.Create(ViewBag.Viewer = new RazorChartViewer(HttpContext, "chart1"),ed.MtxA,ed.MtxB,ed.MtxC,PdbCode);
-
+        {            
             return View();
         }
         public IActionResult Privacy()
@@ -55,31 +39,7 @@ namespace Leucippus.Controllers
         {
             return View();
         }
-
-        public IActionResult Matrix()
-        {
-            ViewBag.Title = "Contour Chart";
-            // The x and y coordinates of the grid
-            double[] dataX = { -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            double[] dataY = { -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-
-            // The values at the grid points. In this example, we will compute the values using the formula
-            // z = x * sin(y) + y * sin(x).
-            double[] dataZ = new double[dataX.Length * dataY.Length];
-            for (int yIndex = 0; yIndex < dataY.Length; ++yIndex)
-            {
-                double y = dataY[yIndex];
-                for (int xIndex = 0; xIndex < dataX.Length; ++xIndex)
-                {
-                    double x = dataX[xIndex];
-                    dataZ[yIndex * dataX.Length + xIndex] = x * Math.Sin(y) + y * Math.Sin(x);
-                }
-            }
-            MatrixView mtx = new MatrixView();
-            mtx.Create(ViewBag.Viewer = new RazorChartViewer(HttpContext, "chart1"),dataX,dataY,dataZ,"Dummy");            
-            return View();
-        }
-
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
