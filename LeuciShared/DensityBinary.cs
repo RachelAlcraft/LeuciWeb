@@ -17,8 +17,9 @@ namespace LeuciShared
         private string _fileName;
         private byte[] _bytes;
         private int _datalength = 0;
-        private double[,,] _myMatrix;
-        private double[] _myMatrixList;
+        //private double[,,] _myMatrix;
+        //private double[] _myMatrixListX;
+        private Dictionary<int,double> _myMatrixList;
 
 
         // conversion between orthogonal
@@ -34,16 +35,19 @@ namespace LeuciShared
 
         private const double M_PI = 3.14159265358979323846;   // pi
 
+        public int X1_cap = 0;
+        public int Y2_cap = 0;
+        public int Z3_cap = 0;
+
+        const int TEMP_CAP = 200;
+
         public DensityBinary(string fileName)
         {
             _fileName = fileName;
             _bytes = ReadBinaryFile(_fileName);
             createWords(_bytes);
-            List<Single> sings = bytesToSingles(_bytes);
-            int z = Convert.ToInt32(Words["01_NX"]);
-            int y = Convert.ToInt32(Words["02_NY"]);
-            int x = Convert.ToInt32(Words["03_NZ"]);            
-            createMatrix(sings,x,y,z);
+            List<Single> sings = bytesToSingles(_bytes);            
+            createMatrix(sings);
         }
 
         public byte[] ReadBinaryFile(string filePath)
@@ -81,9 +85,17 @@ namespace LeuciShared
 
         public void createWords(byte[] fileInBinary)
         {
-            Words["01_NX"] = Convert.ToString(bytesToInt(fileInBinary, 0)); // 1
-            Words["02_NY"] = Convert.ToString(bytesToInt(fileInBinary, 4)); // 2
-            Words["03_NZ"] = Convert.ToString(bytesToInt(fileInBinary, 8)); // 3
+            X1_cap = bytesToInt(fileInBinary, 0); // 1
+            Y2_cap = bytesToInt(fileInBinary, 4); // 1
+            Z3_cap = bytesToInt(fileInBinary, 8); // 1            
+            Words["01_NX"] = Convert.ToString(X1_cap); // 1
+            Words["02_NY"] = Convert.ToString(Y2_cap); // 2
+            Words["03_NZ"] = Convert.ToString(Z3_cap); // 3
+            // WARNING !!!! OPTIMISATION DECISION cap any of these to 200
+            X1_cap = Math.Min(TEMP_CAP, X1_cap);
+            Y2_cap = Math.Min(TEMP_CAP, Y2_cap);
+            Z3_cap = Math.Min(TEMP_CAP, Z3_cap);
+            /////////////////////////////////////////////////////////////
             Words["04_MODE"] = Convert.ToString(bytesToInt(fileInBinary, 12)); // 4
             Words["05_NXSTART"] = Convert.ToString(bytesToInt(fileInBinary, 16)); // 5
             Words["06_NYSTART"] = Convert.ToString(bytesToInt(fileInBinary, 20)); // 6
@@ -132,7 +144,7 @@ namespace LeuciShared
             
         }
 
-        public double[] makePlane(List<int[]> coords)
+        /*public double[] makePlane(List<int[]> coords)
         {
             double[] result = new double[coords.Count];            
             for (int i=0; i < coords.Count; ++i )
@@ -141,7 +153,7 @@ namespace LeuciShared
                 result[i] = getVal(coord[0], coord[1], coord[2]);
             }
             return result;
-        }
+        }*/
 
         private void makeInfo()
         {
@@ -151,15 +163,27 @@ namespace LeuciShared
                 Info += entry.Key + "=" + entry.Value + "\n";
             }
         }
+        //public double[] getShortListX()
+        //{
+        //    return _myMatrixListX;       
+        //}
         public double[] getShortList()
         {
-            return _myMatrixList;
+            double[] shorter = new double[_myMatrixList.Count];
+            int count = 0;
+            foreach (KeyValuePair<int, double> entry in _myMatrixList)
+            {
+                shorter[count] = entry.Value;
+                count++;
+            }
+            
+            return shorter;
 
         }
-        private double getVal(int x, int y, int z)
-        {// TODO this should be loading the binary and getting just those it wants
-            return _myMatrix[x, y, z];            
-        }
+        //private double getVal(int x, int y, int z)
+        //{// TODO this should be loading the binary and getting just those it wants
+        //    return _myMatrix[x, y, z];            
+        //}
         private int bytesToInt(byte[] bytes, int start)
         {
             int i = BitConverter.ToInt32(bytes, start);
@@ -195,10 +219,16 @@ namespace LeuciShared
             return matvals;
         }
 
-        private void createMatrix(List<Single> sings,int x, int y, int z)
-        {            
-            _myMatrix = new double[x, y, z];
-            _myMatrixList = new double[x*y*z];
+        private void createMatrix(List<Single> sings)
+        {
+            int z = Convert.ToInt32(Words["01_NX"]);
+            int y = Convert.ToInt32(Words["02_NY"]);
+            int x = Convert.ToInt32(Words["03_NZ"]);
+
+
+            //_myMatrix = new double[x, y, z];
+            //_myMatrixListX = new double[x*y*z];
+            _myMatrixList = new Dictionary<int, double>();
 
             int count = 0;
 
@@ -208,9 +238,14 @@ namespace LeuciShared
                 {
                     for (int k = 0; k < z; ++k)
                     {
-                        double val = sings[count];
-                        _myMatrix[i, j, k] = val;
-                        _myMatrixList[count] = val;
+                        // keep counting but don't go over the cap
+                        if (k < X1_cap && j < Y2_cap && i < Z3_cap)
+                        {
+                            double val = sings[count];
+                            //_myMatrix[i, j, k] = val;
+                            _myMatrixList[count] = val;
+                            //_myMatrixListX[count] = val;
+                        }
                         count += 1;
                     }
                 }
