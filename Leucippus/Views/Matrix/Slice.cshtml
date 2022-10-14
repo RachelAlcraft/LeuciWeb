@@ -112,20 +112,7 @@
                 },
                 htmlAttributes: null
                 )                        
-            </td>
-            <td style="width: 450px;">Density
-                <br/><div id="myCountour2"></div>
-                <br/>
-                @Html.ActionLink(
-                linkText: "Toggle Plot",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {                
-                denplot = "+1",                
-                },
-                htmlAttributes: null
-                )                        
-            </td>   
+            </td>            
             <td style="width: 450px;">Radiant
                 <br/><div id="myCountourRad"></div>
                 <br />
@@ -161,6 +148,7 @@
     var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
     var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
     var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
+    var jv2 = @Html.Raw(Json.Serialize(@ViewBag.Slice2Density));
     var jvr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadiant));
     var jvl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
     var minv = -2
@@ -223,30 +211,7 @@
             thickness: 15,
         }
     }];
-
-    var data2 = [{
-        z: jv,
-        x: jx,
-        y: jy,
-        type: denplot,
-        colorscale: cs,
-        reversescale: false,
-        autocontour: false,
-        line: {
-            width: 0.5,
-            color: 'DimGray'
-        },
-        contours: {
-            start: minc,
-            end: maxc,
-            size: size
-        },
-        showscale:false,
-        colorbar: {
-            thickness: 15,
-        }
-    }];
-
+   
     var dataR = [{
         z: jvr,
         x: jx,
@@ -309,8 +274,7 @@
 
     var config = { responsive: true }
 
-    Plotly.newPlot('myCountour', data, layout, config);
-    Plotly.newPlot('myCountour2', data2, layout, config);
+    Plotly.newPlot('myCountour', data, layout, config);    
     Plotly.newPlot('myCountourRad', dataR, layout, config);
     Plotly.newPlot('myCountourLap', dataL, layout, config);
     

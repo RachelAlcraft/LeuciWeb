@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace LeuciShared
 {
@@ -18,6 +19,21 @@ namespace LeuciShared
         private int _datalength = 0;
         private double[,,] _myMatrix;
         private double[] _myMatrixList;
+
+
+        // conversion between orthogonal
+        private MatrixThreeThree _orthoMat = new MatrixThreeThree();
+        private MatrixThreeThree _deOrthoMat = new MatrixThreeThree();
+        private VectorThree _origin = new VectorThree();
+        private int[] _map2xyz = new int[3];
+        private int[] _map2crs = new int[3];
+        private double[] _cellDims = new double[3];
+        private int[] _axisSampling = new int[3];
+        private int[] _crsStart = new int[3];
+        private int[] _dimOrder = new int[3];
+
+        private const double M_PI = 3.14159265358979323846;   // pi
+
         public DensityBinary(string fileName)
         {
             _fileName = fileName;
@@ -112,6 +128,7 @@ namespace LeuciShared
             Words["LABEL10"] = Convert.ToString(bytesToString(fileInBinary, 944, 80)); // 66
             _datalength = Convert.ToInt32(Words["01_NX"]) * Convert.ToInt32(Words["02_NY"]) * Convert.ToInt32(Words["03_NZ"]);
             makeInfo();
+            loadInfo();
             
         }
 
@@ -133,6 +150,11 @@ namespace LeuciShared
             {
                 Info += entry.Key + "=" + entry.Value + "\n";
             }
+        }
+        public double[] getShortList()
+        {
+            return _myMatrixList;
+
         }
         private double getVal(int x, int y, int z)
         {// TODO this should be loading the binary and getting just those it wants
@@ -176,7 +198,7 @@ namespace LeuciShared
         private void createMatrix(List<Single> sings,int x, int y, int z)
         {            
             _myMatrix = new double[x, y, z];
-            _myMatrixList = new double[_datalength];
+            _myMatrixList = new double[x*y*z];
 
             int count = 0;
 
@@ -193,6 +215,143 @@ namespace LeuciShared
                     }
                 }
             }
+        }
+
+        ///////////////////////////////////////////////////
+        private void loadInfo()
+        {
+        
+            int len = Convert.ToInt32(Words["01_NX"]) * Convert.ToInt32(Words["02_NY"]) * Convert.ToInt32(Words["03_NZ"]);
+            
+            calculateOrthoMat(      Convert.ToDouble(Words["11_CELLA_X"]), Convert.ToDouble(Words["12_CELLA_Y"]), Convert.ToDouble(Words["13_CELLA_Z"]),
+                                    Convert.ToDouble(Words["14_CELLB_X"]), Convert.ToDouble(Words["15_CELLB_Y"]), Convert.ToDouble(Words["16_CELLB_Z"]));
+            
+            calculateOrigin(Convert.ToInt32(Words["05_NXSTART"]), Convert.ToInt32(Words["06_NYSTART"]), Convert.ToInt32(Words["07_NZSTART"]), 
+                            Convert.ToInt32(Words["17_MAPC"]), Convert.ToInt32(Words["18_MAPR"]), Convert.ToInt32(Words["08_MX"]), Convert.ToInt32(Words["09_MY"]), Convert.ToInt32(Words["10_MZ"]));
+
+            _map2xyz[Convert.ToInt32(Words["17_MAPC"])] = 0;
+            _map2xyz[Convert.ToInt32(Words["18_MAPR"])] = 1;
+            _map2xyz[Convert.ToInt32(Words["19_MAPS"])] = 2;
+            
+            _map2crs[0] = Convert.ToInt32(Words["17_MAPC"]);
+            _map2crs[1] = Convert.ToInt32(Words["18_MAPR"]);
+            _map2crs[2] = Convert.ToInt32(Words["19_MAPS"]);
+            
+            _cellDims[0] = Convert.ToDouble(Words["11_CELLA_X"]);
+            _cellDims[1] = Convert.ToDouble(Words["12_CELLA_Y"]);
+            _cellDims[2] = Convert.ToDouble(Words["13_CELLA_Z"]);
+            
+            _axisSampling[0] = Convert.ToInt32(Words["08_MX"]);
+            _axisSampling[1] = Convert.ToInt32(Words["09_MY"]);
+            _axisSampling[2] = Convert.ToInt32(Words["10_MZ"]);
+            
+            _crsStart[0] = Convert.ToInt32(Words["05_NXSTART"]);
+            _crsStart[1] = Convert.ToInt32(Words["06_NYSTART"]);
+            _crsStart[2] = Convert.ToInt32(Words["07_NZSTART"]);
+            
+            _dimOrder[0] = Convert.ToInt32(Words["01_NX"]);
+            _dimOrder[1] = Convert.ToInt32(Words["02_NY"]);
+            _dimOrder[2] = Convert.ToInt32(Words["03_NZ"]);
+
+
+        }
+
+        private void calculateOrthoMat(double w11_CELLA_X, double w12_CELLA_Y, double w13_CELLA_Z, double w14_CELLB_X, double w15_CELLB_Y, double w16_CELLB_Z)
+        {
+            // Cell angles is w14_CELLB_X, w15_CELLB_Y, w16_CELLB_Z
+            // Cell lengths is w11_CELLA_X , w12_CELLA_Y , w13_CELLA_Z 
+            double alpha = M_PI / 180 * w14_CELLB_X;
+            double beta = M_PI / 180 * w15_CELLB_Y;
+            double gamma = M_PI / 180 * w16_CELLB_Z;
+            double temp = Math.Sqrt(1 - Math.Pow(Math.Cos(alpha), 2) - Math.Pow(Math.Cos(beta), 2) - Math.Pow(Math.Cos(gamma), 2) + 2 * Math.Cos(alpha) * Math.Cos(beta) * Math.Cos(gamma));
+
+            double v00 = w11_CELLA_X;
+            double v01 = w12_CELLA_Y * Math.Cos(gamma);
+            double v02 = w13_CELLA_Z * Math.Cos(beta);
+            double v10 = 0;
+            double v11 = w12_CELLA_Y * Math.Sin(gamma);
+            double v12 = w13_CELLA_Z * (Math.Cos(alpha) - Math.Cos(beta) * Math.Cos(gamma)) / Math.Sin(gamma);
+            double v20 = 0;
+            double v21 = 0;
+            double v22 = w13_CELLA_Z * temp / Math.Sin(gamma);
+
+            _orthoMat.putValue(w11_CELLA_X, 0, 0);
+            _orthoMat.putValue(w12_CELLA_Y * Math.Cos(gamma), 0, 1);
+            _orthoMat.putValue(w13_CELLA_Z * Math.Cos(beta), 0, 2);
+            _orthoMat.putValue(0, 1, 0);
+            _orthoMat.putValue(w12_CELLA_Y * Math.Sin(gamma), 1, 1);
+            _orthoMat.putValue(w13_CELLA_Z * (Math.Cos(alpha) - Math.Cos(beta) * Math.Cos(gamma)) / Math.Sin(gamma), 1, 2);
+            _orthoMat.putValue(0, 2, 0);
+            _orthoMat.putValue(0, 2, 1);
+            _orthoMat.putValue(w13_CELLA_Z * temp / Math.Sin(gamma), 2, 2);
+            _deOrthoMat = _orthoMat.getInverse();
+        }
+
+        private void calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, int w17_MAPC, int w18_MAPR, int W08_NX, int W09_NY, int W10_NZ)
+        {
+            /****************************
+            * These comments are from my C# version and I have no idea currently what they mean (RSA 6/9/21)
+            * ******************************
+             *TODO I am ignoring the possibility of passing in the origin for nowand using the dot product calc for non orthoganality.
+             *The origin is perhaps used for cryoEM only and requires orthoganility
+             *CRSSTART is w05_NXSTART, w06_NYSTART, w07_NZSTART
+             *Cell dims w08_MX, w09_MY, w10_MZ;
+             *Map of indices from crs to xyz is w17_MAPC, w18_MAPR, w19_MAPS
+             */
+
+            VectorThree oro = new VectorThree();
+
+            for (int i = 0; i < 3; ++i)
+            {
+                int startVal = 0;
+                if (w17_MAPC == i)
+                    startVal = w05_NXSTART;
+                else if (w18_MAPR == i)
+                    startVal = w06_NYSTART;
+                else
+                    startVal = w07_NZSTART;
+
+                oro.putByIndex(i, startVal);
+            }
+            oro.putByIndex(0, oro.getByIndex(0) / W08_NX);
+            oro.putByIndex(1, oro.getByIndex(1) / W09_NY);
+            oro.putByIndex(2, oro.getByIndex(2) / W10_NZ);
+            _origin = _orthoMat.multiply(oro, true);
+        }
+
+        public VectorThree getCRSFromXYZ(VectorThree XYZ)
+        {
+            VectorThree vCRS = new VectorThree();
+            //If the axes are all orthogonal            
+            if (Words["14_CELLB_X"] == "90" && Words["15_CELLB_Y"] == "90" && Words["16_CELLB_Z"] == "90")
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    double startVal = XYZ.getByIndex(i) - _origin.getByIndex(i);
+                    startVal /= _cellDims[i] / _axisSampling[i];
+                    //vCRS[i] = startVal;
+                    vCRS.putByIndex(i, startVal);
+                }
+            }
+            else // they are not orthogonal
+            {
+                VectorThree vFraction = _deOrthoMat.multiply(XYZ, true);
+                for (int i = 0; i < 3; ++i)
+                {
+                    double val = vFraction.getByIndex(i) * _axisSampling[i] - _crsStart[_map2xyz[i]];
+                    vCRS.putByIndex(i, val);
+                }
+            }
+            double c = vCRS.getByIndex(_map2crs[0]);
+            double r = vCRS.getByIndex(_map2crs[1]);
+            double s = vCRS.getByIndex(_map2crs[2]);
+
+            VectorThree CRS = new VectorThree();
+            CRS.A = c;
+            CRS.B = r;
+            CRS.C = s;
+            return CRS;
+
         }
     }
 

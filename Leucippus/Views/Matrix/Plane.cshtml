@@ -95,19 +95,42 @@
 </div>
 <br/>
 
-    <div>
+
+<table>
+    <tr>
+        <td style="width: 450px;">
+            Plane
+            <br />
+            <div id="myCountour" style="width:100%"></div>
+            <br />
+            @Html.ActionLink(
+            linkText: "Toggle Plot",
+            actionName: "Plane",
+            controllerName: "Matrix",
+            routeValues: new {
+            planeplot = "+1",
+            },
+            htmlAttributes: null
+            )
+        </td>
+        <td style="width: 450px;">
+            Values
+            <br />
+            <div id="myDiv" style="width:100%"></div>            
+            <br />
+        </td>
+        
+    </tr>
+</table>
+
+    <!--<div>
         <div id="myCountour" style="width:40%"></div>
     <hr/>
         <div id="myDiv" style="width:40%"></div>
     </div>
+    -->
 
-    <div>
-        <div id="myCountour2" style="width:40%"></div>    
-    <hr />    
-        <div id="myDiv2" style="width:40%"></div>    
-    </div>
-    
-
+        
 <script>
     var jx = @Html.Raw(Json.Serialize(@ViewBag.MtxX));
     var jy = @Html.Raw(Json.Serialize(@ViewBag.MtxY));
@@ -115,14 +138,8 @@
     var jv = @Html.Raw(Json.Serialize(@ViewBag.MtxV));    
     var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
     var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
-    
-
-    var jx2 = @Html.Raw(Json.Serialize(@ViewBag.MtxX2));
-    var jy2 = @Html.Raw(Json.Serialize(@ViewBag.MtxY2));
-    var jz2 = @Html.Raw(Json.Serialize(@ViewBag.MtxZ2));    
-    var jv2 = @Html.Raw(Json.Serialize(@ViewBag.MtxV2));    
-
-            
+    var planeplot = @Html.Raw(Json.Serialize(@ViewBag.PlanePlot));
+                    
     var layoutH = {
         autosize: true,
         title: 'Electron density values in this plane'     
@@ -141,30 +158,10 @@
     }
     };
     var dataH = [traceH];
-    Plotly.newPlot('myDiv', dataH,layoutH);
+    var config = { responsive: true }
 
-    var layoutH2 = {
-        autosize: true,
-        title: 'Electron density values in this plane'
-    };
-
-    var traceH2 = {
-        x: jz2,
-        type: 'histogram',
-        nbinsx: 50,
-        marker: {
-            color: "Crimson",
-            line: {
-                color: "Silver",
-                width: 1
-            }
-        }
-    };
-    var dataH2 = [traceH2];
-    Plotly.newPlot('myDiv2', dataH2, layoutH2);
-
-
-
+    Plotly.newPlot('myDiv', dataH,layoutH,config);
+    
     var minc = minv
     var maxc = 3
     var size = (maxc - minc)/10
@@ -187,7 +184,7 @@
 		z: jv,
 		x: jx,
 		y: jy,
-		type: 'contour',
+        type: planeplot,
         colorscale: cs,
         reversescale : false,
         autocontour: false,
@@ -199,7 +196,11 @@
             start: minc,
             end: maxc,
             size: size            
-        }	    
+        },
+        showscale: false,
+        colorbar: {
+            thickness: 15,
+        }
     }];
 
     var layout = {
@@ -215,40 +216,7 @@
         }
     };
     
-    Plotly.newPlot('myCountour', data,layout);
-
-
-    var data2 = [{
-        z: jv2,
-        x: jx2,
-        y: jy2,
-        type: 'contour',
-        colorscale: cs,
-        reversescale: false,
-        autocontour: false,
-        line: {
-            width: 0.5,
-            color: 'DimGray'
-        },
-        contours: {
-            start: minc,
-            end: maxc,
-            size: size
-        }
-    }];
-
-    var layout2 = {
-        autosize: true,
-        title: 'Contour plot of electron density plane',
-        xaxis: {
-            showgrid: false,
-            zeroline: false
-        },
-        yaxis: {
-            scaleanchor: 'x',
-            scaleratio: 1
-        }
-    };
-
-    Plotly.newPlot('myCountour2', data2, layout2);
+    
+    Plotly.newPlot('myCountour', data,layout,config);
+        
 </script>

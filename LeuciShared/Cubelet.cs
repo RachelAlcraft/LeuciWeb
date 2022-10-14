@@ -13,8 +13,8 @@ namespace LeuciShared
         private int _a;
         private int _b;
         private int _c;
-        public int Layer { get; set; }
-        public string Plane { get; set; }
+        public int Layer { get; set; } = 0;
+        public string Plane { get; set; } = "XY";
         /*
          * If this structure was init as 4,3,2
          * it would be 3 points wide, 4 high and 5 deep, (points not width)
@@ -63,7 +63,7 @@ namespace LeuciShared
             int x_bit = z;
             int y_bit = _a + y;
             int z_bit = (_a * _b) + x;
-            return x_bit + y_bit + x_bit;
+            return x_bit + y_bit + z_bit;
         }
         public int[] get3D(int i)
         {
