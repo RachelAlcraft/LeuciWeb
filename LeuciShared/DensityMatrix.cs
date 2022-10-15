@@ -41,18 +41,18 @@ namespace LeuciShared
         public double[]? SliceAxis;       
         private Interpolator _interpMap;
 
-        public static async Task<DensityMatrix> CreateAsync(string pdbcode)
+        public static async Task<DensityMatrix> CreateAsync(string pdbcode,string empath)
         {
             DensityMatrix x = new DensityMatrix();
-            await x.InitializeAsync(pdbcode);
+            await x.InitializeAsync(empath);
             return x;
         }
         private DensityMatrix() { }
-        private async Task InitializeAsync(string emcode)
+        private async Task InitializeAsync(string edFile)
         {
-            _emcode = emcode;
-            string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
-            await DownloadAsync(edFile);
+            //_emcode = emcode;
+            //string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
+            //await DownloadAsync(edFile);
             _densityBinary = new DensityBinary(edFile);
             _A = _densityBinary.Z3_cap;//Convert.ToInt32(_densityBinary.Words["03_NZ"]);
             _B = _densityBinary.Y2_cap;//Convert.ToInt32(_densityBinary.Words["02_NY"]);
@@ -63,7 +63,7 @@ namespace LeuciShared
             _interpMap = new BetaSpline(_densityBinary.getShortList(), _C, _B, _A);
         }
 
-        public async Task<bool> DownloadAsync(string edFile)
+        /*public async Task<bool> DownloadAsync(string edFile)
         {
             bool haveED = false;            
             if (!File.Exists(edFile))
@@ -94,7 +94,7 @@ namespace LeuciShared
                 haveED = true;
             }
             return haveED;
-        }
+        }*/
     
         public void calculatePlane(string plane, int layer)
         {
