@@ -11,22 +11,22 @@
         <table cellpadding="0" cellspacing="0" style="width:700px;table-layout: fixed;">
             <tr>
                 <th style="width:100px;" colspan="1" align="center"><input type="submit" value="Submit" /></th>
-                <th style="width:100px;" colspan="1" align="center">Atom</th>
-                <th style="width:100px;" colspan="1" align="center">(x,y,z)</th>
-                <th style="width:100px;" colspan="1" align="center">Z</th>
+                <th style="width:150px;" colspan="1" align="center">Atom</th>
+                <th style="width:250px;" colspan="1" align="center">(x,y,z)</th>
+                <th style="width:100px;" colspan="1" align="center">distance</th>
                 <th style="width:300px;" colspan="1" align="center">Controls</th>
             </tr>                        
             <tr>
                 <td>central</td>
-                <td><input style="width:80px;" type="text" id="cx" name="cx" value=@ViewBag.cx></td>
-                <td><input style="width:80px;" type="text" id="cy" name="cy" value=@ViewBag.cy></td>
-                <td><input style="width:80px;" type="text" id="cz" name="cz" value=@ViewBag.cz></td>
+                <td><input style="width:120px;" type="text" id="ca" name="ca" value=@ViewBag.cAtom></td>
+                <td><input style="width:210px;" type="text" id="c_xyz" name="c_xyz" value=@ViewBag.cXYZ></td>                
+                <td>@ViewBag.CDistance</td>
                 <td rowspan="3" style="height:30px;text-align:justify"/>
                 @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
                 {
                     <span>
                         Width(Å)=
-                    <input style="width:60px;" type="text" id="width" name="width" value=@ViewBag.Width>                        
+                    <input style="width:80px;" type="text" id="width" name="width" value=@ViewBag.Width>                        
                     <input type="image" src="~/images/calc.png" style="height:18px;vertical-align:text-bottom" />
                         [
                     @Html.ActionLink(
@@ -52,7 +52,7 @@
                     </span>
                     <span>
                         Gap (Å)  =
-                    <input style="width:60px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>                        
+                    <input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>                        
                     <input type="image" src="~/images/calc.png" style="height:18px;vertical-align:text-bottom" />
                         [
                     @Html.ActionLink(
@@ -75,20 +75,23 @@
                     htmlAttributes: null
                     )
                     ]
+                    <br/>
+                        <br />
+                        <a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
                     </span>                                                                                
                 }
             </tr>
             <tr>
                 <td>linear</td>
-                <td><input style="width:80px;" type="text" id="lx" name="lx" value=@ViewBag.lx></td>
-                <td><input style="width:80px;" type="text" id="ly" name="ly" value=@ViewBag.ly></td>
-                <td><input style="width:80px;" type="text" id="lz" name="lz" value=@ViewBag.lz></td>                
+                <td><input style="width:120px;" type="text" id="la" name="la" value=@ViewBag.lAtom></td>
+                <td><input style="width:210px;" type="text" id="l_xyz" name="l_xyz" value=@ViewBag.lXYZ></td>             
+                <td>@ViewBag.LDistance</td>
             </tr>
             <tr>
                 <td>planar</td>
-                <td><input style="width:80px;" type="text" id="px" name="px" value=@ViewBag.px></td>
-                <td><input style="width:80px;" type="text" id="py" name="py" value=@ViewBag.py></td>
-                <td><input style="width:80px;" type="text" id="pz" name="pz" value=@ViewBag.pz></td>
+                <td><input style="width:120px;" type="text" id="pa" name="pa" value=@ViewBag.pAtom></td>
+                <td><input style="width:210px;" type="text" id="p_xyz" name="p_xyz" value=@ViewBag.pXYZ></td>
+                <td>@ViewBag.PDistance</td>
             </tr>                                                                        
         </table>
     }            

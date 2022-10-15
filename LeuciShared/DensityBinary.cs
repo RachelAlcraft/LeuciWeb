@@ -39,7 +39,7 @@ namespace LeuciShared
         public int Y2_cap = 0;
         public int Z3_cap = 0;
 
-        const int TEMP_CAP = 200;
+        const int TEMP_CAP = 300;
 
         public DensityBinary(string fileName)
         {
@@ -48,6 +48,12 @@ namespace LeuciShared
             createWords(_bytes);
             List<Single> sings = bytesToSingles(_bytes);            
             createMatrix(sings);
+
+            // Some testing
+            VectorThree test1 = getCRSFromXYZ(new VectorThree(0, 0, 0));
+            VectorThree test2 = getXYZFromCRS(test1);
+            VectorThree test3 = getCRSFromXYZ(new VectorThree(1, 1, 10));
+            VectorThree test4 = getXYZFromCRS(test3);
         }
 
         public byte[] ReadBinaryFile(string filePath)
@@ -387,6 +393,49 @@ namespace LeuciShared
             CRS.C = s;
             return CRS;
 
+        }
+        public VectorThree getXYZFromCRS(VectorThree vCRSIn)
+        {
+            VectorThree vXYZ = new VectorThree();
+
+            //If the axes are all orthogonal            
+            if (Words["14_CELLB_X"] == "90" && Words["15_CELLB_Y"] == "90" && Words["16_CELLB_Z"] == "90")
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    double startVal = vCRSIn.getByIndex(_map2xyz[i]);
+                    startVal *= _cellDims[i] / _axisSampling[i];
+                    startVal += _origin.getByIndex(i);
+                    vXYZ.putByIndex(i, startVal);
+                }
+            }
+            else // they are not orthogonal
+            {
+                VectorThree vCRS = new VectorThree();
+                for (int i = 0; i < 3; ++i)
+                {
+                    double startVal = 0;
+                    if (Convert.ToInt32(Words["17_MAPC"]) == i)
+                        startVal = Convert.ToInt32(Words["05_NXSTART"]) + vCRSIn.A;
+                    else if (Convert.ToInt32(Words["18_MAPR"]) == i)
+                        startVal = Convert.ToInt32(Words["06_NYSTART"]) + vCRSIn.B;
+                    else
+                        startVal = Convert.ToInt32(Words["07_NZSTART"]) + vCRSIn.C;
+                    vCRS.putByIndex(i, startVal);
+                }
+                vCRS.putByIndex(0, vCRS.getByIndex(0) / Convert.ToInt32(Words["08_MX"]));
+                vCRS.putByIndex(1, vCRS.getByIndex(1) / Convert.ToInt32(Words["09_MY"]));
+                vCRS.putByIndex(2, vCRS.getByIndex(2) / Convert.ToInt32(Words["10_MZ"]));
+                vXYZ = _orthoMat.multiply(vCRS, false);
+            }
+            return vXYZ;
+        }
+        public bool AllValid(VectorThree crs)
+        {
+            if (crs.A < TEMP_CAP && crs.B < TEMP_CAP && crs.C < TEMP_CAP)
+                return true;
+            else
+                return false;
         }
     }
 

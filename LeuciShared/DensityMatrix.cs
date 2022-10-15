@@ -135,14 +135,14 @@ namespace LeuciShared
                 }
             }            
         }
-        
-        public void create_slice(double width, double gap, VectorThree central, VectorThree linear, VectorThree planar)            
+
+        public void create_slice(double width, double gap,
+                                VectorThree central, VectorThree linear, VectorThree planar)            
         {            
             int nums = Convert.ToInt32(width / gap);
-            int halfLength = Convert.ToInt32((nums) / 2);
+            int halfLength = Convert.ToInt32((nums) / 2);                        
             
             SpaceTransformation space = new SpaceTransformation(central, linear, planar);
-
 
             SliceDensity = new double[nums][];
             SliceRadiant = new double[nums][];
@@ -169,12 +169,22 @@ namespace LeuciShared
                     double z0 = 0;
                     VectorThree transformed = space.applyTransformation(new VectorThree(x0, y0, z0));
                     VectorThree crs = _densityBinary.getCRSFromXYZ(transformed);
-                    double density = _interpMap.getValue(crs.A, crs.B, crs.C);
-                    SliceDensity[m][n] = density;                                                            
-                    double radiant = _interpMap.getRadiant(crs.A, crs.B, crs.C);
-                    SliceRadiant[m][n] = radiant;                    
-                    double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
-                    SliceLaplacian[m][n] = laplacian;                    
+                    if (_densityBinary.AllValid(crs))
+                    {
+                        double density = _interpMap.getValue(crs.A, crs.B, crs.C);
+                        SliceDensity[m][n] = density;
+                        double radiant = _interpMap.getRadiant(crs.A, crs.B, crs.C);
+                        SliceRadiant[m][n] = radiant;
+                        double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
+                        SliceLaplacian[m][n] = laplacian;
+                    }
+                    else
+                    {
+                        SliceDensity[m][n] = -1;
+                        SliceRadiant[m][n] = -1;
+                        SliceLaplacian[m][n] = -1;
+                    }
+
                 }                
             }            
         }
