@@ -204,16 +204,17 @@ namespace Leucippus.Models
             get { return _gap; }
             set
             {
+                //don;t maintain ratio when increasing the gap                
                 if (value == -2) // this means increase by 0.05
                 {
-                    _gap += 0.01;
+                    _gap += 0.01;                    
                     ++_refresh;
                 }
                 else if (value == -3)
                 {
                     _gap -= 0.01;
                     if (_gap <= 0.01)
-                        _gap = 0.01;
+                        _gap = 0.01;                    
                     ++_refresh;
                 }
                 else if (value == -1) // this means don;t change
@@ -225,24 +226,27 @@ namespace Leucippus.Models
                     _gap = value;
                     ++_refresh;
                 }
-                if (_width / _gap > 100)
-                {
-                    _width = 100 * _gap;
+                if (_width / _gap > 200)
+                {                    
+                    _gap = _width / 200;
                     ++_refresh;
                 }
                 _width = Math.Round(_width, 4);
                 _gap = Math.Round(_gap, 4);
             }
         }
-        private double _width = 5.0;
+        private double _width = 8.0;
         public double Width
         {
             get { return _width; }
             set
             {
+                //maintain ratio
+                double nums = _width * _gap;
                 if (value == -2) // this means increase by 0.05
                 {
                     _width += 0.5;
+                    _gap = nums / _width;
                     ++_refresh;
                 }
                 else if (value == -3)
@@ -250,6 +254,7 @@ namespace Leucippus.Models
                     _width -= 0.5;
                     if (_width <= 0.5)
                         _width = 0.5;
+                    _gap = nums / _width;
                     ++_refresh;
                 }
                 else if (value == -1) // this means don;t change
@@ -261,9 +266,9 @@ namespace Leucippus.Models
                     _width = value;
                     ++_refresh;
                 }
-                if (_width / _gap > 100)
+                if (_width / _gap > 200)
                 {
-                    _gap = _width / 100;
+                    _width = 200 * _gap;                    
                     ++_refresh;
                 }
                 _width = Math.Round(_width, 4);
@@ -272,51 +277,117 @@ namespace Leucippus.Models
         }
                   
         // Handle setting the central-linear-planar
-        public VectorThree Central = new VectorThree(2.939, 9.67, 18.422);
-        private string _centralatom = "";
-        public void SetCentral(double cx, double cy, double cz, string ca)
+        public VectorThree Central = new VectorThree(-1, -1, -1);
+        private string _cxyz = "(-1,-1,-1)";
+        private VectorThree _cAtom = new VectorThree(-1, -1, -1);
+        public string CentralAtom = "A:1@C";
+        public double CDistance = 0;
+        public void SetCentral(string cxyz, string ca,PdbAtoms pdba)
         {
             // TODO we need to figure out the distance between the atom and the points and decide if it is the same, return it if so or blank if not
             // TODO and we need to know which has changed and which has not
+            if (ca != "" && ca != CentralAtom)
+            {
+                CentralAtom = ca;
+                Central = pdba.getCoords(CentralAtom);
+                _cAtom = new VectorThree(Central.A, Central.B, Central.C);
+                CDistance = 0;
+                ++_refresh;
+            }
+            else if (cxyz != "" && cxyz != _cxyz)
+            {
+                //unwrap
+                string[] xyzs = cxyz.Split(",");
+                double x = Convert.ToDouble(xyzs[0].Substring(1));
+                double y = Convert.ToDouble(xyzs[1]);
+                double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
+                //CentralAtom = "";
+                CDistance = Math.Round(_cAtom.distance(new VectorThree(x, y, z)),3);
+                Central = new VectorThree(x, y, z);
+                ++_refresh;
+            }
+            else if (Central.A + Central.B + Central.C == -3)
+            {
+                Central = pdba.getCoords(CentralAtom);
+                _cAtom = new VectorThree(Central.A, Central.B, Central.C);
+                CDistance = 0;
+                ++_refresh;
+            }
+            else
+            {
 
-            // meanwhile:
-            if (cx != -1)
-                Central.A = cx;
-            if (cy != -1)
-                Central.B = cy;
-            if (cz != -1)
-                Central.C = cz;
+            }
         }
-        public VectorThree Linear = new VectorThree(3.567, 9.168, 19.706);
-        private string _linearatom = "";
-        public void SetLinear(double lx, double ly, double lz, string la)
+        public VectorThree Linear = new VectorThree(-1,-1,-1);
+        private string _lxyz = "(-1,-1,-1)";
+        private VectorThree _lAtom = new VectorThree(-1, -1, -1);
+        public string LinearAtom = "A:1@O";
+        public double LDistance = 0;
+        public void SetLinear(string lxyz, string la, PdbAtoms pdba)
         {
-            // TODO we need to figure out the distance between the atom and the points and decide if it is the same, return it if so or blank if not
-            // TODO and we need to know which has changed and which has not
-
-            // meanwhile:
-            if (lx != -1)
-                Linear.A = lx;
-            if (ly != -1)
-                Linear.B = ly;
-            if (lz != -1)
-                Linear.C = lz;
+            if (la != "" && la != LinearAtom)
+            {
+                LinearAtom = la;
+                Linear = pdba.getCoords(LinearAtom);
+                _lAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
+                LDistance = 0;
+                ++_refresh;
+            }
+            else if (lxyz != "" && lxyz != _lxyz)
+            {
+                //unwrap
+                string[] xyzs = lxyz.Split(",");
+                double x = Convert.ToDouble(xyzs[0].Substring(1));
+                double y = Convert.ToDouble(xyzs[1]);
+                double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
+                LDistance = Math.Round(_lAtom.distance(new VectorThree(x, y, z)),3);
+                //LinearAtom = "";
+                Linear = new VectorThree(x, y, z);
+                ++_refresh;
+            }
+            else if (Linear.A + Linear.B + Linear.C == -3)
+            {
+                Linear = pdba.getCoords(LinearAtom);
+                _lAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
+                LDistance = 0;
+                ++_refresh;
+            }
         }
         
-        public VectorThree Planar = new VectorThree(1.823, 10.185, 18.428);
-        private string _planaratom = "";
-        public void SetPlanar(double px, double py, double pz, string pa)
+        public VectorThree Planar = new VectorThree(-1,-1,-1);
+        private VectorThree _pAtom = new VectorThree(-1, -1, -1);
+        private string _pxyz = "(-1,-1,-1)";
+        public string PlanarAtom = "A:2@N";
+        public double PDistance = 0;
+        public void SetPlanar(string pxyz, string pa, PdbAtoms pdba)
         {
-            // TODO we need to figure out the distance between the atom and the points and decide if it is the same, return it if so or blank if not
-            // TODO and we need to know which has changed and which has not
-
-            // meanwhile:
-            if (px != -1)
-                Planar.A = px;
-            if (py != -1)
-                Planar.B = py;
-            if (pz != -1)
-                Planar.C = pz;
+            if (pa != "" && pa != PlanarAtom)
+            {
+                PlanarAtom = pa;
+                Planar = pdba.getCoords(LinearAtom);
+                _pAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
+                PDistance = 0;
+                ++_refresh;
+            }
+            else if (pxyz != "" && pxyz != _pxyz)
+            {
+                //unwrap
+                string[] xyzs = pxyz.Split(",");
+                double x = Convert.ToDouble(xyzs[0].Substring(1));
+                double y = Convert.ToDouble(xyzs[1]);
+                double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
+                PDistance = Math.Round(_pAtom.distance(new VectorThree(x, y, z)),3);
+                //PlanarAtom = "";
+                Planar = new VectorThree(x, y, z);
+                ++_refresh;
+            }
+            else if (Planar.A + Planar.B + Planar.C == -3)
+            {
+                Planar = pdba.getCoords(PlanarAtom);
+                _pAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
+                PDistance = 0;
+                ++_refresh;
+            }
         }
 
     }

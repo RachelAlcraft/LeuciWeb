@@ -53,12 +53,30 @@
         htmlAttributes: null)
         A small structure fast to navigate.
     </p>
-    <p>
+    <hr/>
+    <h4>The 2 highest resolution x-ray structues at 0.48Å</h4>
         @Html.ActionLink(
-        linkText: "3jcr",
+    linkText: "3nir",
         actionName: "Index",
         controllerName: "Matrix",
-        routeValues: new {pdbcode = "3jcr"},
+        routeValues: new {pdbcode = "3nir"},
+        htmlAttributes: null)
+        The highest resolution crambin structure.
+    <br/>
+        @Html.ActionLink(
+    linkText: "5d8v",
+        actionName: "Index",
+        controllerName: "Matrix",
+        routeValues: new {pdbcode = "5d8v"},
+        htmlAttributes: null)
+        Ultra-high-resolution iron-sulfur protein.
+    <hr />
+    <p>
+        @Html.ActionLink(
+        linkText: "3j5p",
+        actionName: "Index",
+        controllerName: "Matrix",
+        routeValues: new {pdbcode = "3j5p"},
         htmlAttributes: null)
         A small low resolution cryo-em structure.
     </p>

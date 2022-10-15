@@ -30,21 +30,31 @@ namespace LeuciShared
 
         private string _pdbcode = "";
         private DensityMatrix _dm;
+        public FileDownloads FD;
+        public PdbAtoms PA;
+        public bool NewMatrix = false;
 
-        public async Task<DensityMatrix> getMatrix(string pdbcode, string empath)
+        public async Task<DensityMatrix> getMatrix(string pdbcode)
         {
             bool calc = false;
+            NewMatrix = false;
             if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
                 calc = true;
 
             if (!calc)
             {
+                NewMatrix = false;
                 return _dm;
             }
             else
             {
+                FD = new FileDownloads(pdbcode);
+                bool ok = await FD.downloadAll();
+                PA = new PdbAtoms(FD.PdbLines);
+                
                 _pdbcode = pdbcode;
-                _dm = await DensityMatrix.CreateAsync(pdbcode,empath);
+                _dm = await DensityMatrix.CreateAsync(pdbcode,FD.EmFilePath);
+                NewMatrix = true;
                 return _dm;
             }
         }

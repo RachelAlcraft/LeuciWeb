@@ -22,6 +22,7 @@ namespace LeuciShared
         public string DiffDownloadLink = "";
         private string DiffFilePath = "";
         public string[] PdbLines = new string[0];
+        public string Resolution = "";
 
         
         public string DensityType = "none";
@@ -38,6 +39,7 @@ namespace LeuciShared
             PdbDownloadLink = "https://files.rcsb.org/download/" + PdbCode + ".pdb";
             PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";
             EmFilePath = "wwwroot/App_Data/" + PdbCode + ".ccp4";
+            PdbViewLink = "https://www.ebi.ac.uk/pdbe/entry-files/pdb" + PdbCode + ".ent";
             bool ok = await downloadAsync(PdbFilePath, PdbDownloadLink);
             if (ok)
             {                
@@ -50,6 +52,10 @@ namespace LeuciShared
                         EmCode = line_split[4];
                         DensityType = "cryo-em";
                         break;
+                    }
+                    else if (line.Contains("2 RESOLUTION."))
+                    {//REMARK   2 RESOLUTION.    0.48 ANGSTROMS.    
+                        Resolution = line.Substring(26, 5).Trim();
                     }
                     if (line.Substring(0,4) == "ATOM")
                         break;
