@@ -15,19 +15,19 @@
         </tr>
         <tr style="height:30px;" />
         <td style="text-align:left">
-                <span>
-                EmCode :
-                <input type="text" id="emcode" name="emcode" value=@ViewBag.EmCode style="height:30px;" />                    
-                </span>
-                <br/>
             <span>
                 PdbCode:
                 <input type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode style="height:30px;" />
                 <input type="image" src="~/images/search.png" style="height:30px;vertical-align:text-bottom" />
-            </span>
+            </span>                                    
         </td>        
-    </table>
+    </table>    
 }
+<div>
+    EmCode : @ViewBag.EmCode
+    <br />
+    DensityType: @ViewBag.DensityType
+</div>
 <hr />
 <div>
     Explore the structure with the top menu items <i>Slice</i> to look at real space contour slices, or <i>Matrix</i> to explore the raw matrix data.

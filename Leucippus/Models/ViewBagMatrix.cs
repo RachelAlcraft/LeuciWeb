@@ -16,6 +16,11 @@ namespace Leucippus.Models
         }
         private ViewBagMatrix()
         {
+            PdbCode = "6eex";
+            //FileDownloads fd = new FileDownloads("6eex");
+            //fd.downloadAll();
+            //EmCode = fd.EmCode;
+            //DensityType = fd.DensityType;
         }
 
         public static ViewBagMatrix Instance
@@ -49,25 +54,26 @@ namespace Leucippus.Models
                 if (value != "")
                 {
                     if (value != _pdbcode)
+                    {                        
                         ++_refresh;
+                        //FileDownloads fd = new FileDownloads(value);
+                        //fd.downloadAll();
+                        //EmCode = fd.EmCode;
+                        //DensityType = fd.DensityType;
+                    }
                     _pdbcode = value;
                 }
             }
-        }
-        private string _emcode = "6eex";
+        }        
         public string EmCode
         {
-            get { return _emcode; }
-            set
-            {
-                if (value != "")
-                {
-                    if (value != _emcode)
-                        ++_refresh;
-                    _emcode = value;
-                }
-            }
-        }        
+            get;set;
+        }
+        public string DensityType
+        {
+            get; set;
+        }
+
         public string EbiLink
         {
             get { return "https://www.ebi.ac.uk/pdbe/entry/pdb/" + PdbCode;  }

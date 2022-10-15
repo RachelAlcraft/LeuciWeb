@@ -13,19 +13,24 @@ namespace Leucippus.Controllers
 {
     public class MatrixController : Controller
     {        
-        public async Task <IActionResult> Index(string pdbcode = "", string emcode = "")
+        public async Task <IActionResult> Index(string pdbcode = "")
         {
             ViewBagMatrix.Instance.PdbCode = pdbcode;
-            ViewBagMatrix.Instance.EmCode = emcode;            
             
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.EmCode);
+            FileDownloads fd = new FileDownloads(ViewBagMatrix.Instance.PdbCode);
+            bool ok = await fd.downloadAll();
+            ViewBagMatrix.Instance.EmCode = fd.EmCode;
+            ViewBagMatrix.Instance.DensityType = fd.DensityType;
+
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.EmCode,fd.EmFilePath);
             ViewBagMatrix.Instance.Info = dm.Info;
             
             ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
             ViewBag.EmCode = ViewBagMatrix.Instance.EmCode;
             ViewBag.Info = ViewBagMatrix.Instance.Info;
             ViewBag.EbiLink = ViewBagMatrix.Instance.EbiLink;
-            
+            ViewBag.DensityType = ViewBagMatrix.Instance.DensityType;
+
             return View();            
         }
         
@@ -37,7 +42,13 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.Plane = plane;
             ViewBagMatrix.Instance.Layer = layer;
             ViewBagMatrix.Instance.PlanePlot = planeplot;
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.EmCode);
+            
+            FileDownloads fd = new FileDownloads(ViewBagMatrix.Instance.PdbCode);
+            bool ok = await fd.downloadAll();
+            ViewBagMatrix.Instance.EmCode = fd.EmCode;
+            ViewBagMatrix.Instance.DensityType = fd.DensityType;
+
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.EmCode,fd.EmFilePath);
             dm.calculatePlane(ViewBagMatrix.Instance.Plane, ViewBagMatrix.Instance.Layer);
             
             if (ViewBagMatrix.Instance.EmCode == "" && layer == -1 && plane == "")            
@@ -77,8 +88,14 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.SetPlanar(px, py, pz, pa);
 
             bool recalc = ViewBagMatrix.Instance.Refresh;
+
+            FileDownloads fd = new FileDownloads(ViewBagMatrix.Instance.PdbCode);
+            bool ok = await fd.downloadAll();
+            ViewBagMatrix.Instance.EmCode = fd.EmCode;
+            ViewBagMatrix.Instance.DensityType = fd.DensityType;
+
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.EmCode, fd.EmFilePath);
             
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.EmCode);
             if (recalc)                        
                 dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
                                     

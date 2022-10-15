@@ -31,7 +31,7 @@ namespace LeuciShared
         private string _pdbcode = "";
         private DensityMatrix _dm;
 
-        public async Task<DensityMatrix> getMatrix(string pdbcode)
+        public async Task<DensityMatrix> getMatrix(string pdbcode, string empath)
         {
             bool calc = false;
             if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
@@ -44,7 +44,7 @@ namespace LeuciShared
             else
             {
                 _pdbcode = pdbcode;
-                _dm = await DensityMatrix.CreateAsync(pdbcode);
+                _dm = await DensityMatrix.CreateAsync(pdbcode,empath);
                 return _dm;
             }
         }
