@@ -61,8 +61,8 @@ namespace Leucippus.Controllers
             
             ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;            
             ViewBag.Plane = ViewBagMatrix.Instance.Plane;
-            ViewBag.Layer = ViewBagMatrix.Instance.Layer;
-            ViewBag.LayerMax = ViewBagMatrix.Instance.Layer - 1;
+            ViewBag.Layer = dm.Layer;
+            ViewBag.LayerMax = dm.LayerMax-1;
             ViewBag.MinV = dm.MinV;
             ViewBag.MaxV = dm.MaxV;
             ViewBag.PlanePlot = ViewBagMatrix.Instance.PlanePlot;

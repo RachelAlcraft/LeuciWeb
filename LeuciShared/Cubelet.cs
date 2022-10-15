@@ -14,6 +14,7 @@ namespace LeuciShared
         private int _b;
         private int _c;
         public int Layer { get; set; } = 0;
+        public int LayerMax { get; set; } = 0;
         public string Plane { get; set; } = "XY";
         /*
          * If this structure was init as 4,3,2
@@ -117,38 +118,55 @@ namespace LeuciShared
 
             Layer = layer;
             Plane = plane;
+            LayerMax = layermax;
             
             for (int x = 0; x < endX; ++x)
             {
                 for (int y = 0; y < endY; ++y)
                 {
-                    if (plane == "XY")                    
-                        coords.Add(new int[] { x, y, layer });                   
+                    if (plane == "XY")
+                    {
+                        //coords.Add(new int[] { x, y, layer });
+                        coords.Add(new int[] { layer, y, x });
+                    }
                     else if (plane == "YZ")
-                        coords.Add(new int[] { layer, x, y});
+                    {
+                        //coords.Add(new int[] { layer, x, y });
+                        coords.Add(new int[] { y, x, layer });
+                    }
                     else if (plane == "ZX")
-                        coords.Add(new int[] { y, layer, x});            
+                    {
+                        //coords.Add(new int[] { y, layer, x });
+                        coords.Add(new int[] { x, layer, y });
+                    }
                 }
             }
             return coords;
         }
         public int[] getPlaneDims(string plane, int layer)
         {
+            int eX = _a;
+            int eY = _b;
+            int eZ = _c;
+
             int[] dims = new int[2] { 0, 0 };                        
             if (plane == "XY")
             {
                 dims[0]= _a;
-                dims[1] = _b;                
+                dims[1] = _b;
+                LayerMax = eZ;
             }
             else if (plane == "YZ")
             {
                 dims[0] = _b;
-                dims[1] = _c;                
+                dims[1] = _c;
+                LayerMax = eX;
             }
             else if (plane == "ZX")
             {
                 dims[0] = _c;
-                dims[1] = _a;                
+                dims[1] = _a;
+                LayerMax = eY;
             }
             return dims;
         }
