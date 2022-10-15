@@ -31,6 +31,8 @@ namespace LeuciShared
         public double[] MatB = new double[0];
         public double[] MatC = new double[0];
         public double[][] MatD = new double[0][];
+        public int LayerMax = 0;
+        public int Layer = 0;
         public double MinV = 0;
         public double MaxV = 0;
 
@@ -98,10 +100,14 @@ namespace LeuciShared
     
         public void calculatePlane(string plane, int layer)
         {
-            //TODO check if it needs to be recalced
-            List<int[]> coords = _cublet.getPlaneCoords(plane, layer);
-            int[] XY = _cublet.getPlaneDims(plane, layer);      
+            //TODO check if it needs to be recalced            
+            int[] XY = _cublet.getPlaneDims(plane, layer);
+            LayerMax = _cublet.LayerMax;
             //double[] doubles = _densityBinary.makePlane(coords);
+            if (layer > LayerMax)
+                layer = LayerMax;            
+            List<int[]> coords = _cublet.getPlaneCoords(plane, layer);
+            Layer = layer;
 
             double[] doubles = new double[coords.Count];
             for (int i = 0; i < coords.Count; ++i)
@@ -109,8 +115,6 @@ namespace LeuciShared
                 int[] coord = coords[i];
                 doubles[i] = _interpMap.getExactValue(coord[0], coord[1], coord[2]);
             }
-
-
 
             MatD = _cublet.makeSquare(doubles, XY);
             MatA = new double[XY[1]];
