@@ -33,8 +33,10 @@ namespace LeuciShared
         public double[][] MatD = new double[0][];
         public int LayerMax = 0;
         public int Layer = 0;
-        public double MinV = 0;
-        public double MaxV = 0;
+        public double DMin = 0;
+        public double DMax = 0;
+        public double LMin = 0;
+        public double LMax = 0;
 
 
         public double[][]? SliceDensity;
@@ -42,15 +44,16 @@ namespace LeuciShared
         public double[][]? SliceLaplacian;
         public double[]? SliceAxis;       
         private Interpolator _interpMap;
+        private string _interp;
 
-        public static async Task<DensityMatrix> CreateAsync(string pdbcode,string empath)
+        public static async Task<DensityMatrix> CreateAsync(string pdbcode,string empath,string interp)
         {
             DensityMatrix x = new DensityMatrix();
-            await x.InitializeAsync(empath);
+            await x.InitializeAsync(empath,interp);
             return x;
         }
         private DensityMatrix() { }
-        private async Task InitializeAsync(string edFile)
+        private async Task InitializeAsync(string edFile,string interp)
         {
             //_emcode = emcode;
             //string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
@@ -61,8 +64,12 @@ namespace LeuciShared
             _C = _densityBinary.X1_cap;//Convert.ToInt32(_densityBinary.Words["01_NX"]);
             Info = _densityBinary.Info;            
             _cublet = new Cubelet(_A, _B, _C);
-            //_interpMap = new Nearest(_densityBinary.getShortList(), _C, _B, _A);
-            _interpMap = new BetaSpline(_densityBinary.getShortList(), _C, _B, _A);
+            _interp = interp;
+            if (interp == "BSPLINE")
+                _interpMap = new BetaSpline(_densityBinary.getShortList(), _C, _B, _A);
+            else
+                _interpMap = new Nearest(_densityBinary.getShortList(), _C, _B, _A);
+            
         }
 
         /*public async Task<bool> DownloadAsync(string edFile)
@@ -128,8 +135,8 @@ namespace LeuciShared
                 {
                     MatA[b] = b;
                     MatC[count] = MatD[a][b];                    
-                    MinV = Math.Min(MinV, MatC[count]);
-                    MaxV = Math.Max(MinV, MatC[count]);
+                    DMin = Math.Min(DMin, MatC[count]);
+                    DMax = Math.Max(DMin, MatC[count]);
                     count++;
 
                 }
@@ -140,14 +147,29 @@ namespace LeuciShared
                                 VectorThree central, VectorThree linear, VectorThree planar)            
         {            
             int nums = Convert.ToInt32(width / gap);
-            int halfLength = Convert.ToInt32((nums) / 2);                        
-            
+            int halfLength = Convert.ToInt32((nums) / 2);
+            DMin = 100;
+            LMin = 100;
+            DMax = -100;
+            LMax = -100;
+
             SpaceTransformation space = new SpaceTransformation(central, linear, planar);
 
             SliceDensity = new double[nums][];
             SliceRadiant = new double[nums][];
             SliceLaplacian = new double[nums][];
             SliceAxis = new double[nums];
+            if (_interp == "NEAREST")
+            {
+                SliceRadiant = new double[0][];
+                SliceLaplacian = new double[0][];
+            }
+            if (_interp == "LINEAR")
+            {            
+                SliceLaplacian = new double[0][];
+            }
+            
+
 
             for (int m = 0; m< nums; ++m)
             {
@@ -157,9 +179,21 @@ namespace LeuciShared
                 List<double> row_l = new List<double>();
                 SliceAxis[m] = m;
 
-                SliceDensity[m] = new double[nums];
-                SliceRadiant[m] = new double[nums];
-                SliceLaplacian[m] = new double[nums];
+                if (_interp == "NEAREST")
+                {
+                    SliceDensity[m] = new double[nums];
+                }
+                else if (_interp == "LINEAR")
+                {
+                    SliceDensity[m] = new double[nums];
+                    SliceRadiant[m] = new double[nums];
+                }
+                else
+                {
+                    SliceDensity[m] = new double[nums];
+                    SliceRadiant[m] = new double[nums];
+                    SliceLaplacian[m] = new double[nums];
+                }
 
                 for (int n = 0; n < nums; ++n)
                 {
@@ -173,10 +207,21 @@ namespace LeuciShared
                     {
                         double density = _interpMap.getValue(crs.A, crs.B, crs.C);
                         SliceDensity[m][n] = density;
-                        double radiant = _interpMap.getRadiant(crs.A, crs.B, crs.C);
-                        SliceRadiant[m][n] = radiant;
-                        double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
-                        SliceLaplacian[m][n] = laplacian;
+                        DMin = Math.Min(DMin, density);
+                        DMax = Math.Max(DMax, density);
+                        if (_interp == "BSPLINE" || _interp == "LINEAR")
+                        {
+                            double radiant = _interpMap.getRadiant(crs.A, crs.B, crs.C);
+                            SliceRadiant[m][n] = radiant;
+                        }
+                        if (_interp == "BSPLINE")
+                        {
+                            double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
+                            SliceLaplacian[m][n] = laplacian;
+                            LMin = Math.Min(LMin, density);
+                            LMax = Math.Max(LMax, density);
+                        }
+                        
                     }
                     else
                     {

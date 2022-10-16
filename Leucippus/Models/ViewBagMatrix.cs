@@ -64,7 +64,26 @@ namespace Leucippus.Models
                     _pdbcode = value;
                 }
             }
-        }        
+        }
+        private string _interp = "BSPLINE";
+        public string Interp
+        {
+            get { return _interp; }
+            set
+            {
+                if (value != "")
+                {
+                    if (value == "+1")
+                    {
+                        ++_refresh;
+                        if (_interp == "BSPLINE")
+                            _interp = "NEAREST";
+                        else if (_interp == "NEAREST")
+                            _interp = "BSPLINE";
+                    }                    
+                }
+            }
+        }
         public string EmCode
         {
             get;set;
@@ -138,6 +157,23 @@ namespace Leucippus.Models
                 
             }
         }
+        private string _denhue = "RedBlueGrey";
+        public string DenHue
+        {
+            get { return _denhue; }
+            set
+            {
+                if (value == "+1")
+                {
+                    if (_denhue == "RedBlueGrey")
+                        _denhue = "BlackWhite";
+                    else if (_denhue == "BlackWhite")
+                        _denhue = "RedBlue";
+                    else
+                        _denhue = "RedBlueGrey";
+                }                
+            }
+        }
         private string _radplot = "heatmap";
         public string RadPlot
         {
@@ -158,6 +194,23 @@ namespace Leucippus.Models
 
             }
         }
+        private string _radhue = "BlackWhite";
+        public string RadHue
+        {
+            get { return _radhue; }
+            set
+            {
+                if (value == "+1")
+                {
+                    if (_radhue == "RedBlueGrey")
+                        _radhue = "BlackWhite";
+                    else if (_radhue == "BlackWhite")
+                        _radhue = "RedBlue";
+                    else
+                        _radhue = "RedBlueGrey";
+                }
+            }
+        }
         private string _lapplot = "contour";
         public string LapPlot
         {
@@ -175,6 +228,89 @@ namespace Leucippus.Models
                 {
                     _lapplot = value;
                 }
+            }
+        }
+        private string _laphue = "RedBlue";
+        public string LapHue
+        {
+            get { return _laphue; }
+            set
+            {
+                if (value == "+1")
+                {
+                    if (_laphue == "RedBlueGrey")
+                        _laphue = "BlackWhite";
+                    else if (_laphue == "BlackWhite")
+                        _laphue = "RedBlue";
+                    else
+                        _laphue = "RedBlueGrey";
+                }
+            }
+        }
+        private string _denbar = "N";
+        public string DenBar
+        {
+            get { return _denbar; }
+            set
+            {
+                if (value == "+1")
+                {
+                    if (_denbar == "N")
+                        _denbar = "Y";                    
+                    else
+                        _denbar = "N";
+                }
+            }
+        }
+        public bool IsDenBar
+        {
+            get
+            {
+                return _denbar == "Y";
+            }
+        }
+        private string _radbar = "N";
+        public string RadBar
+        {
+            get { return _radbar; }
+            set
+            {
+                if (value == "+1")
+                {
+                    if (_radbar == "N")
+                        _radbar = "Y";
+                    else
+                        _radbar = "N";
+                }
+            }
+        }
+        public bool IsRadBar
+        {
+            get
+            {
+                return _radbar == "Y";
+            }
+        }
+        private string _lapbar = "N";
+        public string LapBar
+        {
+            get { return _lapbar; }
+            set
+            {
+                if (value == "+1")
+                {
+                    if (_lapbar == "N")
+                        _lapbar = "Y";
+                    else
+                        _lapbar = "N";
+                }
+            }
+        }
+        public bool IsLapBar
+        {
+            get
+            {
+                return _lapbar == "Y";
             }
         }
         private string _planeplot = "contour";
@@ -364,7 +500,7 @@ namespace Leucippus.Models
             if (pa != "" && pa != PlanarAtom)
             {
                 PlanarAtom = pa;
-                Planar = pdba.getCoords(LinearAtom);
+                Planar = pdba.getCoords(PlanarAtom);
                 _pAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
                 PDistance = 0;
                 ++_refresh;
