@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_LayoutDensity.cshtml";
 }
 
-<h1>Slice though Density Matrix - @ViewBag.PdbCode</h1>
+<h2>Slice though Density Matrix - @ViewBag.PdbCode</h2>
 <hr />
 <div>                
     @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
@@ -18,9 +18,9 @@
             </tr>                        
             <tr>
                 <td>central</td>
-                <td><input style="width:120px;" type="text" id="ca" name="ca" value=@ViewBag.cAtom></td>
-                <td><input style="width:210px;" type="text" id="c_xyz" name="c_xyz" value=@ViewBag.cXYZ></td>                
-                <td>@ViewBag.CDistance</td>
+                <td><input style="width:120px;color:@ViewBag.CColor" type="text" id="ca" name="ca" value=@ViewBag.cAtom></td>
+                <td><input style="width:210px;" type="text" id="c_xyz" name="c_xyz" value=@ViewBag.cXYZ></td>
+                <td><div id="cdistance">@ViewBag.CDistance</div></td>                
                 <td rowspan="3" style="height:30px;text-align:justify"/>
                 @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
                 {
@@ -75,28 +75,40 @@
                     htmlAttributes: null
                     )
                     ]
-                    <br/>
-                        <br />
-                        <a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
-                    </span>                                                                                
+                    <br/>                        
+                    </span>        
+                    <span>
+                     @ViewBag.Interp 
+                    [@Html.ActionLink(
+                    linkText: "Toggle Interpolation",
+                    actionName: "Slice",
+                    controllerName: "Matrix",
+                    routeValues: new {
+                    interp = "+1",
+                    },
+                    htmlAttributes: null
+                    )]
+                    
+                    </span>
                 }
             </tr>
             <tr>
                 <td>linear</td>
-                <td><input style="width:120px;" type="text" id="la" name="la" value=@ViewBag.lAtom></td>
-                <td><input style="width:210px;" type="text" id="l_xyz" name="l_xyz" value=@ViewBag.lXYZ></td>             
+                <td><input style="width:120px;color:@ViewBag.LColor;" type="text" id="la" name="la" value=@ViewBag.lAtom></td>
+                <td><input style="width:210px;" type="text" id="l_xyz" name="l_xyz" value=@ViewBag.lXYZ></td>
                 <td>@ViewBag.LDistance</td>
             </tr>
             <tr>
                 <td>planar</td>
-                <td><input style="width:120px;" type="text" id="pa" name="pa" value=@ViewBag.pAtom></td>
+                <td><input style="width:120px;color:@ViewBag.PColor;" type="text" id="pa" name="pa" value=@ViewBag.pAtom></td>
                 <td><input style="width:210px;" type="text" id="p_xyz" name="p_xyz" value=@ViewBag.pXYZ></td>
                 <td>@ViewBag.PDistance</td>
             </tr>                                                                        
-        </table>
-    }            
-
+        </table>        
+    }
+      
 </div>
+<a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
 <br />
 
 <hr />
@@ -104,8 +116,8 @@
     <table>
     <tr>
             <td style="width: 450px;">Density
-                <br /><div id="myCountour"></div>
-                <br />
+                <div id="myCountour"></div>
+                [
                 @Html.ActionLink(
                 linkText: "Toggle Plot",
                 actionName: "Slice",
@@ -114,11 +126,32 @@
                 denplot = "+1",
                 },
                 htmlAttributes: null
-                )                        
+                )
+                ] [                
+                @Html.ActionLink(
+                linkText: "Toggle Hue",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                denhue = "+1",
+                },
+                htmlAttributes: null
+                )
+                ] [
+                @Html.ActionLink(
+                linkText: "Toggle Bar",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                denbar = "+1",
+                },
+                htmlAttributes: null
+                )
+                ]
             </td>            
             <td style="width: 450px;">Radiant
-                <br/><div id="myCountourRad"></div>
-                <br />
+                <div id="myCountourRad"></div>
+                [
                 @Html.ActionLink(
                 linkText: "Toggle Plot",
                 actionName: "Slice",
@@ -128,10 +161,31 @@
                 },
                 htmlAttributes: null
                 )
+                ] [
+                @Html.ActionLink(
+                linkText: "Toggle Hue",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                radhue = "+1",
+                },
+                htmlAttributes: null
+                )
+                ] [
+                @Html.ActionLink(
+                linkText: "Toggle Bar",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                radbar = "+1",
+                },
+                htmlAttributes: null
+                )
+                ]
             </td>
             <td style="width: 450px;">Laplacian
-                <br/><div id="myCountourLap"></div>
-                <br />
+                <div id="myCountourLap"></div>                
+                [
                 @Html.ActionLink(
                 linkText: "Toggle Plot",
                 actionName: "Slice",
@@ -141,6 +195,27 @@
                 },
                 htmlAttributes: null
                 )
+                ] [
+                @Html.ActionLink(
+                linkText: "Toggle Hue",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                laphue = "+1",
+                },
+                htmlAttributes: null
+                )
+                ] [
+                @Html.ActionLink(
+                linkText: "Toggle Bar",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                lapbar = "+1",
+                },
+                htmlAttributes: null
+                )
+                ]
                 </td>        
     </tr>
     </table>
@@ -156,33 +231,60 @@
     var jvl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
     var minv = -2
     var maxv = 10    
-    var minl = @Html.Raw(Json.Serialize(@ViewBag.MinLaplacian));
-    var maxl = @Html.Raw(Json.Serialize(@ViewBag.MaxLaplacian));
+    var minl = @Html.Raw(Json.Serialize(@ViewBag.LMin));
+    var maxl = @Html.Raw(Json.Serialize(@ViewBag.LMax));
+    
+    var dhue = @Html.Raw(Json.Serialize(@ViewBag.DenHue));
+    var rhue = @Html.Raw(Json.Serialize(@ViewBag.RadHue));
+    var lhue = @Html.Raw(Json.Serialize(@ViewBag.LapHue));
+
+    var dbar = @Html.Raw(Json.Serialize(@ViewBag.DenBar));
+    var rbar = @Html.Raw(Json.Serialize(@ViewBag.RadBar));
+    var lbar = @Html.Raw(Json.Serialize(@ViewBag.LapBar));
+
     var minc = -1
     var maxc = 5
     var size = (maxc - minc) / 20
     var zero_frac = 0.001
     var zero_frac_lap = 0.001
     var cs = []
-    if (minc < 0) {
-        zero_frac = (0 - minc) / (maxc - minc)
-        var lev1 = zero_frac + 0.1 * (1 - zero_frac)
-        var lev2 = zero_frac + 0.3 * (1 - zero_frac)
-        var lev3 = zero_frac + 0.5 * (1 - zero_frac)
+    
+    zero_frac = (0 - minc) / (maxc - minc)
+    var lev1 = zero_frac + 0.1 * (1 - zero_frac)
+    var lev2 = zero_frac + 0.3 * (1 - zero_frac)
+    var lev3 = zero_frac + 0.5 * (1 - zero_frac)
+    if (dhue == "RedBlueGrey"){
         cs = [[0, 'DimGray'], [String(zero_frac + 0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]        
-   }
-    else {
-        cs = [[0, 'AliceBlue'], [0.25, 'LightBlue'], [0.5, 'CornflowerBlue'], [0.75, 'Crimson'], [1, 'rgb(100, 0, 0)']]
     }
-    <!--cs = [[0, 'AliceBlue'], [0.25, 'LightBlue'], [0.5, 'CornflowerBlue'], [0.75, 'Crimson'], [1, 'rgb(100, 0, 0)']]-->
-
-    if (minl < 0){
-        zero_frac_lap = (0 - minl) / (maxl - minl)        
-        cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'Snow'], [1, 'Crimson']]
+    else if (dhue == "BlackWhite") {
+        cs = [[0, 'Snow'], [1, 'Black']]
+    }
+    else{
+        cs = [[0, 'CornflowerBlue'], [String(zero_frac), 'Snow'], [1, 'Crimson']]
+    }
+         
+    zero_frac_lap = (0 - minl) / (maxl - minl)  
+    var lev1 = zero_frac + 0.1 * (1 - zero_frac)
+    var lev2 = zero_frac + 0.3 * (1 - zero_frac)
+    var lev3 = zero_frac + 0.5 * (1 - zero_frac)
+    if (lhue == "RedBlueGrey") {
+        cs_lap = [[0, 'DimGray'], [String(zero_frac_lap + 0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]
+    }
+    else if (lhue == "BlackWhite") {
+        cs_lap = [[0, 'Snow'], [1, 'Black']]
+    }
+    else {
+        cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'], [String(lev2), 'Snow'], [1, 'Crimson']]
+    }
+      
+   if (rhue == "RedBlueGrey") {
+        cs_rad = [[0, 'DimGray'], [String(0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]
    }
-   else{
-        cs_lap = [[0, 'CornflowerBlue'], [0.5, 'Snow'], [1, 'Crimson']]
-
+    else if (rhue == "BlackWhite") {
+        cs_rad = [[0, 'Black'], [1, 'Snow']]
+   }
+   else {
+        cs_rad = [[0, 'CornflowerBlue'], [String(0.5), 'Snow'], [1, 'Crimson']]
    }
 
    var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
@@ -209,7 +311,7 @@
             end: maxc,
             size: size
         },
-        showscale:false,
+        showscale:dbar,
         colorbar: {
             thickness: 15,
         }
@@ -220,14 +322,14 @@
         x: jx,
         y: jy,
         type: radplot,
-        colorscale: 'Greys',
+        colorscale: cs_rad,
         reversescale: false,
         autocontour: true,
         line: {
             width: 0,
             color: 'DimGray'
         },        
-        showscale: false,
+        showscale: rbar,
         colorbar: {
             thickness: 15,
         }
@@ -245,7 +347,7 @@
             width: 0.5,
             color: 'DimGray'
         },        
-        showscale: false,
+        showscale: lbar,
         colorbar: {
             thickness: 15,
         }

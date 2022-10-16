@@ -17,7 +17,7 @@ namespace Leucippus.Controllers
         {
             ViewBagMatrix.Instance.PdbCode = pdbcode;
             
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode);
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode,ViewBagMatrix.Instance.Interp);
             if (DensitySingleton.Instance.NewMatrix)
             {
                 string[] first_three = DensitySingleton.Instance.PA.getFirstThreeCoords();
@@ -49,7 +49,7 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.Layer = layer;
             ViewBagMatrix.Instance.PlanePlot = planeplot;
                         
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode);
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp);
             dm.calculatePlane(ViewBagMatrix.Instance.Plane, ViewBagMatrix.Instance.Layer);
             
             if (ViewBagMatrix.Instance.EmCode == "" && layer == -1 && plane == "")            
@@ -67,8 +67,8 @@ namespace Leucippus.Controllers
             ViewBag.Plane = ViewBagMatrix.Instance.Plane;
             ViewBag.Layer = dm.Layer;
             ViewBag.LayerMax = dm.LayerMax-1;
-            ViewBag.MinV = dm.MinV;
-            ViewBag.MaxV = dm.MaxV;
+            ViewBag.MinV = dm.DMin;
+            ViewBag.MaxV = dm.DMax;
             ViewBag.PlanePlot = ViewBagMatrix.Instance.PlanePlot;
 
             return View();
@@ -78,14 +78,24 @@ namespace Leucippus.Controllers
             string c_xyz = "", string l_xyz = "", string p_xyz = "",
             string ca = "", string la = "", string pa = "",
             string denplot ="", string radplot="", string lapplot = "",
-            double width = -1, double gap = -1)
+            string denhue = "", string radhue = "", string laphue = "",
+            string denbar = "", string radbar = "", string lapbar = "",
+            double width = -1, double gap = -1,string interp="")
         {
 
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode);
+            ViewBagMatrix.Instance.Interp = interp;
+
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp);
 
             ViewBagMatrix.Instance.DenPlot = denplot;
             ViewBagMatrix.Instance.RadPlot = radplot;
             ViewBagMatrix.Instance.LapPlot = lapplot;
+            ViewBagMatrix.Instance.DenHue = denhue;
+            ViewBagMatrix.Instance.RadHue = radhue;
+            ViewBagMatrix.Instance.LapHue = laphue;
+            ViewBagMatrix.Instance.DenBar = denbar;
+            ViewBagMatrix.Instance.RadBar = radbar;
+            ViewBagMatrix.Instance.LapBar = lapbar;
             ViewBagMatrix.Instance.Width = width;
             ViewBagMatrix.Instance.Gap = gap;
             ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.PA);
@@ -108,6 +118,8 @@ namespace Leucippus.Controllers
             ViewBag.SliceRadiant = dm.SliceRadiant;
             ViewBag.SliceLaplacian = dm.SliceLaplacian;
             ViewBag.SliceAxis = dm.SliceAxis;
+            ViewBag.LMax = dm.LMax;
+            ViewBag.LMin = dm.LMin;
 
             ViewBag.cAtom = ViewBagMatrix.Instance.CentralAtom;
             ViewBag.lAtom = ViewBagMatrix.Instance.LinearAtom;
@@ -122,12 +134,29 @@ namespace Leucippus.Controllers
             ViewBag.DenPlot = ViewBagMatrix.Instance.DenPlot;
             ViewBag.RadPlot = ViewBagMatrix.Instance.RadPlot;
             ViewBag.LapPlot = ViewBagMatrix.Instance.LapPlot;
+            
             ViewBag.Width = ViewBagMatrix.Instance.Width;
             ViewBag.Gap = ViewBagMatrix.Instance.Gap;
+            ViewBag.Interp = ViewBagMatrix.Instance.Interp;
             ViewBag.BrowseAtoms = DensitySingleton.Instance.FD.PdbViewLink;
             ViewBag.CDistance = ViewBagMatrix.Instance.CDistance;
             ViewBag.LDistance = ViewBagMatrix.Instance.LDistance;
             ViewBag.PDistance = ViewBagMatrix.Instance.PDistance;
+            ViewBag.DenHue = ViewBagMatrix.Instance.DenHue;
+            ViewBag.RadHue = ViewBagMatrix.Instance.RadHue;
+            ViewBag.LapHue = ViewBagMatrix.Instance.LapHue;
+            ViewBag.DenBar = ViewBagMatrix.Instance.IsDenBar;
+            ViewBag.RadBar = ViewBagMatrix.Instance.IsRadBar;
+            ViewBag.LapBar = ViewBagMatrix.Instance.IsLapBar;
+            ViewBag.CColor = "black";
+            ViewBag.LColor = "black";
+            ViewBag.PColor = "black";
+            if (ViewBag.CDistance > 0)
+                ViewBag.CColor = "silver";
+            if (ViewBag.LDistance > 0)
+                ViewBag.LColor = "silver";
+            if (ViewBag.PDistance > 0)
+                ViewBag.PColor = "silver";
 
             ViewBagMatrix.Instance.Reset();
             return View();
