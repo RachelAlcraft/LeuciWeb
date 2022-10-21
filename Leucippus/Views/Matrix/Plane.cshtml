@@ -3,9 +3,8 @@
     ViewData["Title"] = "Matrix";
     Layout = "~/Views/Shared/_LayoutDensity.cshtml";
 }
-
-<h1>Raw Density Matrix - @ViewBag.PdbCode</h1>
-<hr/>
+<h3>Raw Density Matrix - @ViewBag.PdbCode</h3>
+<hr />
 <div>
 <h5>Interactive matrix explorer - planes</h5>
 
@@ -85,7 +84,7 @@
                 </td>
             </tr>            
             <tr><!-- style="height:25%;background-color:Crimson;">-->
-                <td><input type="submit" value="Jump to"/></td>
+                <th><input type="submit" value="Jump to"/></th>
                 <td>Chosen plane= @ViewBag.Plane</td>
                 <td>Chosen layer= @ViewBag.Layer / @ViewBag.LayerMax</td>
             </tr>

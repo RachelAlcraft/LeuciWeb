@@ -40,7 +40,7 @@ namespace LeuciShared
 
 
         public double[][]? SliceDensity;
-        public double[][]? SliceRadiant;
+        public double[][]? SliceRadient;
         public double[][]? SliceLaplacian;
         public double[]? SliceAxis;       
         private Interpolator _interpMap;
@@ -156,12 +156,12 @@ namespace LeuciShared
             SpaceTransformation space = new SpaceTransformation(central, linear, planar);
 
             SliceDensity = new double[nums][];
-            SliceRadiant = new double[nums][];
+            SliceRadient = new double[nums][];
             SliceLaplacian = new double[nums][];
             SliceAxis = new double[nums];
             if (_interp == "NEAREST")
             {
-                SliceRadiant = new double[0][];
+                SliceRadient = new double[0][];
                 SliceLaplacian = new double[0][];
             }
             if (_interp == "LINEAR")
@@ -186,12 +186,12 @@ namespace LeuciShared
                 else if (_interp == "LINEAR")
                 {
                     SliceDensity[m] = new double[nums];
-                    SliceRadiant[m] = new double[nums];
+                    SliceRadient[m] = new double[nums];
                 }
                 else
                 {
                     SliceDensity[m] = new double[nums];
-                    SliceRadiant[m] = new double[nums];
+                    SliceRadient[m] = new double[nums];
                     SliceLaplacian[m] = new double[nums];
                 }
 
@@ -211,8 +211,8 @@ namespace LeuciShared
                         DMax = Math.Max(DMax, density);
                         if (_interp == "BSPLINE" || _interp == "LINEAR")
                         {
-                            double radiant = _interpMap.getRadiant(crs.A, crs.B, crs.C);
-                            SliceRadiant[m][n] = radiant;
+                            double radient = _interpMap.getRadient(crs.A, crs.B, crs.C);
+                            SliceRadient[m][n] = radient;
                         }
                         if (_interp == "BSPLINE")
                         {
@@ -226,7 +226,7 @@ namespace LeuciShared
                     else
                     {
                         SliceDensity[m][n] = -1;
-                        SliceRadiant[m][n] = -1;
+                        SliceRadient[m][n] = -1;
                         SliceLaplacian[m][n] = -1;
                     }
 

@@ -61,14 +61,14 @@ namespace LeuciShared
             else
                 return 0;
         }
-        public double getRadiant(double x, double y, double z)
+        public double getRadient(double x, double y, double z)
         {
             double val = getValue(x, y, z);
             double dx = (getValue(x + h, y, z) - val) / h;
             double dy = (getValue(x, y + h, z) - val) / h;
             double dz = (getValue(x, y, z + h) - val) / h;
-            double radiant = (Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz)) / 3;
-            return radiant;
+            double radient = (Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz)) / 3;
+            return radient;
         }
         public double getLaplacian(double x, double y, double z)
         {

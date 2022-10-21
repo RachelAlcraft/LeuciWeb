@@ -15,7 +15,7 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: honeydew;
+    background-color: aliceblue;
     color: crimson
 }
 
@@ -32,9 +32,94 @@ th {
 }
 td {
     border: 0.5px solid;
+    border-color: lightslategrey;
     background-color: GhostWhite;
     color: DarkSlateGray;
 }
+td input {
+        box-sizing: border-box;
+        display: inline-block;
+        width: 95%;
+        border:0.1px;
+        margin:0.5px;
+        background-color:aliceblue;
+        text-align:center;
+    }
+
+.inner-tbl td {
+    border: 0.5px none;    
+}
+
+.subheader {
+    background-color: crimson;
+    padding: 8px;
+    color: White;
+}
+
+a {
+    color: dodgerblue;
+    padding: 8px;    
+}
+
+    a:active {
+        color: dodgerblue
+    }
+
+    a:link {
+        color: dodgerblue
+    }
+
+    a:visited {
+        color: dodgerblue
+    }
+
+    a:hover {
+        color: palevioletred
+    }
+
+
+    a.sub-header {
+        color: snow;
+        padding: 8px;
+        text-decoration: none;
+    }
+        a.sub-header:active {
+            color: snow;
+        }
+        a.sub-header:link {
+            color: snow;
+        }
+        a.sub-header:visited {
+            color: snow;
+        }
+        a.sub-header:hover {
+            color: cornflowerblue;
+        }
+
+.in_text a {
+        color: black;
+        padding: 8px;
+        text-decoration: none;
+    }
+.in_text a:visited {
+    color: Navy;
+}
+
+    .in_text a:active {
+        color: Navy;
+    }
+
+    .in_text a:link {
+        color: Navy;
+    }
+
+    .in_text a:visited {
+        color: Navy;
+    }
+
+.in_text a:hover {
+        color: deeppink;
+    }
 
 .navbar-collapse {
     background-color: DarkSlateGray;
@@ -43,4 +128,23 @@ td {
 .nav-link {
     background-color: transparent;
 }
+
+table.browse {
+    background-color: aliceblue;
+    border: 0px none;
+}
+th.browse {
+    vertical-align: text-top;
+    text-align: left;
+    background-color: aliceblue;
+    border: 0px none;
+}
+td.browse {
+    vertical-align: text-top;
+    text-align: left;
+    background-color: aliceblue;
+    border: 0px none;
+}
+
+
 

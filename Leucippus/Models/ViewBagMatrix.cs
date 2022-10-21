@@ -418,10 +418,25 @@ namespace Leucippus.Models
         private VectorThree _cAtom = new VectorThree(-1, -1, -1);
         public string CentralAtom = "A:1@C";
         public double CDistance = 0;
-        public void SetCentral(string cxyz, string ca,PdbAtoms pdba)
+        public void SetCentral(string cxyz, string ca,PdbAtoms pdba,bool refresh=true)
         {
             // TODO we need to figure out the distance between the atom and the points and decide if it is the same, return it if so or blank if not
             // TODO and we need to know which has changed and which has not
+            if (refresh)
+            {
+                CentralAtom = pdba.getFirstThreeCoords()[0];
+                Central = pdba.getCoords(CentralAtom);
+                _cAtom = new VectorThree(Central.A, Central.B, Central.C);
+                CDistance = 0;
+                ++_refresh;
+            }
+            else if (Central.A + Central.B + Central.C == -3)
+            {
+                Central = pdba.getCoords(CentralAtom);
+                _cAtom = new VectorThree(Central.A, Central.B, Central.C);
+                CDistance = 0;
+                ++_refresh;
+            }
             if (ca != "" && ca != CentralAtom)
             {
                 CentralAtom = ca;
@@ -441,14 +456,7 @@ namespace Leucippus.Models
                 CDistance = Math.Round(_cAtom.distance(new VectorThree(x, y, z)),3);
                 Central = new VectorThree(x, y, z);
                 ++_refresh;
-            }
-            else if (Central.A + Central.B + Central.C == -3)
-            {
-                Central = pdba.getCoords(CentralAtom);
-                _cAtom = new VectorThree(Central.A, Central.B, Central.C);
-                CDistance = 0;
-                ++_refresh;
-            }
+            }            
             else
             {
 
@@ -459,8 +467,23 @@ namespace Leucippus.Models
         private VectorThree _lAtom = new VectorThree(-1, -1, -1);
         public string LinearAtom = "A:1@O";
         public double LDistance = 0;
-        public void SetLinear(string lxyz, string la, PdbAtoms pdba)
+        public void SetLinear(string lxyz, string la, PdbAtoms pdba, bool refresh = true)
         {
+            if (refresh)
+            {
+                LinearAtom = pdba.getFirstThreeCoords()[1];
+                Linear = pdba.getCoords(LinearAtom);
+                _lAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
+                LDistance = 0;
+                ++_refresh;
+            }
+            else if (Linear.A + Linear.B + Linear.C == -3)
+            {
+                Linear = pdba.getCoords(LinearAtom);
+                _lAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
+                LDistance = 0;
+                ++_refresh;
+            }
             if (la != "" && la != LinearAtom)
             {
                 LinearAtom = la;
@@ -481,13 +504,7 @@ namespace Leucippus.Models
                 Linear = new VectorThree(x, y, z);
                 ++_refresh;
             }
-            else if (Linear.A + Linear.B + Linear.C == -3)
-            {
-                Linear = pdba.getCoords(LinearAtom);
-                _lAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
-                LDistance = 0;
-                ++_refresh;
-            }
+            
         }
         
         public VectorThree Planar = new VectorThree(-1,-1,-1);
@@ -495,8 +512,23 @@ namespace Leucippus.Models
         private string _pxyz = "(-1,-1,-1)";
         public string PlanarAtom = "A:2@N";
         public double PDistance = 0;
-        public void SetPlanar(string pxyz, string pa, PdbAtoms pdba)
+        public void SetPlanar(string pxyz, string pa, PdbAtoms pdba,bool refresh=true)
         {
+            if (refresh)
+            {
+                PlanarAtom = pdba.getFirstThreeCoords()[2];
+                Planar = pdba.getCoords(PlanarAtom);
+                _pAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
+                PDistance = 0;
+                ++_refresh;
+            }
+            else if (Planar.A + Planar.B + Planar.C == -3)
+            {
+                Planar = pdba.getCoords(PlanarAtom);
+                _pAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
+                PDistance = 0;
+                ++_refresh;
+            }
             if (pa != "" && pa != PlanarAtom)
             {
                 PlanarAtom = pa;
@@ -516,14 +548,7 @@ namespace Leucippus.Models
                 //PlanarAtom = "";
                 Planar = new VectorThree(x, y, z);
                 ++_refresh;
-            }
-            else if (Planar.A + Planar.B + Planar.C == -3)
-            {
-                Planar = pdba.getCoords(PlanarAtom);
-                _pAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
-                PDistance = 0;
-                ++_refresh;
-            }
+            }            
         }
 
     }
