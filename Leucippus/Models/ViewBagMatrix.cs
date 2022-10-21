@@ -77,6 +77,8 @@ namespace Leucippus.Models
                     {
                         ++_refresh;
                         if (_interp == "BSPLINE")
+                            _interp = "LINEAR";
+                        else if (_interp == "LINEAR")
                             _interp = "NEAREST";
                         else if (_interp == "NEAREST")
                             _interp = "BSPLINE";

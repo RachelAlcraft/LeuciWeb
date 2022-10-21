@@ -67,9 +67,10 @@ namespace LeuciShared
             _interp = interp;
             if (interp == "BSPLINE")
                 _interpMap = new BetaSpline(_densityBinary.getShortList(), _C, _B, _A);
+            else if (interp == "LINEAR")
+                _interpMap = new Linear(_densityBinary.getShortList(), _C, _B, _A);
             else
-                _interpMap = new Nearest(_densityBinary.getShortList(), _C, _B, _A);
-            
+                _interpMap = new Nearest(_densityBinary.getShortList(), _C, _B, _A);                        
         }
 
         /*public async Task<bool> DownloadAsync(string edFile)
