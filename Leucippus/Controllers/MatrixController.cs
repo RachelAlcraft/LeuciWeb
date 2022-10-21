@@ -40,10 +40,17 @@ namespace Leucippus.Controllers
             return View();            
         }
         
-        public async Task<IActionResult> Plane(int layer = -1, string plane="",string planeplot="")
+        public async Task<IActionResult> Plane(string pdbcode = "",int layer = -1, string plane="",string planeplot="")
         {            
             //https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_element_innerhtml            
             bool newCalcs = true;
+            ViewBagMatrix.Instance.PdbCode = pdbcode;
+            if (ViewBagMatrix.Instance.Refresh)
+            {
+                ViewBagMatrix.Instance.SetCentral("", "", DensitySingleton.Instance.PA, true);
+                ViewBagMatrix.Instance.SetLinear("", "", DensitySingleton.Instance.PA, true);
+                ViewBagMatrix.Instance.SetPlanar("", "", DensitySingleton.Instance.PA, true);
+            }
 
             ViewBagMatrix.Instance.Plane = plane;
             ViewBagMatrix.Instance.Layer = layer;
@@ -83,7 +90,15 @@ namespace Leucippus.Controllers
             double width = -1, double gap = -1,string interp="")
         {
 
+            ViewBagMatrix.Instance.PdbCode = pdbcode;
             ViewBagMatrix.Instance.Interp = interp;
+
+            if (ViewBagMatrix.Instance.Refresh)
+            {
+                ViewBagMatrix.Instance.SetCentral("", "", DensitySingleton.Instance.PA, true);
+                ViewBagMatrix.Instance.SetLinear("", "", DensitySingleton.Instance.PA, true);
+                ViewBagMatrix.Instance.SetPlanar("", "", DensitySingleton.Instance.PA, true);
+            }
 
             DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp);
 
@@ -115,7 +130,7 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.DensityType = DensitySingleton.Instance.FD.DensityType;
 
             ViewBag.SliceDensity = dm.SliceDensity;
-            ViewBag.SliceRadiant = dm.SliceRadiant;
+            ViewBag.SliceRadient = dm.SliceRadient;
             ViewBag.SliceLaplacian = dm.SliceLaplacian;
             ViewBag.SliceAxis = dm.SliceAxis;
             ViewBag.LMax = dm.LMax;
@@ -159,6 +174,43 @@ namespace Leucippus.Controllers
                 ViewBag.PColor = "silver";
 
             ViewBagMatrix.Instance.Reset();
+            return View();
+        }
+
+        public async Task<IActionResult> Browse(string pdbcode = "")
+        {
+            ViewBagMatrix.Instance.PdbCode = pdbcode;
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp);
+            if (ViewBagMatrix.Instance.Refresh)
+            {
+                ViewBagMatrix.Instance.SetCentral("", "", DensitySingleton.Instance.PA, true);
+                ViewBagMatrix.Instance.SetLinear("", "", DensitySingleton.Instance.PA, true);
+                ViewBagMatrix.Instance.SetPlanar("", "", DensitySingleton.Instance.PA, true);
+            }
+
+            DataFiles dfs = new DataFiles("wwwroot/App_Data/");
+            List<DataFile> dataFiles = dfs.Files;
+            ViewBag.Pdbs = dataFiles;
+            //List<string> sms = new List<string>();
+            //sms.Add("6eex");
+            //sms.Add("6fgz");
+            //sms.Add("6q53");
+            //sms.Add("2fd7");
+            //sms.Add("6y50");           
+            //ViewBag.Pdbs = sms;
+            //ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
+
+            ViewBagMatrix.Instance.Info = dm.Info;
+            ViewBagMatrix.Instance.EmCode = DensitySingleton.Instance.FD.EmCode;
+            ViewBagMatrix.Instance.DensityType = DensitySingleton.Instance.FD.DensityType;
+
+            ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
+            ViewBag.EmCode = ViewBagMatrix.Instance.EmCode;
+            ViewBag.Info = ViewBagMatrix.Instance.Info;
+            ViewBag.EbiLink = ViewBagMatrix.Instance.EbiLink;
+            ViewBag.DensityType = ViewBagMatrix.Instance.DensityType;
+            ViewBag.Resolution = DensitySingleton.Instance.FD.Resolution;
+
             return View();
         }
 

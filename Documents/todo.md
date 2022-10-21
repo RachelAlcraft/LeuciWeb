@@ -21,7 +21,7 @@ Slice screen
 - Resolve to coordinates that can be changed
 - If the coordinates no longer match the atom grey it out
 - No need to browse pdb file, but a link could be useful.
-- For nearest neighbour, don’t display Radiant and Laplaciam
+- For nearest neighbour, don’t display Radient and Laplaciam
 - For linear don’t display Laplacian
 - Look at what coot does interpolation-wise
 - Toggle 3 (or 4) colours

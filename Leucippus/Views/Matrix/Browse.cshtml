@@ -1,0 +1,85 @@
+﻿@{
+    ViewData["Title"] = "Browse";
+    Layout = "~/Views/Shared/_LayoutDensity.cshtml";
+}
+<h3>Select from example Electron Density</h3>
+<div class="in_text">
+<span>
+    Or select 
+    @Html.ActionLink(
+    linkText: "Choose",
+    actionName: "Index",
+    controllerName: "Matrix",
+    routeValues: new {
+    pdbcode = ViewBag.PdbCode,
+    },
+    htmlAttributes: new { @class = "sub-header" }
+    )
+    to request electron density to browse via pdb code.
+</span>
+</div>
+<hr />
+<div class="browse">
+    <table class="browse" width="95%">
+        <tr>
+            <th class="browse">Available Pdbs</th>            
+            <th class ="browse">Selected: @ViewBag.PdbCode</th>
+        </tr>
+    <tr>
+            <td class="browse" width="20%">
+
+            @foreach (var item in ViewBag.Pdbs)
+            {
+                <span>
+                    @item.PdbCode
+
+                    @Html.ActionLink(
+                linkText: "select",
+                actionName: "Browse",
+                controllerName: "Matrix",
+                routeValues: new {
+                pdbcode = @item.PdbCode,
+                },
+                htmlAttributes: null
+                )
+                    
+                </span>
+                <br />
+            }
+
+        </td>
+
+        <td class="browse" width="80%">
+
+            <div>                                                
+                <a href=@ViewBag.EbiLink target="_blank">EBI Link to @ViewBag.PdbCode</a>
+                <hr />                
+                <b>Electron density details</b>
+                <br />
+                <span>EmCode : @ViewBag.EmCode 
+                <br />
+                DensityType: @ViewBag.DensityType
+                <br />
+                Resolution: @ViewBag.Resolution
+                <br />
+                        <a href="https://www.ccpem.ac.uk/mrc_format/mrc2014.php" target="_blank">Info on ED Maps</a>
+                    </span>
+                
+            </div>
+            <hr />
+            <div id="detls">                                
+                <textarea rows="10" cols="50">@Html.Raw(@ViewBag.Info)</textarea>
+            </div>
+
+
+        </td>
+    </tr>
+
+
+</table>
+</div>
+
+
+
+
+

@@ -6,7 +6,7 @@
     <title>@ViewData["Title"] - Leucippus</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Leucippus.styles.css" asp-append-version="true" />    
+    <link rel="stylesheet" href="~/Leucippus.styles.css" asp-append-version="true" />
     <link rel="icon" href="~/images/favicon.ico" type="image/x-icon">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
@@ -19,27 +19,69 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between"><!--style="background-color:Crimson;color:AliceBlue;">-->
-                    <ul class="navbar-nav flex-grow-1">                                                
-                        <li class="nav-item" style="background-color:darkslateblue;">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Matrix" asp-action="Index">Explorer</a>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <!-- style="background-color:Crimson;color:AliceBlue;">-->
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Matrix" asp-action="Browse">Explore</a>                            
+
+                            <div class="subheader">
+                                <span>                                    
+                                    @Html.ActionLink(
+                                    linkText: "Examples",
+                                    actionName: "Browse",
+                                    controllerName: "Matrix",
+                                    routeValues: new {
+                                    pdbcode = ViewBag.PdbCode,
+                                    },
+                                    htmlAttributes: new { @class = "sub-header" }
+                                    )
+                                    @Html.ActionLink(
+                                    linkText: "Choose",
+                                    actionName: "Index",
+                                    controllerName: "Matrix",
+                                    routeValues: new {
+                                    pdbcode = ViewBag.PdbCode,
+                                    },
+                                    htmlAttributes: new { @class = "sub-header" }
+                                    )
+                                    @Html.ActionLink(
+                                    linkText: "Slice",
+                                    actionName: "Slice",
+                                    controllerName: "Matrix",
+                                    routeValues: new {
+                                    pdbcode = ViewBag.PdbCode,
+                                    },
+                                    htmlAttributes: new { @class = "sub-header" }
+                                    )
+
+                                    @Html.ActionLink(
+                                    linkText: "Plane",
+                                    actionName: "Plane",
+                                    controllerName: "Matrix",
+                                    routeValues: new {
+                                    pdbcode = ViewBag.PdbCode,
+                                    },
+                                    htmlAttributes: new { @class = "sub-header" }
+                                    )                                    
+                                </span>
+                                </div>
+
+
+
+
+
                         </li>
-                        <li class="nav-item" style="background-color:darkslateblue;">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Matrix" asp-action="Slice">Slice</a>
-                        </li>
-                        <li class="nav-item" style="background-color:darkslateblue;">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Matrix" asp-action="Plane">Plane</a>
-                        </li>                        
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Help">Help</a>
-                        </li>                        
+                        </li>
                     </ul>
-                </div>                                
+                </div>
             </div>
-        </nav>       
+        </nav>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -50,11 +92,11 @@
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; Rachel Alcraft, 2022 <a asp-area="" asp-controller="Home" asp-action="Index">Home</a> - <a asp-area="" asp-controller="Home" asp-action="About">About</a> - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> Supervisor Mark A Williams, Birkbeck (Univeristy of London)
-        </div>        
+        </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>    
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

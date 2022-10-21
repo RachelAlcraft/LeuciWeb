@@ -39,7 +39,7 @@ namespace LeuciShared
         public int Y2_cap = 0;
         public int Z3_cap = 0;
 
-        const int TEMP_CAP = 300;
+        const int TEMP_CAP = 200;
 
         public DensityBinary(string fileName)
         {
