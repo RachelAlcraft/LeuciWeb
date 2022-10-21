@@ -145,7 +145,8 @@
 <div>
     <table>
     <tr>
-            <td style="width: 450px;">Density
+            <td style="width: 450px;">
+                Density - @ViewBag.DenPlot
                 <div id="myCountour"></div>
                 [
                 @Html.ActionLink(
@@ -179,7 +180,8 @@
                 )
                 ]
             </td>            
-            <td style="width: 450px;">Radient
+            <td style="width: 450px;">
+                Radient - @ViewBag.RadPlot
                 <div id="myCountourRad"></div>
                 [
                 @Html.ActionLink(
@@ -213,7 +215,8 @@
                 )
                 ]
             </td>
-            <td style="width: 450px;">Laplacian
+            <td style="width: 450px;">
+                Laplacian - @ViewBag.LapPlot
                 <div id="myCountourLap"></div>                
                 [
                 @Html.ActionLink(
@@ -274,7 +277,7 @@
 
     var minc = -1
     var maxc = 5
-    var size = (maxc - minc) / 20
+    var size = (maxc - minc) / 10
     var zero_frac = 0.001
     var zero_frac_lap = 0.001
     var cs = []

@@ -119,6 +119,173 @@ namespace LeuciShared
         }        
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public class Linear : Interpolator
+    {
+        // ****** Linear Implementation ****************************************
+        public Linear(double[] matrix, int x, int y, int z) : base(matrix, x, y, z)
+        {
+        }
+
+        public override double getValue(double x, double y, double z)
+        {
+            // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
+            // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
+            // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
+            // 1. Build the points around the centre as a cube - 8 points
+            double[] vals = new double[8];
+            int count = 0;
+            for (int i=0; i < 2; ++i)
+            {
+                int xp = Convert.ToInt32(Math.Floor(x+i));
+                for (int j = 0; j < 2; ++j)
+                {
+                    int yp = Convert.ToInt32(Math.Floor(y+j));
+                    for (int k = 0; k < 2; ++k)
+                    {
+                        int zp = Convert.ToInt32(Math.Floor(z+k));
+                        double p = getExactValue(xp, yp, zp);
+                        vals[count] = p;
+                        ++count;
+                    }
+                }
+            }
+            //2. Multiply with the precomputed matrix to find the multivariate polynomial
+            double[] ABC = multMatrixVector(getInverseLinear(), vals);
+
+            //3. Put the 8 values back into a cube
+            double[,,] coeffs = new double[2, 2, 2];
+            int pos = 0;
+            for (int i = 0; i < 2; ++i)
+            {
+                for (int j = 0; j < 2; ++j)
+                {
+                    for (int k = 0; k < 2; ++k)
+                    {
+                        coeffs[i, j, k] = ABC[pos];
+                        ++pos;
+                    }
+                }
+            }
+            
+            //4. Adjust the values to be within this cube
+            double xn = x - Math.Floor(x);
+            double yn = y - Math.Floor(y);
+            double zn = z - Math.Floor(z);
+            
+            //5. Apply the multivariate polynomial coefficents to find the value
+            return getValueMultVariate(zn,yn,xn,coeffs);
+        }
+        double getValueMultVariate(double x, double y, double z, double[,,] coeffs)
+        {/*This is using a value scheme that makes sens of our new fitted polyCube
+          * In a linear case it will be a decimal between 0 and 1
+          */
+            double value = 0;
+
+            for (int i = 0; i < coeffs.GetLength(0); ++i)
+            {
+                for (int j = 0; j < coeffs.GetLength(1); ++j)
+                {
+                    for (int k = 0; k < coeffs.GetLength(2); ++k)
+                    {
+                        double coeff = coeffs[i, j, k];
+                        double val = coeff * Math.Pow(z, i) * Math.Pow(y, j) * Math.Pow(x, k);
+                        value += val;
+                    }
+                }
+            }
+            return value;
+        }
+
+        private double[] multMatrixVector(double[,] A, double[] V)
+        {
+            int length = V.Length;
+            double[] results = new double[length];
+
+            for (int row = 0; row < length; ++row)
+            {
+                double sum = 0;
+                for (int col = 0; col < length; ++col)
+                {
+                    sum += A[row, col] * V[col];
+                }
+                results[row] = sum;
+            }
+            return results;
+        }
+
+        private double[,] getInverseLinear()
+        {
+            double[,] inverse1 = new double[8, 8];
+            inverse1[0, 0] = 1.0;
+            inverse1[0, 1] = 0.0;
+            inverse1[0, 2] = 0.0;
+            inverse1[0, 3] = 0.0;
+            inverse1[0, 4] = 0.0;
+            inverse1[0, 5] = 0.0;
+            inverse1[0, 6] = 0.0;
+            inverse1[0, 7] = 0.0;
+            inverse1[1, 0] = -1.0;
+            inverse1[1, 1] = 1.0;
+            inverse1[1, 2] = 0.0;
+            inverse1[1, 3] = 0.0;
+            inverse1[1, 4] = 0.0;
+            inverse1[1, 5] = 0.0;
+            inverse1[1, 6] = 0.0;
+            inverse1[1, 7] = 0.0;
+            inverse1[2, 0] = -1.0;
+            inverse1[2, 1] = 0.0;
+            inverse1[2, 2] = 1.0;
+            inverse1[2, 3] = 0.0;
+            inverse1[2, 4] = 0.0;
+            inverse1[2, 5] = 0.0;
+            inverse1[2, 6] = 0.0;
+            inverse1[2, 7] = 0.0;
+            inverse1[3, 0] = 1.0;
+            inverse1[3, 1] = -1.0;
+            inverse1[3, 2] = -1.0;
+            inverse1[3, 3] = 1.0;
+            inverse1[3, 4] = 0.0;
+            inverse1[3, 5] = 0.0;
+            inverse1[3, 6] = 0.0;
+            inverse1[3, 7] = 0.0;
+            inverse1[4, 0] = -1.0;
+            inverse1[4, 1] = 0.0;
+            inverse1[4, 2] = 0.0;
+            inverse1[4, 3] = 0.0;
+            inverse1[4, 4] = 1.0;
+            inverse1[4, 5] = 0.0;
+            inverse1[4, 6] = 0.0;
+            inverse1[4, 7] = 0.0;
+            inverse1[5, 0] = 1.0;
+            inverse1[5, 1] = -1.0;
+            inverse1[5, 2] = 0.0;
+            inverse1[5, 3] = 0.0;
+            inverse1[5, 4] = -1.0;
+            inverse1[5, 5] = 1.0;
+            inverse1[5, 6] = 0.0;
+            inverse1[5, 7] = 0.0;
+            inverse1[6, 0] = 1.0;
+            inverse1[6, 1] = 0.0;
+            inverse1[6, 2] = -1.0;
+            inverse1[6, 3] = 0.0;
+            inverse1[6, 4] = -1.0;
+            inverse1[6, 5] = 0.0;
+            inverse1[6, 6] = 1.0;
+            inverse1[6, 7] = 0.0;
+            inverse1[7, 0] = -1.0;
+            inverse1[7, 1] = 1.0;
+            inverse1[7, 2] = 1.0;
+            inverse1[7, 3] = -1.0;
+            inverse1[7, 4] = 1.0;
+            inverse1[7, 5] = -1.0;
+            inverse1[7, 6] = -1.0;
+            inverse1[7, 7] = 1.0;
+            return inverse1;
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public class BetaSpline : Interpolator
