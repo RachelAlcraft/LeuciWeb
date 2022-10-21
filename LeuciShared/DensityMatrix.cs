@@ -38,6 +38,10 @@ namespace LeuciShared
         public double LMin = 0;
         public double LMax = 0;
 
+        public double DenMin = 0;
+        public double DenMax = 0;
+        public double ThreeSd = 0;
+
 
         public double[][]? SliceDensity;
         public double[][]? SliceRadient;
@@ -71,41 +75,7 @@ namespace LeuciShared
                 _interpMap = new Linear(_densityBinary.getShortList(), _C, _B, _A);
             else
                 _interpMap = new Nearest(_densityBinary.getShortList(), _C, _B, _A);                        
-        }
-
-        /*public async Task<bool> DownloadAsync(string edFile)
-        {
-            bool haveED = false;            
-            if (!File.Exists(edFile))
-            {
-                string edWebPath = @"https://www.ebi.ac.uk/pdbe/coordinates/files/" + _emcode + ".ccp4";
-                using (HttpClient client = new HttpClient())
-                {
-                    try
-                    {
-                        using (var s = await client.GetStreamAsync(edWebPath))
-                        {
-                            using (var fs = new FileStream(edFile, FileMode.CreateNew))
-                            {
-                                var tasks = s.CopyToAsync(fs);
-                                await Task.WhenAll(tasks);
-                                haveED = true;
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        haveED = false;
-                    }
-                }
-            }
-            else
-            {
-                haveED = true;
-            }
-            return haveED;
-        }*/
-    
+        }            
         public void calculatePlane(string plane, int layer)
         {
             //TODO check if it needs to be recalced            
@@ -144,9 +114,21 @@ namespace LeuciShared
             }            
         }
 
-        public void create_slice(double width, double gap,
+        public void create_slice(double width, double gap, bool sd,double sdcap,
                                 VectorThree central, VectorThree linear, VectorThree planar)            
-        {            
+        {
+            // we want general info of the max and min given the sd setting
+            DenMin = Convert.ToDouble(_densityBinary.Words["20_DMIN"]);
+            DenMax = Convert.ToDouble(_densityBinary.Words["21_DMAX"]);
+            ThreeSd = _densityBinary.Mean + (sdcap * _densityBinary.Sd);
+            if (sd)
+            {
+                DenMin = (Convert.ToDouble(_densityBinary.Words["20_DMIN"]) - _densityBinary.Mean)/ _densityBinary.Sd;
+                DenMax = (Convert.ToDouble(_densityBinary.Words["21_DMAX"]) - _densityBinary.Mean)/ _densityBinary.Sd;
+                ThreeSd = sdcap;
+            }
+            ThreeSd = Math.Round(ThreeSd, 2);
+
             int nums = Convert.ToInt32(width / gap);
             int halfLength = Convert.ToInt32((nums) / 2);
             DMin = 100;
@@ -207,6 +189,10 @@ namespace LeuciShared
                     if (_densityBinary.AllValid(crs))
                     {
                         double density = _interpMap.getValue(crs.A, crs.B, crs.C);
+                        if (sd)//convert to standard deviations
+                        {
+                            density = (density - _densityBinary.Mean) / _densityBinary.Sd;
+                        }
                         SliceDensity[m][n] = density;
                         DMin = Math.Min(DMin, density);
                         DMax = Math.Max(DMax, density);

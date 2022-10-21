@@ -39,6 +39,9 @@ namespace LeuciShared
         public int Y2_cap = 0;
         public int Z3_cap = 0;
 
+        public double Sd = 0;
+        public double Mean = 0;
+
         const int TEMP_CAP = 200;
 
         public DensityBinary(string fileName)
@@ -214,14 +217,30 @@ namespace LeuciShared
         }
 
         private List<Single> bytesToSingles(byte[] bytes)
-        {            
+        {
+            double sum = 0;
+            int count = 0;
             int start = bytes.Length - (4 * _datalength);
             List<Single> matvals = new List<Single>();
             for (int i = start; i < bytes.Length; i += 4)
             {
                 Single value = BitConverter.ToSingle(bytes, i);
                 matvals.Add(value);
+                count++;
+                sum += value;
             }
+
+            Mean = sum / count;
+
+            double sdSum = 0;
+            for (int i = start; i < bytes.Length; i += 4)
+            {
+                Single value = BitConverter.ToSingle(bytes, i);
+                sdSum += Math.Pow(value - Mean,2);
+            }
+            sdSum /= count;
+            Sd = Math.Sqrt(sdSum);
+
             return matvals;
         }
 

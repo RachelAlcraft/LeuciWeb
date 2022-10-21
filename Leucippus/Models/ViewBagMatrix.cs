@@ -2,7 +2,7 @@
 
 using LeuciShared;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Security.Permissions;
 
 namespace Leucippus.Models
 {
@@ -196,6 +196,35 @@ namespace Leucippus.Models
 
             }
         }
+        public bool IsSD { get { return _valsd == "st.dev."; } }
+        private string _valsd = "st.dev.";
+        public string ValSd
+        {
+            get { return _valsd; }
+            set
+            {
+                if (value == "+1")
+                {
+                    if (_valsd == "st.dev.")
+                        _valsd = "∝ electrons/cube";
+                    else
+                        _valsd = "st.dev.";
+                }                
+            }
+        }
+        private double _sdcap = 3.0;
+        public double SdCap
+        {
+            get { return _sdcap; }
+            set
+            {
+                if (value != -1)
+                {
+                    _sdcap = value;
+                }
+            }
+        }
+
         private string _radhue = "BlackWhite";
         public string RadHue
         {

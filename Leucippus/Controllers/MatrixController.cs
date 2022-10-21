@@ -6,6 +6,7 @@ using ScottPlot;
 using ScottPlot.Statistics.Interpolation;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Threading;
 using static Plotly.NET.StyleParam;
 
 
@@ -81,13 +82,14 @@ namespace Leucippus.Controllers
             return View();
 
         }
-        public async Task<IActionResult> Slice(string pdbcode = "",            
+        public async Task<IActionResult> Slice(string pdbcode = "",
             string c_xyz = "", string l_xyz = "", string p_xyz = "",
             string ca = "", string la = "", string pa = "",
-            string denplot ="", string radplot="", string lapplot = "",
+            string denplot = "", string radplot = "", string lapplot = "",
             string denhue = "", string radhue = "", string laphue = "",
             string denbar = "", string radbar = "", string lapbar = "",
-            double width = -1, double gap = -1,string interp="")
+            double width = -1, double gap = -1, string interp = "", 
+            string valsd = "",double sdcap = -1)
         {
 
             ViewBagMatrix.Instance.PdbCode = pdbcode;
@@ -116,6 +118,10 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.PA);
             ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.PA);
             ViewBagMatrix.Instance.SetPlanar(p_xyz, pa, DensitySingleton.Instance.PA);
+            ViewBagMatrix.Instance.ValSd = valsd;
+            ViewBagMatrix.Instance.SdCap = sdcap;
+            ViewBagMatrix.Instance.SdCap = Math.Round(ViewBagMatrix.Instance.SdCap, 2);
+            
 
             bool recalc = ViewBagMatrix.Instance.Refresh;
                         
@@ -123,7 +129,7 @@ namespace Leucippus.Controllers
                                     
             if (recalc)
             {                
-                dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear,ViewBagMatrix.Instance.Planar);
+                dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap,ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear,ViewBagMatrix.Instance.Planar);
             }
 
             ViewBagMatrix.Instance.EmCode = DensitySingleton.Instance.FD.EmCode;
@@ -135,6 +141,7 @@ namespace Leucippus.Controllers
             ViewBag.SliceAxis = dm.SliceAxis;
             ViewBag.LMax = dm.LMax;
             ViewBag.LMin = dm.LMin;
+            
 
             ViewBag.cAtom = ViewBagMatrix.Instance.CentralAtom;
             ViewBag.lAtom = ViewBagMatrix.Instance.LinearAtom;
@@ -149,7 +156,13 @@ namespace Leucippus.Controllers
             ViewBag.DenPlot = ViewBagMatrix.Instance.DenPlot;
             ViewBag.RadPlot = ViewBagMatrix.Instance.RadPlot;
             ViewBag.LapPlot = ViewBagMatrix.Instance.LapPlot;
-            
+            ViewBag.ValSd = ViewBagMatrix.Instance.ValSd;
+            ViewBag.SdCap = ViewBagMatrix.Instance.SdCap;
+
+            ViewBag.DenMax = Math.Round(dm.DenMax,2);
+            ViewBag.DenMin = dm.DenMin;
+            ViewBag.ThreeSd = Math.Round(dm.ThreeSd,2);
+
             ViewBag.Width = ViewBagMatrix.Instance.Width;
             ViewBag.Gap = ViewBagMatrix.Instance.Gap;
             ViewBag.Interp = ViewBagMatrix.Instance.Interp;

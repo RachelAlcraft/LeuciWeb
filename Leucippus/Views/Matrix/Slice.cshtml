@@ -26,14 +26,33 @@
                 <td rowspan="3" style="height:30px;text-align:justify">    
                     <div class="inner-tbl">
                 <table>
+                            <tr>
+                                <td width="25%">
+                                    Interp=
+                                </td>
+                                <td width="40%">
+                                    @ViewBag.Interp
+                                </td>
+                                <td width="35%">
+                                    [@Html.ActionLink(
+                                linkText: "Tgl Interp",
+                                actionName: "Slice",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                interp = "+1",
+                                },
+                                htmlAttributes: null
+                                )]
+                                </td>
+                            </tr>
                     <tr>
-                        <td>
+                                <td>
                             Width(Å)=
                         </td>
-                        <td>
+                                <td>
                             <input style="width:80px;" type="text" id="width" name="width" value=@ViewBag.Width>                        
                         </td>
-                        <td>
+                                <td>
                                [
                     @Html.ActionLink(
                     linkText: "+0.5",
@@ -64,53 +83,70 @@
                         <td>
                             <input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>                        
                         </td>
-                        <td>
-                            [
-                    @Html.ActionLink(
+                        <td>[@Html.ActionLink(
                     linkText: "+0.01",
                     actionName: "Slice",
                     controllerName: "Matrix",
                     routeValues: new {
                     gap = "-2",
-                    },
-                    htmlAttributes: null
-                    )
-                    ,
-                    @Html.ActionLink(
+                    },htmlAttributes: null
+                    ),@Html.ActionLink(
                     linkText: "-0.01",
                     actionName: "Slice",
                     controllerName: "Matrix",
                     routeValues: new {
                     gap = "-3",
-                    },
-                    htmlAttributes: null
-                    )
-                    ]
-                        </td>
+                    },htmlAttributes: null
+                    )]</td>
 
                     </tr>
-                    <tr>
-                        <td>
-                            Interpolation=
-                        </td>
-                        <td>
-                            @ViewBag.Interp 
-                        </td>
-                        <td>
-                            [@Html.ActionLink(
-                        linkText: "Tgl Interp",
-                        actionName: "Slice",
-                        controllerName: "Matrix",
-                        routeValues: new {
-                        interp = "+1",
-                        },
-                        htmlAttributes: null
-                        )]
-                        </td>
+                    
+                            <tr>
+                                <td>
+                                    Density=
+                                </td>
+                                <td>
+                                    @ViewBag.ValSd
+                                </td>
+                                <td>
+                                    [@Html.ActionLink(
+                                linkText: "Tgl Density",
+                                actionName: "Slice",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                valsd = "+1",
+                                },
+                                htmlAttributes: null
+                                )]
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Hue cap=
+                                </td>
+                                <td>
+                                    <span><input style="width:70%;" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap> (sd's)</span>
+                                </td>
+                                <td>
+                                    [@Html.ActionLink(
+                                linkText: "+0.1",
+                                actionName: "Slice",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                sdcap = @ViewBag.SdCap + 0.1,
+                                },htmlAttributes: null
+                                ),@Html.ActionLink(
+                                linkText: "-0.1",
+                                actionName: "Slice",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                sdcap = @ViewBag.SdCap - 0.1,
+                                },htmlAttributes: null
+                                )]
+                                </td>
+                            </tr>
 
-                    </tr>                    
-
-                </table>     
+                        </table>     
                     </div>
                     <!--<input type="image" src="~/images/calc.png" style="width:18px;height:18px;vertical-align:text-bottom" />-->
                </td>
@@ -142,12 +178,21 @@
 <br />
 
 <hr />
-<div>
+<div class="inner-tbl">
     <table>
-    <tr>
-            <td style="width: 450px;">
+        <tr>
+            <td>
                 Density - @ViewBag.DenPlot
-                <div id="myCountour"></div>
+            </td>
+            <td>
+                Radient - @ViewBag.RadPlot
+            </td>
+            <td>
+                Laplacian - @ViewBag.LapPlot
+            </td>
+        </tr>            
+        <tr>
+            <td style="width: 450px;">                            
                 [
                 @Html.ActionLink(
                 linkText: "Toggle Plot",
@@ -180,9 +225,7 @@
                 )
                 ]
             </td>            
-            <td style="width: 450px;">
-                Radient - @ViewBag.RadPlot
-                <div id="myCountourRad"></div>
+            <td style="width: 450px;">                                
                 [
                 @Html.ActionLink(
                 linkText: "Toggle Plot",
@@ -215,9 +258,7 @@
                 )
                 ]
             </td>
-            <td style="width: 450px;">
-                Laplacian - @ViewBag.LapPlot
-                <div id="myCountourLap"></div>                
+            <td style="width: 450px;">                                                
                 [
                 @Html.ActionLink(
                 linkText: "Toggle Plot",
@@ -250,7 +291,18 @@
                 )
                 ]
                 </td>        
-    </tr>
+            </tr>
+            <tr>
+                <td>
+                    <div id="myCountour"></div>
+                </td>
+                <td>
+                    <div id="myCountourRad"></div>
+                </td>
+                <td>
+                    <div id="myCountourLap"></div>
+                </td>
+            </tr>
     </table>
 </div>
 <hr />
@@ -267,6 +319,10 @@
     var minl = @Html.Raw(Json.Serialize(@ViewBag.LMin));
     var maxl = @Html.Raw(Json.Serialize(@ViewBag.LMax));
     
+    var denmin = @Html.Raw(Json.Serialize(@ViewBag.DenMin));
+    var denmax = @Html.Raw(Json.Serialize(@ViewBag.DenMax));
+    var numsd = @Html.Raw(Json.Serialize(@ViewBag.ThreeSd));
+    
     var dhue = @Html.Raw(Json.Serialize(@ViewBag.DenHue));
     var rhue = @Html.Raw(Json.Serialize(@ViewBag.RadHue));
     var lhue = @Html.Raw(Json.Serialize(@ViewBag.LapHue));
@@ -275,19 +331,25 @@
     var rbar = @Html.Raw(Json.Serialize(@ViewBag.RadBar));
     var lbar = @Html.Raw(Json.Serialize(@ViewBag.LapBar));
 
-    var minc = -1
-    var maxc = 5
+    var minc = denmin
+    var maxc = Math.round(numsd*100)/100
     var size = (maxc - minc) / 10
     var zero_frac = 0.001
     var zero_frac_lap = 0.001
     var cs = []
     
     zero_frac = (0 - minc) / (maxc - minc)
-    var lev1 = zero_frac + 0.1 * (1 - zero_frac)
-    var lev2 = zero_frac + 0.3 * (1 - zero_frac)
-    var lev3 = zero_frac + 0.5 * (1 - zero_frac)
+    var lev1 = zero_frac + 0.1 * (1 - zero_frac)    
+    var lev2 = zero_frac + 0.2 * (1 - zero_frac)
+    var lev3 = zero_frac + 0.75 * (1 - zero_frac)
     if (dhue == "RedBlueGrey"){
-        cs = [[0, 'DimGray'], [String(zero_frac + 0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]        
+        cs = [  [0, 'DimGray'], 
+                [String(zero_frac + 0.0001), 'Snow'], 
+                [String(zero_frac + 0.0002), 'LightBlue'], 
+                [String(lev1), 'LightBlue'], 
+                [String(lev2), 'CornflowerBlue'], 
+                [String(lev3), 'Crimson'], 
+                [1, 'Black']]
     }
     else if (dhue == "BlackWhite") {
         cs = [[0, 'Snow'], [1, 'Black']]
@@ -323,9 +385,9 @@
    var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
    var radplot = @Html.Raw(Json.Serialize(@ViewBag.RadPlot));
    var lapplot = @Html.Raw(Json.Serialize(@ViewBag.LapPlot));
-   
 
 
+    var huetitle = @Html.Raw(Json.Serialize(@ViewBag.ValSd)) + "<br>max=" + denmax;
 
     var data = [{
         z: jv,
@@ -347,7 +409,8 @@
         showscale:dbar,
         colorbar: {
             thickness: 15,
-        }
+            title:huetitle,            
+        },        
     }];
    
     var dataR = [{
@@ -365,6 +428,7 @@
         showscale: rbar,
         colorbar: {
             thickness: 15,
+            title:"l1 norm of P1",            
         }
     }];
 
@@ -383,6 +447,7 @@
         showscale: lbar,
         colorbar: {
             thickness: 15,
+            title:"sum of P2",
         }
     }];
     
@@ -407,12 +472,17 @@
             b: 100,
             t: 100,
             pad: 4
+        },  
+        colorbar: {
+            textangle:-90,            
         }
     };
-
+    
     var config = { responsive: true }
 
-    Plotly.newPlot('myCountour', data, layout, config);    
+    annos = {}
+         
+    Plotly.newPlot('myCountour', data, layout, config,annos);    
     Plotly.newPlot('myCountourRad', dataR, layout, config);
     Plotly.newPlot('myCountourLap', dataL, layout, config);
     
