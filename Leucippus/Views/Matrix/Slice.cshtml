@@ -348,8 +348,8 @@
                 [String(zero_frac + 0.0002), 'LightBlue'], 
                 [String(lev1), 'LightBlue'], 
                 [String(lev2), 'CornflowerBlue'], 
-                [String(lev3), 'Crimson'], 
-                [1, 'Black']]
+                [String(lev3), 'Crimson'],
+                [1, 'rgb(100, 0, 0)']]
     }
     else if (dhue == "BlackWhite") {
         cs = [[0, 'Snow'], [1, 'Black']]
@@ -359,9 +359,9 @@
     }
          
     zero_frac_lap = (0 - minl) / (maxl - minl)  
-    var lev1 = zero_frac + 0.1 * (1 - zero_frac)
-    var lev2 = zero_frac + 0.3 * (1 - zero_frac)
-    var lev3 = zero_frac + 0.5 * (1 - zero_frac)
+    var lev1 = zero_frac_lap + 0.1 * (1 - zero_frac)
+    var lev2 = zero_frac_lap + 0.3 * (1 - zero_frac)
+    var lev3 = zero_frac_lap + 0.5 * (1 - zero_frac)
     if (lhue == "RedBlueGrey") {
         cs_lap = [[0, 'DimGray'], [String(zero_frac_lap + 0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]
     }
