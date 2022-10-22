@@ -11,6 +11,7 @@
             <tr>
                 <th style="width:6%;" colspan="1" align="center">                  
                   <input type="submit" value="Submit" />
+                  <input style="visibility:hidden;height:0px" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
                 </th>
                 <th style="width:8%;" colspan="1" align="center">Atom</th>
                 <th style="width:15%;" colspan="1" align="center">(x,y,z)</th>
@@ -40,6 +41,13 @@
                                 controllerName: "Matrix",
                                 routeValues: new {
                                 interp = "+1",
+                                pdbcode = @ViewBag.PdbCode,
+                                c_xyz = @ViewBag.cXYZ,
+                                l_xyz = @ViewBag.lXYZ,
+                                p_xyz = @ViewBag.pXYZ,
+                                ca = @ViewBag.cAtom,
+                                la = @ViewBag.lAtom,
+                                pa = @ViewBag.pAtom,
                                 },
                                 htmlAttributes: null
                                 )]
@@ -60,6 +68,13 @@
                     controllerName: "Matrix",
                     routeValues: new {
                     width = "-2",
+                    pdbcode = @ViewBag.PdbCode,
+                    c_xyz = @ViewBag.cXYZ,
+                    l_xyz = @ViewBag.lXYZ,
+                    p_xyz = @ViewBag.pXYZ,
+                    ca = @ViewBag.cAtom,
+                    la = @ViewBag.lAtom,
+                    pa = @ViewBag.pAtom,
                     },
                     htmlAttributes: null
                     )
@@ -70,6 +85,13 @@
                     controllerName: "Matrix",
                     routeValues: new {
                     width = "-3",
+                    pdbcode = @ViewBag.PdbCode,
+                    c_xyz = @ViewBag.cXYZ,
+                    l_xyz = @ViewBag.lXYZ,
+                    p_xyz = @ViewBag.pXYZ,
+                    ca = @ViewBag.cAtom,
+                    la = @ViewBag.lAtom,
+                    pa = @ViewBag.pAtom,
                     },
                     htmlAttributes: null
                     )
@@ -89,6 +111,7 @@
                     controllerName: "Matrix",
                     routeValues: new {
                     gap = "-2",
+                    pdbcode = @ViewBag.PdbCode,
                     },htmlAttributes: null
                     ),@Html.ActionLink(
                     linkText: "-0.01",
@@ -96,6 +119,13 @@
                     controllerName: "Matrix",
                     routeValues: new {
                     gap = "-3",
+                    pdbcode = @ViewBag.PdbCode,
+                    c_xyz = @ViewBag.cXYZ,
+                    l_xyz = @ViewBag.lXYZ,
+                    p_xyz = @ViewBag.pXYZ,
+                    ca = @ViewBag.cAtom,
+                    la = @ViewBag.lAtom,
+                    pa = @ViewBag.pAtom,
                     },htmlAttributes: null
                     )]</td>
 
@@ -115,6 +145,13 @@
                                 controllerName: "Matrix",
                                 routeValues: new {
                                 valsd = "+1",
+                                pdbcode = @ViewBag.PdbCode,
+                                c_xyz = @ViewBag.cXYZ,
+                                l_xyz = @ViewBag.lXYZ,
+                                p_xyz = @ViewBag.pXYZ,
+                                ca = @ViewBag.cAtom,
+                                la = @ViewBag.lAtom,
+                                pa = @ViewBag.pAtom,
                                 },
                                 htmlAttributes: null
                                 )]
@@ -134,6 +171,13 @@
                                 controllerName: "Matrix",
                                 routeValues: new {
                                 sdcap = @ViewBag.SdCap + 0.1,
+                                pdbcode = @ViewBag.PdbCode,
+                                c_xyz = @ViewBag.cXYZ,
+                                l_xyz = @ViewBag.lXYZ,
+                                p_xyz = @ViewBag.pXYZ,
+                                ca = @ViewBag.cAtom,
+                                la = @ViewBag.lAtom,
+                                pa = @ViewBag.pAtom,
                                 },htmlAttributes: null
                                 ),@Html.ActionLink(
                                 linkText: "-0.1",
@@ -141,6 +185,13 @@
                                 controllerName: "Matrix",
                                 routeValues: new {
                                 sdcap = @ViewBag.SdCap - 0.1,
+                                pdbcode = @ViewBag.PdbCode,
+                                c_xyz = @ViewBag.cXYZ,
+                                l_xyz = @ViewBag.lXYZ,
+                                p_xyz = @ViewBag.pXYZ,
+                                ca = @ViewBag.cAtom,
+                                la = @ViewBag.lAtom,
+                                pa = @ViewBag.pAtom,
                                 },htmlAttributes: null
                                 )]
                                 </td>
@@ -200,6 +251,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 denplot = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )
@@ -210,6 +268,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 denhue = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )
@@ -220,6 +285,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 denbar = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )
@@ -233,6 +305,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 radplot = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )
@@ -243,6 +322,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 radhue = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )
@@ -253,6 +339,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 radbar = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )
@@ -266,6 +359,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 lapplot = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )
@@ -276,6 +376,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 laphue = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )
@@ -286,6 +393,13 @@
                 controllerName: "Matrix",
                 routeValues: new {
                 lapbar = "+1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
                 },
                 htmlAttributes: null
                 )

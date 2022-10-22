@@ -23,12 +23,13 @@
                     <!-- style="background-color:Crimson;color:AliceBlue;">-->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
+                            <span>
                             <a class="nav-link text-light" asp-area="" asp-controller="Matrix" asp-action="Browse">Explore</a>                            
 
                             <div class="subheader">
                                 <span>                                    
                                     @Html.ActionLink(
-                                    linkText: "Examples",
+                                    linkText: "Choose",
                                     actionName: "Browse",
                                     controllerName: "Matrix",
                                     routeValues: new {
@@ -36,7 +37,7 @@
                                     },
                                     htmlAttributes: new { @class = "sub-header" }
                                     )
-                                    @Html.ActionLink(
+                                    <!--@Html.ActionLink(
                                     linkText: "Choose",
                                     actionName: "Index",
                                     controllerName: "Matrix",
@@ -44,7 +45,7 @@
                                     pdbcode = ViewBag.PdbCode,
                                     },
                                     htmlAttributes: new { @class = "sub-header" }
-                                    )
+                                    )-->
                                     @Html.ActionLink(
                                     linkText: "Slice",
                                     actionName: "Slice",
@@ -66,7 +67,7 @@
                                     )                                    
                                 </span>
                                 </div>
-
+                                </span>
 
 
 

@@ -11,7 +11,7 @@ namespace LeuciShared
     // ****** ABSTRACT CLASS ****************************************
     public abstract class Interpolator
     {
-        protected double[] Matrix;
+        protected Dictionary<int, double> Matrix;
         protected int XLen;
         protected int YLen;
         protected int ZLen;
@@ -22,7 +22,7 @@ namespace LeuciShared
 
         //--------------------------------------------------------------------
 
-        public Interpolator(double[] matrix, int x, int y, int z)
+        public Interpolator(Dictionary<int, double> matrix, int x, int y, int z)
         {
             //x = slowest, y = middle, z = fastest changing axis
             Matrix = matrix;
@@ -31,7 +31,7 @@ namespace LeuciShared
             ZLen = z;
             h = 0.001;            
         }
-        public void addMatrix(double[] matrix, int x, int y, int z)
+        public void addMatrix(Dictionary<int, double> matrix, int x, int y, int z)
         {
             Matrix = matrix;
             XLen = x;
@@ -45,7 +45,7 @@ namespace LeuciShared
             int pos = z * sliceSize;
             pos += XLen * y;
             pos += x;
-            if (pos > 0 && pos < Matrix.Length)
+            if (Matrix.ContainsKey(pos))
                 return pos;
             else
                 return 0;//what should this return? -1, throw an error? TODO
@@ -56,7 +56,7 @@ namespace LeuciShared
             int pos = z * sliceSize;
             pos += XLen * y;
             pos += x;
-            if (pos > 0 && pos < Matrix.Length)
+            if (Matrix.ContainsKey(pos))
                 return Matrix[pos];
             else
                 return 0;
@@ -106,7 +106,7 @@ namespace LeuciShared
     public class Nearest: Interpolator
     {         
         // ****** Nearest Neighbour Implementation ****************************************
-        public Nearest(double[] matrix, int x, int y, int z): base(matrix, x, y, z)
+        public Nearest(Dictionary<int, double> matrix, int x, int y, int z): base(matrix, x, y, z)
         {            
         }
 
@@ -124,7 +124,7 @@ namespace LeuciShared
     public class Linear : Interpolator
     {
         // ****** Linear Implementation ****************************************
-        public Linear(double[] matrix, int x, int y, int z) : base(matrix, x, y, z)
+        public Linear(Dictionary<int, double> matrix, int x, int y, int z) : base(matrix, x, y, z)
         {
         }
 
@@ -298,7 +298,7 @@ namespace LeuciShared
         private int _degree;
         private List<double> _coefficients = new List<double>();
 
-        public BetaSpline(double[] matrix, int x, int y, int z) : base(matrix, x, y, z)
+        public BetaSpline(Dictionary<int,double> matrix, int x, int y, int z) : base(matrix, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = 5;
@@ -422,8 +422,10 @@ namespace LeuciShared
 
         private void createCoefficients()
         {
-            for (int i = 0; i < XLen * YLen * ZLen; ++i)
-                _coefficients.Add(Matrix[i]);
+            //for (int i = 0; i < XLen * YLen * ZLen; ++i)
+                //_coefficients.Add(Matrix[i]);
+            foreach (var v in Matrix)
+                _coefficients.Add(v.Value);
 
             List<double> pole = getPole(_degree);
             int numPoles = Convert.ToInt32(pole.Count);

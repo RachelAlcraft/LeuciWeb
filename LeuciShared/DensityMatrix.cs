@@ -69,15 +69,41 @@ namespace LeuciShared
             Info = _densityBinary.Info;            
             _cublet = new Cubelet(_A, _B, _C);
             _interp = interp;
-            if (interp == "BSPLINE")
-                _interpMap = new BetaSpline(_densityBinary.getShortList(), _C, _B, _A);
+            /*if (interp == "BSPLINE")
+                _interpMap = new BetaSpline(_densityBinary.getShortList(new int[3] { 0,0,0}), _C, _B, _A);
             else if (interp == "LINEAR")
-                _interpMap = new Linear(_densityBinary.getShortList(), _C, _B, _A);
+                _interpMap = new Linear(_densityBinary.getShortList(new int[3] { 0, 0, 0 }), _C, _B, _A);
             else
-                _interpMap = new Nearest(_densityBinary.getShortList(), _C, _B, _A);                        
-        }            
+                _interpMap = new Nearest(_densityBinary.getShortList(new int[3] { 0, 0, 0 }), _C, _B, _A);                        
+            */
+        }
+
+        public void changeInterp(string interp)
+        {
+            _interp = interp;
+            if (_interp == "BSPLINE")
+                _interpMap = new BetaSpline(_densityBinary.getShortList(new int[3] { 0, 0, 0 }), _C, _B, _A);
+            else if (_interp == "LINEAR")
+                _interpMap = new Linear(_densityBinary.getShortList(new int[3] { 0, 0, 0 }), _C, _B, _A);
+            else
+                _interpMap = new Nearest(_densityBinary.getShortList(new int[3] { 0, 0, 0 }), _C, _B, _A);
+        }        
+        private void createData()
+        {
+            if (!_densityBinary.INIT)
+            {
+                _densityBinary.Init();
+                if (_interp == "BSPLINE")
+                    _interpMap = new BetaSpline(_densityBinary.getShortList(new int[3] { 0, 0, 0 }), _C, _B, _A);
+                else if (_interp == "LINEAR")
+                    _interpMap = new Linear(_densityBinary.getShortList(new int[3] { 0, 0, 0 }), _C, _B, _A);
+                else
+                    _interpMap = new Nearest(_densityBinary.getShortList(new int[3] { 0, 0, 0 }), _C, _B, _A);
+            }
+        }
         public void calculatePlane(string plane, int layer)
         {
+            createData();
             //TODO check if it needs to be recalced            
             int[] XY = _cublet.getPlaneDims(plane, layer);
             LayerMax = _cublet.LayerMax;
@@ -117,6 +143,7 @@ namespace LeuciShared
         public void create_slice(double width, double gap, bool sd,double sdcap,
                                 VectorThree central, VectorThree linear, VectorThree planar)            
         {
+            createData();
             // we want general info of the max and min given the sd setting
             DenMin = Convert.ToDouble(_densityBinary.Words["20_DMIN"]);
             DenMax = Convert.ToDouble(_densityBinary.Words["21_DMAX"]);

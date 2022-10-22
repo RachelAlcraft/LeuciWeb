@@ -5,9 +5,10 @@
 }
 <h3>Electron Density Matrix Explorer - @ViewBag.PdbCode</h3>
 <hr />
-@using (Html.BeginForm("Index", "Matrix", FormMethod.Post))
-{
+
     <table cellpadding="0" cellspacing="0">
+    @using (Html.BeginForm("Index", "Matrix", FormMethod.Post))
+    {
         <tr style="height:25%">
             <th colspan="1" align="center">Protein Structure</th>
         </tr>
@@ -30,8 +31,9 @@
                 </div>
         </td>        
         </tr>
+    }
     </table>    
-}
+
 <div>
     EmCode : @ViewBag.EmCode
     <br />

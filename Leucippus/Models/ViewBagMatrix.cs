@@ -63,9 +63,14 @@ namespace Leucippus.Models
                     }
                     _pdbcode = value;
                 }
+                else if(_pdbcode != "6eex")
+                {
+                    _pdbcode = "6eex";
+                    ++_refresh;
+                }
             }
         }
-        private string _interp = "BSPLINE";
+        private string _interp = "LINEAR";
         public string Interp
         {
             get { return _interp; }
@@ -344,7 +349,7 @@ namespace Leucippus.Models
                 return _lapbar == "Y";
             }
         }
-        private string _planeplot = "contour";
+        private string _planeplot = "heatmap";
         public string PlanePlot
         {
             get { return _planeplot; }

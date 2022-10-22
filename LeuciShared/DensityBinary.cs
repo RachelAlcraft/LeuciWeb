@@ -42,21 +42,27 @@ namespace LeuciShared
         public double Sd = 0;
         public double Mean = 0;
 
-        const int TEMP_CAP = 200;
+        const int TEMP_CAP = 2000;
+        public bool INIT = false;
 
         public DensityBinary(string fileName)
         {
             _fileName = fileName;
             _bytes = ReadBinaryFile(_fileName);
             createWords(_bytes);
-            List<Single> sings = bytesToSingles(_bytes);            
-            createMatrix(sings);
+            //List<Single> sings = bytesToSingles(_bytes);                        
+        }
 
+        public void Init()
+        {
+            calcStats(_bytes);
+            createMatrix(0, Z3_cap, 0, Y2_cap, 0, X1_cap);
             // Some testing
-            VectorThree test1 = getCRSFromXYZ(new VectorThree(0, 0, 0));
-            VectorThree test2 = getXYZFromCRS(test1);
-            VectorThree test3 = getCRSFromXYZ(new VectorThree(1, 1, 10));
-            VectorThree test4 = getXYZFromCRS(test3);
+            //VectorThree test1 = getCRSFromXYZ(new VectorThree(0, 0, 0));
+            //VectorThree test2 = getXYZFromCRS(test1);
+            //VectorThree test3 = getCRSFromXYZ(new VectorThree(1, 1, 10));
+            //VectorThree test4 = getXYZFromCRS(test3);
+            INIT = true;
         }
 
         public byte[] ReadBinaryFile(string filePath)
@@ -176,17 +182,18 @@ namespace LeuciShared
         //{
         //    return _myMatrixListX;       
         //}
-        public double[] getShortList()
+        public Dictionary<int,double> getShortList(int[] xyz)
         {
-            double[] shorter = new double[_myMatrixList.Count];
-            int count = 0;
-            foreach (KeyValuePair<int, double> entry in _myMatrixList)
-            {
-                shorter[count] = entry.Value;
-                count++;
-            }
-            
-            return shorter;
+            //double[] shorter = new double[_myMatrixList.Count];
+            //int count = 0;
+            //foreach (KeyValuePair<int, double> entry in _myMatrixList)
+            //{
+            //    shorter[count] = entry.Value;
+            //    count++;
+            //}
+
+            //createMatrix(0, Z3_cap, 0, Y2_cap, 0, X1_cap);
+            return _myMatrixList;
 
         }
         //private double getVal(int x, int y, int z)
@@ -216,65 +223,85 @@ namespace LeuciShared
             }
         }
 
-        private List<Single> bytesToSingles(byte[] bytes)
+        private void calcStats(byte[] bytes)
         {
             double sum = 0;
             int count = 0;
             int start = bytes.Length - (4 * _datalength);
-            List<Single> matvals = new List<Single>();
+            Mean = Convert.ToDouble(Words["22_DMEAN"]);
+            double sdSum = 0;            
             for (int i = start; i < bytes.Length; i += 4)
             {
                 Single value = BitConverter.ToSingle(bytes, i);
-                matvals.Add(value);
+                sdSum += Math.Pow(value - Mean, 2);                
                 count++;
                 sum += value;
             }
-
-            Mean = sum / count;
-
-            double sdSum = 0;
-            for (int i = start; i < bytes.Length; i += 4)
-            {
-                Single value = BitConverter.ToSingle(bytes, i);
-                sdSum += Math.Pow(value - Mean,2);
-            }
+            // calculate the stats                                    
             sdSum /= count;
-            Sd = Math.Sqrt(sdSum);
+            Sd = Math.Sqrt(sdSum);            
+        }
+
+        private Dictionary<int,double> bytesToDoubles(byte[] bytes, List<int> poses)
+        {            
+            int count = 0;
+            int start = bytes.Length - (4 * _datalength);                     
+            // add the reduced numbre of required values to the list
+            //Dictionary<int,double> matvals=new Dictionary<int,double>();
+            List<Single> vals = new List<Single>();
+            /*for (int i = start; i < bytes.Length; i += 4)
+            {
+                //if (poses.Contains(count))
+                {
+                    Single value = BitConverter.ToSingle(bytes, i);
+                    //matvals[count] = Convert.ToDouble(value);
+                    vals.Add(value);
+                }
+                count++;
+                //if (poses.Count == matvals.Count)
+                //    return matvals;
+            }*/
+
+            foreach (int pos in poses)
+            {
+                Single value = BitConverter.ToSingle(bytes, start + pos*4);
+                vals.Add(value);
+            }
+
+            Dictionary<int,double> matvals=new Dictionary<int,double>();
+            for (int m = 0; m < poses.Count; ++m)
+            {
+                matvals.Add(poses[m], vals[m]);
+            }
+
 
             return matvals;
         }
 
-        private void createMatrix(List<Single> sings)
+        public void createMatrix(int xl, int xu, int yl, int yu, int zl, int zu)
         {
             int z = Convert.ToInt32(Words["01_NX"]);
             int y = Convert.ToInt32(Words["02_NY"]);
             int x = Convert.ToInt32(Words["03_NZ"]);
 
-
-            //_myMatrix = new double[x, y, z];
-            //_myMatrixListX = new double[x*y*z];
-            _myMatrixList = new Dictionary<int, double>();
-
-            int count = 0;
-
+            // first generate list of positions we want given the caps
+            List<int> poses = new List<int>();
+            int pos = 0;
             for (int i = 0; i < x; ++i)
-            {
+            {                
                 for (int j = 0; j < y; ++j)
-                {
+                {                        
                     for (int k = 0; k < z; ++k)
                     {
-                        // keep counting but don't go over the cap
-                        if (k < X1_cap && j < Y2_cap && i < Z3_cap)
+                        if ((i >= xl && i < xu)  && (j >= yl && j < yu) && (k >= zl && k < zu) || xl+xu+yl+yu+zl+zu==-6)
                         {
-                            double val = sings[count];
-                            //_myMatrix[i, j, k] = val;
-                            _myMatrixList[count] = val;
-                            //_myMatrixListX[count] = val;
+                            poses.Add(pos);
                         }
-                        count += 1;
-                    }
-                }
+                        pos++;
+                    }                        
+                }                
             }
+            _myMatrixList = bytesToDoubles(_bytes,poses);            
         }
 
         ///////////////////////////////////////////////////

@@ -40,12 +40,13 @@ namespace LeuciShared
             bool calc = false;
             NewMatrix = false;
             if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
-                calc = true;
-
-            if (interp != _interp)
             {
                 calc = true;
+            }
+            else if (interp != _interp)
+            {                
                 _interp = interp;
+                _dm.changeInterp(_interp);
             }
 
             if (!calc)

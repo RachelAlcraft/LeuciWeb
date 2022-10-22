@@ -40,7 +40,7 @@ td input {
         box-sizing: border-box;
         display: inline-block;
         width: 95%;
-        border:0.1px;
+        border:0.5px inset;
         margin:0.5px;
         background-color:aliceblue;
         text-align:center;

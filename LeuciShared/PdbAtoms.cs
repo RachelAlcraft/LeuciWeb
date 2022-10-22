@@ -59,24 +59,36 @@ namespace LeuciShared
 
         public string[] getFirstThreeCoords()
         {
+            //the very first can be nont very string ED so get the... 3rd?
             string[] v3 = new string[3];
             int count = 0;
+            int found_ca = 0;
             foreach (var atm in _atoms)
             {
-                if (count ==0 && atm.Key.IndexOf("@C.A") > 0)
+                if (atm.Key.IndexOf("@C.A") > 0)
                 {
-                    v3[0] = atm.Key;
-                    count++;
+                    if (found_ca > 3)
+                    {
+                        v3[0] = atm.Key;
+                        count++;
+                    }                    
                 }
-                else if (count == 1 && atm.Key.IndexOf("@O.A") > 0)
+                else if (atm.Key.IndexOf("@CA.A") > 0)
                 {
-                    v3[1] = atm.Key;
-                    count++;
+                    if (found_ca > 2)
+                    {
+                        v3[1] = atm.Key;
+                        count++;
+                    }
+                    found_ca++;
                 }
-                else if (count == 2 && atm.Key.IndexOf("@N.A") > 0)
+                else if (atm.Key.IndexOf("@O.A") > 0)
                 {
-                    v3[2] = atm.Key;
-                    count++;
+                    if (found_ca > 3)
+                    {
+                        v3[2] = atm.Key;
+                        count++;
+                    }
                 }
                 if (count >= 3)
                     return v3;
