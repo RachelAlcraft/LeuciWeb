@@ -228,8 +228,10 @@ namespace LeuciShared
                         if (sd)//convert to standard deviations
                         {
                             density = (density - _densityBinary.Mean) / _densityBinary.Sd;
-                        }
+                        }               
                         SliceDensity[m][n] = density;
+                        if (density > ThreeSd)
+                            SliceDensity[m][n] = ThreeSd;
                         DMin = Math.Min(DMin, density);
                         DMax = Math.Max(DMax, density);
                         if (_interp == "BSPLINE" || _interp == "LINEAR")
@@ -267,6 +269,19 @@ namespace LeuciShared
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap,
                                 VectorThree central, VectorThree linear, VectorThree planar)
         {
+            ////////////// general settings for the view /////////////////////
+            // we want general info of the max and min given the sd setting
+            DenMin = Convert.ToDouble(_densityBinary.Words["20_DMIN"]);
+            DenMax = Convert.ToDouble(_densityBinary.Words["21_DMAX"]);
+            ThreeSd = _densityBinary.Mean + (sdcap * _densityBinary.Sd);
+            if (sd)
+            {
+                DenMin = (Convert.ToDouble(_densityBinary.Words["20_DMIN"]) - _densityBinary.Mean) / _densityBinary.Sd;
+                DenMax = (Convert.ToDouble(_densityBinary.Words["21_DMAX"]) - _densityBinary.Mean) / _densityBinary.Sd;
+                ThreeSd = sdcap;
+            }
+            ThreeSd = Math.Round(ThreeSd, 2);
+            ////////////////////////////////////////////////////////////////////
 
             // we want to first build a smaller cube around the centre
             VectorThree crs_centre = _densityBinary.getCRSFromXYZ(central);
@@ -356,6 +371,8 @@ namespace LeuciShared
                             density = (density - _densityBinary.Mean) / _densityBinary.Sd;
                         }
                         SliceDensity[m][n] = density;
+                        if (density > ThreeSd)
+                            SliceDensity[m][n] = ThreeSd;
                         DMin = Math.Min(DMin, density);
                         DMax = Math.Max(DMax, density);
                         if (_interp == "BSPLINE" || _interp == "LINEAR")
@@ -387,20 +404,7 @@ namespace LeuciShared
                     }
 
                 }
-            }
-
-            ////////////// general settings for the view /////////////////////
-            // we want general info of the max and min given the sd setting
-            DenMin = Convert.ToDouble(_densityBinary.Words["20_DMIN"]);
-            DenMax = Convert.ToDouble(_densityBinary.Words["21_DMAX"]);
-            ThreeSd = _densityBinary.Mean + (sdcap * _densityBinary.Sd);
-            if (sd)
-            {
-                DenMin = (Convert.ToDouble(_densityBinary.Words["20_DMIN"]) - _densityBinary.Mean) / _densityBinary.Sd;
-                DenMax = (Convert.ToDouble(_densityBinary.Words["21_DMAX"]) - _densityBinary.Mean) / _densityBinary.Sd;
-                ThreeSd = sdcap;
-            }
-            ThreeSd = Math.Round(ThreeSd, 2);
+            }            
         }
 
     }

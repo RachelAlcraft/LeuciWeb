@@ -175,9 +175,13 @@ namespace Leucippus.Models
                     if (_denhue == "RedBlueGrey")
                         _denhue = "BlackWhite";
                     else if (_denhue == "BlackWhite")
-                        _denhue = "RedBlue";
-                    else
+                        _denhue = "RedBlueZero";
+                    else if (_denhue == "RedBlueZero")
                         _denhue = "RedBlueGrey";
+                    
+                    //else if (_denhue == "RedBlue")
+                    //    _denhue = "RedBlueGrey";
+                    
                 }                
             }
         }
@@ -241,9 +245,12 @@ namespace Leucippus.Models
                     if (_radhue == "RedBlueGrey")
                         _radhue = "BlackWhite";
                     else if (_radhue == "BlackWhite")
-                        _radhue = "RedBlue";
-                    else
+                        _radhue = "RedBlueZero";
+                    else if (_radhue == "RedBlueZero")
                         _radhue = "RedBlueGrey";
+                    
+                    //else if (_radhue == "RedBlue")
+                    //    _radhue = "RedBlueGrey";                    
                 }
             }
         }
@@ -266,7 +273,7 @@ namespace Leucippus.Models
                 }
             }
         }
-        private string _laphue = "RedBlue";
+        private string _laphue = "RedBlueZero";
         public string LapHue
         {
             get { return _laphue; }
@@ -277,9 +284,11 @@ namespace Leucippus.Models
                     if (_laphue == "RedBlueGrey")
                         _laphue = "BlackWhite";
                     else if (_laphue == "BlackWhite")
-                        _laphue = "RedBlue";
-                    else
+                        _laphue = "RedBlueZero";
+                    else if (_laphue == "RedBlueZero")
                         _laphue = "RedBlueGrey";
+                    //else if (_laphue == "RedBlue")
+                    //    _laphue = "RedBlueGrey";                    
                 }
             }
         }

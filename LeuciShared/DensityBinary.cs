@@ -56,7 +56,7 @@ namespace LeuciShared
 
         public void Init()
         {
-            calcStats(Bytes);
+            //calcStats(Bytes);
             //createMatrix(0, Z3_cap, 0, Y2_cap, 0, X1_cap);
             // Some testing
             //VectorThree test1 = getCRSFromXYZ(new VectorThree(0, 0, 0));
@@ -158,6 +158,7 @@ namespace LeuciShared
             Bstart = Bytes.Length - (4 * Blength);
             makeInfo();
             loadInfo();
+            calcStats();
             
         }
 
@@ -228,7 +229,7 @@ namespace LeuciShared
             }
         }
 
-        private void calcStats(byte[] bytes)
+        private void calcStats()
         {            
             Mean = Convert.ToDouble(Words["22_DMEAN"]);
             Sd = Convert.ToDouble(Words["RMS"]);
