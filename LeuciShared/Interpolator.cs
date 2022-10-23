@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -10,8 +11,10 @@ namespace LeuciShared
 {
     // ****** ABSTRACT CLASS ****************************************
     public abstract class Interpolator
-    {
-        protected double[] Matrix;
+    {        
+        protected byte[] _binary;
+        protected int _bStart;
+        protected int _bLength;
         protected int XLen;
         protected int YLen;
         protected int ZLen;
@@ -22,22 +25,24 @@ namespace LeuciShared
 
         //--------------------------------------------------------------------
 
-        public Interpolator(double[] matrix, int x, int y, int z)
-        {
-            //x = slowest, y = middle, z = fastest changing axis
-            Matrix = matrix;
-            XLen = x;
-            YLen = y;
-            ZLen = z;
-            h = 0.001;            
-        }
-        public void addMatrix(double[] matrix, int x, int y, int z)
-        {
-            Matrix = matrix;
+        public Interpolator(byte[] binary,int bstart,int blength,int x, int y, int z)
+        {//init without data for conversions
+            //x = slowest, y = middle, z = fastest changing axis         
             XLen = x;
             YLen = y;
             ZLen = z;
             h = 0.001;
+            _binary = binary;
+            _bStart = bstart;
+            _bLength = blength;
+        }        
+        public int getExactPos(int x, int y, int z)
+        {
+            int sliceSize = XLen * YLen;
+            int pos = z * sliceSize;
+            pos += XLen * y;
+            pos += x;
+            return pos;
         }
         public int getPosition(int x, int y, int z)
         {                                    
@@ -45,22 +50,28 @@ namespace LeuciShared
             int pos = z * sliceSize;
             pos += XLen * y;
             pos += x;
-            if (pos > 0 && pos < Matrix.Length)
-                return pos;
-            else
-                return 0;//what should this return? -1, throw an error? TODO
+            return pos;
+            //if (Matrix.ContainsKey(pos))
+            //    return pos;
+            //else
+            //    return 0;//what should this return? -1, throw an error? TODO
         }
-        public double getExactValue(int x, int y, int z)
+        public double getExactValueBinary(int x, int y, int z)
         {
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
             pos += XLen * y;
             pos += x;
-            if (pos > 0 && pos < Matrix.Length)
-                return Matrix[pos];
-            else
+            try
+            {
+                Single value = BitConverter.ToSingle(_binary, _bStart + pos * 4);
+                return value;
+            }
+            catch(Exception e)
+            {
                 return 0;
-        }
+            }            
+        }        
         public double getRadient(double x, double y, double z)
         {
             double val = getValue(x, y, z);
@@ -104,18 +115,18 @@ namespace LeuciShared
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public class Nearest: Interpolator
-    {         
+    {
         // ****** Nearest Neighbour Implementation ****************************************
-        public Nearest(double[] matrix, int x, int y, int z): base(matrix, x, y, z)
-        {            
-        }
+        public Nearest(byte[] bytes,int start,int length,int x, int y, int z) : base(bytes,start,length,x, y, z)
+        {
 
+        }        
         public override double getValue(double x, double y, double z)
         {
             int i = Convert.ToInt32(Math.Round(x));
             int j = Convert.ToInt32(Math.Round(y));
             int k = Convert.ToInt32(Math.Round(z));
-            return getExactValue(i, j, k);
+            return getExactValueBinary(i, j, k);
         }        
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,10 +135,10 @@ namespace LeuciShared
     public class Linear : Interpolator
     {
         // ****** Linear Implementation ****************************************
-        public Linear(double[] matrix, int x, int y, int z) : base(matrix, x, y, z)
+        public Linear(byte[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
         {
-        }
 
+        }        
         public override double getValue(double x, double y, double z)
         {
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
@@ -145,7 +156,7 @@ namespace LeuciShared
                     for (int k = 0; k < 2; ++k)
                     {
                         int zp = Convert.ToInt32(Math.Floor(z+k));
-                        double p = getExactValue(xp, yp, zp);
+                        double p = getExactValueBinary(xp, yp, zp);
                         vals[count] = p;
                         ++count;
                     }
@@ -296,16 +307,39 @@ namespace LeuciShared
         // *******************************************************************************
         private double TOLERANCE;
         private int _degree;
-        private List<double> _coefficients = new List<double>();
+        private Dictionary<int,double> _coefficients = new Dictionary<int,double>();
+        //private Dictionary<int,int> _poses = new Dictionary<int,int>();
+        protected Dictionary<int, double> Matrix;
 
-        public BetaSpline(double[] matrix, int x, int y, int z) : base(matrix, x, y, z)
+        public BetaSpline(byte[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = 5;
+            makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
             createCoefficients();
-
+        }        
+        public void makeSubMatrix(int minx, int miny, int minz, int maxx, int maxy, int maxz)
+        {
+            int count = 0;
+            Matrix = new Dictionary<int, double>();
+            for (int i = _bStart; i < _binary.Length; i += 4)
+            {
+                Single value = BitConverter.ToSingle(_binary, i);
+                Matrix[count] = value;
+                count++;
+            }            
         }
-
+        public double getExactValueMat(int x, int y, int z)
+        {
+            int sliceSize = XLen * YLen;
+            int pos = z * sliceSize;
+            pos += XLen * y;
+            pos += x;
+            if (Matrix.ContainsKey(pos))
+                return Matrix[pos];
+            else
+                return 0;
+        }
         public override double getValue(double x, double y, double z)
         {            
             int weight_length = _degree + 1;
@@ -411,7 +445,7 @@ namespace LeuciShared
                     double w1 = 0.0;
                     for (i = 0; i <= splineDegree; i++)
                     {
-                        w1 += xWeight[i] * _coefficients[getPosition(xIndex[i], yIndex[j], zIndex[k])];
+                        w1 += xWeight[i] * getCoef(xIndex[i], yIndex[j], zIndex[k]);
                     }
                     w2 += yWeight[j] * w1;
                 }
@@ -420,10 +454,30 @@ namespace LeuciShared
             return w3;
         }
 
+        private double getCoef(int x, int y, int z)
+        {
+            int pos = getPosition(x,y,z);
+            if (_coefficients.ContainsKey(pos))
+                return _coefficients[pos];
+            else            
+            return 0;
+        }
+        private void putCoef(int x, int y, int z,double v)
+        {
+            int pos = getPosition(x, y, z);
+            if (_coefficients.ContainsKey(pos))
+                _coefficients[pos] = v;
+            
+        }
         private void createCoefficients()
         {
-            for (int i = 0; i < XLen * YLen * ZLen; ++i)
-                _coefficients.Add(Matrix[i]);
+            //for (int i = 0; i < XLen * YLen * ZLen; ++i)
+            //_coefficients.Add(Matrix[i]);
+            foreach (var v in Matrix)
+            {
+                _coefficients.Add(v.Key,v.Value);
+                //_poses.Add(v.Key);
+            }
 
             List<double> pole = getPole(_degree);
             int numPoles = Convert.ToInt32(pole.Count);
@@ -466,37 +520,37 @@ namespace LeuciShared
         {
             List<double> row = new List<double>();
             for (int x = 0; x < length; ++x)
-                row.Add(_coefficients[getPosition(x, y, z)]);
+                row.Add(getCoef(x, y, z));
             return row;
         }
         private void putRow3d(int y, int z, List<double> row, int length)
         {
             for (int x = 0; x < length; ++x)
-                _coefficients[getPosition(x, y, z)] = row[x];
+                putCoef(x, y, z,row[x]);
         }
         private List<double> getColumn3d(int x, int z, int length)
         {
             List <double> col = new List<double>();
             for (int y = 0; y < length; ++y)
-                col.Add(_coefficients[getPosition(x, y, z)]);
+                col.Add(getCoef(x, y, z));
             return col;
         }
         private void putColumn3d(int x, int z, List<double> col, int length)
         {
             for (int y = 0; y < length; ++y)
-                _coefficients[getPosition(x, y, z)] = col[y];
+                putCoef(x, y, z, col[y]);            
         }
         private List<double> getHole3d(int x, int y, int length)
         {
             List<double> bore = new List<double>();
             for (int z = 0; z < length; ++z)
-                bore.Add(_coefficients[getPosition(x, y, z)]);
+                bore.Add(getCoef(x, y, z));
             return bore;
         }
         private void putHole3d(int x, int y, List<double> bore, int length)
         {
             for (int z = 0; z < length; ++z)
-                _coefficients[getPosition(x, y, z)] = bore[z];
+                putCoef(x, y, z, bore[z]);            
         }
 
         private List<double> getPole(int degree)

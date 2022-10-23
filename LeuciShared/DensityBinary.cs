@@ -15,11 +15,12 @@ namespace LeuciShared
         public Dictionary<string, string> Words = new Dictionary<string, string>();
         public string Info = "";
         private string _fileName;
-        private byte[] _bytes;
-        private int _datalength = 0;
+        public byte[] Bytes;
+        public int Blength = 0;
+        public int Bstart = 0;
         //private double[,,] _myMatrix;
         //private double[] _myMatrixListX;
-        private Dictionary<int,double> _myMatrixList;
+        //private Dictionary<int,double> _myMatrixList;
 
 
         // conversion between orthogonal
@@ -42,21 +43,27 @@ namespace LeuciShared
         public double Sd = 0;
         public double Mean = 0;
 
-        const int TEMP_CAP = 200;
+        const int TEMP_CAP = 1000;
+        public bool INIT = false;
 
         public DensityBinary(string fileName)
         {
             _fileName = fileName;
-            _bytes = ReadBinaryFile(_fileName);
-            createWords(_bytes);
-            List<Single> sings = bytesToSingles(_bytes);            
-            createMatrix(sings);
+            Bytes = ReadBinaryFile(_fileName);
+            createWords(Bytes);
+            //List<Single> sings = bytesToSingles(_bytes);                        
+        }
 
+        public void Init()
+        {
+            calcStats(Bytes);
+            //createMatrix(0, Z3_cap, 0, Y2_cap, 0, X1_cap);
             // Some testing
-            VectorThree test1 = getCRSFromXYZ(new VectorThree(0, 0, 0));
-            VectorThree test2 = getXYZFromCRS(test1);
-            VectorThree test3 = getCRSFromXYZ(new VectorThree(1, 1, 10));
-            VectorThree test4 = getXYZFromCRS(test3);
+            //VectorThree test1 = getCRSFromXYZ(new VectorThree(0, 0, 0));
+            //VectorThree test2 = getXYZFromCRS(test1);
+            //VectorThree test3 = getCRSFromXYZ(new VectorThree(1, 1, 10));
+            //VectorThree test4 = getXYZFromCRS(test3);
+            INIT = true;
         }
 
         public byte[] ReadBinaryFile(string filePath)
@@ -147,7 +154,8 @@ namespace LeuciShared
             Words["LABEL8"] = Convert.ToString(bytesToString(fileInBinary, 784, 80)); // 64
             Words["LABEL9"] = Convert.ToString(bytesToString(fileInBinary, 864, 80)); // 65
             Words["LABEL10"] = Convert.ToString(bytesToString(fileInBinary, 944, 80)); // 66
-            _datalength = Convert.ToInt32(Words["01_NX"]) * Convert.ToInt32(Words["02_NY"]) * Convert.ToInt32(Words["03_NZ"]);
+            Blength = Convert.ToInt32(Words["01_NX"]) * Convert.ToInt32(Words["02_NY"]) * Convert.ToInt32(Words["03_NZ"]);
+            Bstart = Bytes.Length - (4 * Blength);
             makeInfo();
             loadInfo();
             
@@ -175,19 +183,23 @@ namespace LeuciShared
         //public double[] getShortListX()
         //{
         //    return _myMatrixListX;       
-        //}
-        public double[] getShortList()
+        //}        
+        public Dictionary<int, double> getShorterList(List<int> xyz)
         {
-            double[] shorter = new double[_myMatrixList.Count];
-            int count = 0;
-            foreach (KeyValuePair<int, double> entry in _myMatrixList)
-            {
-                shorter[count] = entry.Value;
+            return bytesToDoubles(Bytes, xyz);
+        }
+        public Dictionary<int,double> getFullList(int[] xyz)
+        {
+            int count = 0;            
+            Dictionary<int,double> matvals=new Dictionary<int,double>();            
+            for (int i = Bstart; i < Bytes.Length; i += 4)
+            {                
+                Single value = BitConverter.ToSingle(Bytes, i);
+                matvals[count] = Convert.ToDouble(value);                                
                 count++;
+                
             }
-            
-            return shorter;
-
+            return matvals;
         }
         //private double getVal(int x, int y, int z)
         //{// TODO this should be loading the binary and getting just those it wants
@@ -216,65 +228,101 @@ namespace LeuciShared
             }
         }
 
-        private List<Single> bytesToSingles(byte[] bytes)
-        {
+        private void calcStats(byte[] bytes)
+        {            
+            Mean = Convert.ToDouble(Words["22_DMEAN"]);
+            Sd = Convert.ToDouble(Words["RMS"]);
+            /*
             double sum = 0;
             int count = 0;
             int start = bytes.Length - (4 * _datalength);
-            List<Single> matvals = new List<Single>();
+            double sdSum = 0;            
             for (int i = start; i < bytes.Length; i += 4)
             {
                 Single value = BitConverter.ToSingle(bytes, i);
-                matvals.Add(value);
+                sdSum += Math.Pow(value - Mean, 2);                
                 count++;
                 sum += value;
             }
-
-            Mean = sum / count;
-
-            double sdSum = 0;
-            for (int i = start; i < bytes.Length; i += 4)
-            {
-                Single value = BitConverter.ToSingle(bytes, i);
-                sdSum += Math.Pow(value - Mean,2);
-            }
+            // calculate the stats                                    
             sdSum /= count;
-            Sd = Math.Sqrt(sdSum);
+            Sd = Math.Sqrt(sdSum);*/
+        }
+        private Dictionary<int,double> bytesToDoubles(byte[] bytes, List<int> poses)
+        {            
+            int count = 0;
+            int start = bytes.Length - (4 * Blength);                     
+            // add the reduced numbre of required values to the list
+            //Dictionary<int,double> matvals=new Dictionary<int,double>();
+            List<Single> vals = new List<Single>();
+            /*for (int i = start; i < bytes.Length; i += 4)
+            {
+                //if (poses.Contains(count))
+                {
+                    Single value = BitConverter.ToSingle(bytes, i);
+                    //matvals[count] = Convert.ToDouble(value);
+                    vals.Add(value);
+                }
+                count++;
+                //if (poses.Count == matvals.Count)
+                //    return matvals;
+            }*/
+
+            foreach (int pos in poses)
+            {
+                try
+                {
+                    Single value = BitConverter.ToSingle(bytes, start + pos * 4);
+                    vals.Add(value);
+                }
+                catch(Exception e)
+                {
+                    string msg = e.Message;
+                }
+            }
+
+            Dictionary<int,double> matvals=new Dictionary<int,double>();
+            for (int m = 0; m < poses.Count; ++m)
+            {
+                if (matvals.ContainsKey(poses[m]))
+                {
+                    int breakpoint = 0;
+                    breakpoint++;
+                }
+                else
+                {
+                    matvals.Add(poses[m], vals[m]);
+                }
+            }
+
 
             return matvals;
         }
-
-        private void createMatrix(List<Single> sings)
+        
+        public void createMatrix(int xl, int xu, int yl, int yu, int zl, int zu)
         {
             int z = Convert.ToInt32(Words["01_NX"]);
             int y = Convert.ToInt32(Words["02_NY"]);
             int x = Convert.ToInt32(Words["03_NZ"]);
 
-
-            //_myMatrix = new double[x, y, z];
-            //_myMatrixListX = new double[x*y*z];
-            _myMatrixList = new Dictionary<int, double>();
-
-            int count = 0;
-
+            // first generate list of positions we want given the caps
+            List<int> poses = new List<int>();
+            int pos = 0;
             for (int i = 0; i < x; ++i)
-            {
+            {                
                 for (int j = 0; j < y; ++j)
-                {
+                {                        
                     for (int k = 0; k < z; ++k)
                     {
-                        // keep counting but don't go over the cap
-                        if (k < X1_cap && j < Y2_cap && i < Z3_cap)
+                        if ((i >= xl && i < xu)  && (j >= yl && j < yu) && (k >= zl && k < zu) || xl+xu+yl+yu+zl+zu==-6)
                         {
-                            double val = sings[count];
-                            //_myMatrix[i, j, k] = val;
-                            _myMatrixList[count] = val;
-                            //_myMatrixListX[count] = val;
+                            poses.Add(pos);
                         }
-                        count += 1;
-                    }
-                }
+                        pos++;
+                    }                        
+                }                
             }
+            //_myMatrixList = bytesToDoubles(_bytes,poses);            
         }
 
         ///////////////////////////////////////////////////

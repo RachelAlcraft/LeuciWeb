@@ -122,16 +122,12 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.SdCap = sdcap;
             ViewBagMatrix.Instance.SdCap = Math.Round(ViewBagMatrix.Instance.SdCap, 2);
             
-
             bool recalc = ViewBagMatrix.Instance.Refresh;
-                        
-            
-                                    
+            dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
             if (recalc)
             {                
-                dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap,ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear,ViewBagMatrix.Instance.Planar);
+                //dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap,ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear,ViewBagMatrix.Instance.Planar);
             }
-
             ViewBagMatrix.Instance.EmCode = DensitySingleton.Instance.FD.EmCode;
             ViewBagMatrix.Instance.DensityType = DensitySingleton.Instance.FD.DensityType;
 
@@ -203,7 +199,10 @@ namespace Leucippus.Controllers
 
             DataFiles dfs = new DataFiles("wwwroot/App_Data/");
             List<DataFile> dataFiles = dfs.Files;
-            ViewBag.Pdbs = dataFiles;
+            ViewBag.SmallPdbs = dfs.SmallPdbs;
+            ViewBag.HighPdbs = dfs.HighPdbs;
+            ViewBag.SmallEmPdbs = dfs.SmallEmPdbs;
+            ViewBag.HighEmPdbs = dfs.HighEmPdbs;
             //List<string> sms = new List<string>();
             //sms.Add("6eex");
             //sms.Add("6fgz");

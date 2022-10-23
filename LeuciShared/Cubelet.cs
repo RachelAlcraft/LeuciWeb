@@ -61,10 +61,16 @@ namespace LeuciShared
 
         public int get1D(int x, int y, int z)
         {
-            int x_bit = z;
-            int y_bit = _a + y;
-            int z_bit = (_a * _b) + x;
-            return x_bit + y_bit + z_bit;
+            int sliceSize = _c * _b;
+            int pos = z * sliceSize;
+            pos += _c * y;
+            pos += x;
+            return pos;
+
+            //int x_bit = z;
+            //int y_bit = _a + y;
+            //int z_bit = (_a * _b) + x;
+            //return x_bit + y_bit + z_bit;
         }
         public int[] get3D(int i)
         {
@@ -77,7 +83,35 @@ namespace LeuciShared
             return new int[] { x, y, z };
         }
 
-        public List<int[]> getPlaneCoords(string plane, int layer)
+        public List<int[]> getCubeCoords3d(int xmin, int xmax, int ymin, int ymax, int zmin, int zmax)
+        {
+            List<int[]> coords = new List<int[]>();
+            for (int x = xmin; x < xmax; ++x)
+            {
+                for (int y = ymin; y < ymax; ++y)
+                {
+                    for (int z = zmin; z < zmax; ++z)
+                    {
+                        coords.Add(new int[] { x, y, z });
+                    }
+
+                }
+            }
+            return coords;
+        }
+
+        public List<int> getPlaneCoords1d(string plane, int layer)
+        {
+            List<int[]> coords = getPlaneCoords3d(plane, layer);
+            List<int> poses = new List<int>();
+            for (int i = 0; i < coords.Count; ++i)
+            {
+                int pos = get1D(coords[i][0], coords[i][1], coords[i][2]);
+                poses.Add(pos);
+            }
+            return poses;
+        }
+        public List<int[]> getPlaneCoords3d(string plane, int layer)
         {
             List<int[]> coords = new List<int[]>();
             int eX = _a;
@@ -171,7 +205,7 @@ namespace LeuciShared
             return dims;
         }
 
-        public double[][] makeSquare(double[] doubles, int[] XY)
+        public double[][] makeSquare(List<double> doubles, int[] XY)
         {
             double[][] ret = new double[XY[0]][];//, XY[1]];
             int count = 0;
@@ -180,8 +214,15 @@ namespace LeuciShared
                 ret[a] = new double[XY[1]];
                 for (int b = 0; b < XY[1]; ++b)
                 {
-                    ret[a][b] = doubles[count];
-                    ++count;
+                    try
+                    {
+                        ret[a][b] = doubles[count];
+                        ++count;
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = e.Message;
+                    }
                 }
             }
             return ret;

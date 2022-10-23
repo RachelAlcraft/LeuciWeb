@@ -19,33 +19,144 @@
 </span>
 </div>
 <hr />
+<table cellpadding="0" cellspacing="0">
+    @using (Html.BeginForm("Index", "Matrix", FormMethod.Post))
+    {
+        <tr style="height:25%">
+            <th colspan="1" align="center">Protein Structure</th>
+        </tr>
+        <tr style="height:30px;">
+            <td style="text-align:left">
+                <div class="inner-tbl">
+                    <table>
+                        <tr>
+                            <td>
+                                PdbCode:
+                            </td>
+                            <td>
+                                <input type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode style="height:30px;" />
+                            </td>
+                            <td>
+                                <input type="image" src="~/images/search.png" style="width:30px;height:30px;vertical-align:text-bottom" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    }
+</table>
+<hr />
 <div class="browse">
-    <table class="browse" width="95%">
+    <table class="browse" width="95%">        
         <tr>
-            <th class="browse">Available Pdbs</th>            
+            <th class="browse">Examples</th>            
             <th class ="browse">Selected: @ViewBag.PdbCode</th>
         </tr>
     <tr>
             <td class="browse" width="20%">
+                <table>
+                    <tr>
+                        <th>Small structures</th>
+                    </tr>
+                    <tr>
+                        <td>
+                        @foreach (var item in ViewBag.SmallPdbs)
+                        {
+                            <span>
+                                @item.PdbCode
 
-            @foreach (var item in ViewBag.Pdbs)
-            {
-                <span>
-                    @item.PdbCode
-
-                    @Html.ActionLink(
-                linkText: "select",
-                actionName: "Browse",
-                controllerName: "Matrix",
-                routeValues: new {
-                pdbcode = @item.PdbCode,
-                },
-                htmlAttributes: null
-                )
+                                @Html.ActionLink(
+                            linkText: "select",
+                            actionName: "Browse",
+                            controllerName: "Matrix",
+                            routeValues: new {
+                            pdbcode = @item.PdbCode,
+                            },
+                            htmlAttributes: null
+                            )
                     
-                </span>
-                <br />
-            }
+                            </span>
+                            <br />
+                        }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Ultra-high-resolution</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @foreach (var item in ViewBag.HighPdbs)
+                            {
+                                <span>
+                                    @item.PdbCode
+
+                                    @Html.ActionLink(
+                                linkText: "select",
+                                actionName: "Browse",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                pdbcode = @item.PdbCode,
+                                },
+                                htmlAttributes: null
+                                )
+
+                                </span>
+                                <br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Small cryo-em</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @foreach (var item in ViewBag.SmallEmPdbs)
+                            {
+                                <span>
+                                    @item.PdbCode
+
+                                    @Html.ActionLink(
+                                linkText: "select",
+                                actionName: "Browse",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                pdbcode = @item.PdbCode,
+                                },
+                                htmlAttributes: null
+                                )
+
+                                </span>
+                                <br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>High-res cryo-em</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @foreach (var item in ViewBag.HighEmPdbs)
+                            {
+                                <span>
+                                    @item.PdbCode
+
+                                    @Html.ActionLink(
+                                linkText: "select",
+                                actionName: "Browse",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                pdbcode = @item.PdbCode,
+                                },
+                                htmlAttributes: null
+                                )
+
+                                </span>
+                                <br />
+                            }
+                        </td>
+                    </tr>
+                </table>
 
         </td>
 
