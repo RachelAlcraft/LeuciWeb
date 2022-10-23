@@ -407,7 +407,7 @@ namespace Leucippus.Models
                 _gap = Math.Round(_gap, 4);
             }
         }
-        private double _width = 8.0;
+        private double _width = 5.0;
         public double Width
         {
             get { return _width; }

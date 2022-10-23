@@ -11,7 +11,7 @@
             <tr>
                 <th style="width:6%;" colspan="1" align="center">                  
                   <input type="submit" value="Submit" />
-                  <input style="visibility:hidden;height:0px" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
+                  <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
                 </th>
                 <th style="width:8%;" colspan="1" align="center">Atom</th>
                 <th style="width:15%;" colspan="1" align="center">(x,y,z)</th>
@@ -447,7 +447,7 @@
 
     var minc = denmin
     var maxc = Math.round(numsd*100)/100
-    var size = (maxc - minc) / 10
+    var size = (maxc - minc) / 15
     var zero_frac = 0.001
     var zero_frac_lap = 0.001
     var cs = []

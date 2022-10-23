@@ -15,11 +15,12 @@ namespace LeuciShared
         public Dictionary<string, string> Words = new Dictionary<string, string>();
         public string Info = "";
         private string _fileName;
-        private byte[] _bytes;
-        private int _datalength = 0;
+        public byte[] Bytes;
+        public int Blength = 0;
+        public int Bstart = 0;
         //private double[,,] _myMatrix;
         //private double[] _myMatrixListX;
-        private Dictionary<int,double> _myMatrixList;
+        //private Dictionary<int,double> _myMatrixList;
 
 
         // conversion between orthogonal
@@ -42,21 +43,21 @@ namespace LeuciShared
         public double Sd = 0;
         public double Mean = 0;
 
-        const int TEMP_CAP = 2000;
+        const int TEMP_CAP = 1000;
         public bool INIT = false;
 
         public DensityBinary(string fileName)
         {
             _fileName = fileName;
-            _bytes = ReadBinaryFile(_fileName);
-            createWords(_bytes);
+            Bytes = ReadBinaryFile(_fileName);
+            createWords(Bytes);
             //List<Single> sings = bytesToSingles(_bytes);                        
         }
 
         public void Init()
         {
-            calcStats(_bytes);
-            createMatrix(0, Z3_cap, 0, Y2_cap, 0, X1_cap);
+            calcStats(Bytes);
+            //createMatrix(0, Z3_cap, 0, Y2_cap, 0, X1_cap);
             // Some testing
             //VectorThree test1 = getCRSFromXYZ(new VectorThree(0, 0, 0));
             //VectorThree test2 = getXYZFromCRS(test1);
@@ -153,7 +154,8 @@ namespace LeuciShared
             Words["LABEL8"] = Convert.ToString(bytesToString(fileInBinary, 784, 80)); // 64
             Words["LABEL9"] = Convert.ToString(bytesToString(fileInBinary, 864, 80)); // 65
             Words["LABEL10"] = Convert.ToString(bytesToString(fileInBinary, 944, 80)); // 66
-            _datalength = Convert.ToInt32(Words["01_NX"]) * Convert.ToInt32(Words["02_NY"]) * Convert.ToInt32(Words["03_NZ"]);
+            Blength = Convert.ToInt32(Words["01_NX"]) * Convert.ToInt32(Words["02_NY"]) * Convert.ToInt32(Words["03_NZ"]);
+            Bstart = Bytes.Length - (4 * Blength);
             makeInfo();
             loadInfo();
             
@@ -181,20 +183,23 @@ namespace LeuciShared
         //public double[] getShortListX()
         //{
         //    return _myMatrixListX;       
-        //}
-        public Dictionary<int,double> getShortList(int[] xyz)
+        //}        
+        public Dictionary<int, double> getShorterList(List<int> xyz)
         {
-            //double[] shorter = new double[_myMatrixList.Count];
-            //int count = 0;
-            //foreach (KeyValuePair<int, double> entry in _myMatrixList)
-            //{
-            //    shorter[count] = entry.Value;
-            //    count++;
-            //}
-
-            //createMatrix(0, Z3_cap, 0, Y2_cap, 0, X1_cap);
-            return _myMatrixList;
-
+            return bytesToDoubles(Bytes, xyz);
+        }
+        public Dictionary<int,double> getFullList(int[] xyz)
+        {
+            int count = 0;            
+            Dictionary<int,double> matvals=new Dictionary<int,double>();            
+            for (int i = Bstart; i < Bytes.Length; i += 4)
+            {                
+                Single value = BitConverter.ToSingle(Bytes, i);
+                matvals[count] = Convert.ToDouble(value);                                
+                count++;
+                
+            }
+            return matvals;
         }
         //private double getVal(int x, int y, int z)
         //{// TODO this should be loading the binary and getting just those it wants
@@ -224,11 +229,13 @@ namespace LeuciShared
         }
 
         private void calcStats(byte[] bytes)
-        {
+        {            
+            Mean = Convert.ToDouble(Words["22_DMEAN"]);
+            Sd = Convert.ToDouble(Words["RMS"]);
+            /*
             double sum = 0;
             int count = 0;
             int start = bytes.Length - (4 * _datalength);
-            Mean = Convert.ToDouble(Words["22_DMEAN"]);
             double sdSum = 0;            
             for (int i = start; i < bytes.Length; i += 4)
             {
@@ -239,13 +246,12 @@ namespace LeuciShared
             }
             // calculate the stats                                    
             sdSum /= count;
-            Sd = Math.Sqrt(sdSum);            
+            Sd = Math.Sqrt(sdSum);*/
         }
-
         private Dictionary<int,double> bytesToDoubles(byte[] bytes, List<int> poses)
         {            
             int count = 0;
-            int start = bytes.Length - (4 * _datalength);                     
+            int start = bytes.Length - (4 * Blength);                     
             // add the reduced numbre of required values to the list
             //Dictionary<int,double> matvals=new Dictionary<int,double>();
             List<Single> vals = new List<Single>();
@@ -264,20 +270,35 @@ namespace LeuciShared
 
             foreach (int pos in poses)
             {
-                Single value = BitConverter.ToSingle(bytes, start + pos*4);
-                vals.Add(value);
+                try
+                {
+                    Single value = BitConverter.ToSingle(bytes, start + pos * 4);
+                    vals.Add(value);
+                }
+                catch(Exception e)
+                {
+                    string msg = e.Message;
+                }
             }
 
             Dictionary<int,double> matvals=new Dictionary<int,double>();
             for (int m = 0; m < poses.Count; ++m)
             {
-                matvals.Add(poses[m], vals[m]);
+                if (matvals.ContainsKey(poses[m]))
+                {
+                    int breakpoint = 0;
+                    breakpoint++;
+                }
+                else
+                {
+                    matvals.Add(poses[m], vals[m]);
+                }
             }
 
 
             return matvals;
         }
-
+        
         public void createMatrix(int xl, int xu, int yl, int yu, int zl, int zu)
         {
             int z = Convert.ToInt32(Words["01_NX"]);
@@ -301,7 +322,7 @@ namespace LeuciShared
                     }                        
                 }                
             }
-            _myMatrixList = bytesToDoubles(_bytes,poses);            
+            //_myMatrixList = bytesToDoubles(_bytes,poses);            
         }
 
         ///////////////////////////////////////////////////
