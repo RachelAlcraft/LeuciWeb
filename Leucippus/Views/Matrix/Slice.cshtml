@@ -447,15 +447,16 @@
 
     var minc = denmin
     var maxc = Math.round(numsd*100)/100
-    var size = (maxc - minc) / 15
-    var zero_frac = 0.001
-    var zero_frac_lap = 0.001
-    var cs = []
-    
+    var size = (maxc - minc) / 20
+    var zero_frac = 0.001            
     zero_frac = (0 - minc) / (maxc - minc)
     var lev1 = zero_frac + 0.1 * (1 - zero_frac)    
     var lev2 = zero_frac + 0.2 * (1 - zero_frac)
     var lev3 = zero_frac + 0.75 * (1 - zero_frac)
+            
+    var zero_frac_lap = 0.001
+    var cs = []
+            
     if (dhue == "RedBlueGrey"){
         cs = [  [0, 'DimGray'], 
                 [String(zero_frac + 0.0001), 'Snow'], 
@@ -464,12 +465,15 @@
                 [String(lev2), 'CornflowerBlue'], 
                 [String(lev3), 'Crimson'],
                 [1, 'rgb(100, 0, 0)']]
-    }
+    }    
     else if (dhue == "BlackWhite") {
         cs = [[0, 'Snow'], [1, 'Black']]
     }
-    else{
+    else if (dhue == "RedBlueZero") {
         cs = [[0, 'CornflowerBlue'], [String(zero_frac), 'Snow'], [1, 'Crimson']]
+    }
+    else {
+        cs = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
     }
          
     zero_frac_lap = (0 - minl) / (maxl - minl)  
@@ -482,8 +486,11 @@
     else if (lhue == "BlackWhite") {
         cs_lap = [[0, 'Snow'], [1, 'Black']]
     }
+    else if (lhue == "RedBlueZero") {
+        cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'],[String(lev1), 'Snow'], [1, 'Crimson']]
+    }
     else {
-        cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'], [String(lev2), 'Snow'], [1, 'Crimson']]
+        cs_lap = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
     }
       
    if (rhue == "RedBlueGrey") {
@@ -493,7 +500,7 @@
         cs_rad = [[0, 'Black'], [1, 'Snow']]
    }
    else {
-        cs_rad = [[0, 'CornflowerBlue'], [String(0.5), 'Snow'], [1, 'Crimson']]
+        cs_rad = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
    }
 
    var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
@@ -503,29 +510,50 @@
 
     var huetitle = @Html.Raw(Json.Serialize(@ViewBag.ValSd)) + "<br>max=" + denmax;
 
-    var data = [{
-        z: jv,
-        x: jx,
-        y: jy,
-        type: denplot,
-        colorscale: cs,
-        reversescale: false,
-        autocontour: false,
-        line: {
-            width: 0.5,
-            color: 'DimGray'
-        },
-        contours: {
-            start: minc,
-            end: maxc,
-            size: size
-        },
-        showscale:dbar,
-        colorbar: {
-            thickness: 15,
-            title:huetitle,            
-        },        
-    }];
+    if (denplot == "heatmap"){
+        var data = [{
+            z: jv,
+            x: jx,
+            y: jy,
+            type: denplot,
+            colorscale: cs,
+            reversescale: false,            
+            line: {
+                width: 0.5,
+                color: 'DimGray'
+            },            
+            showscale: dbar,
+            colorbar: {
+                thickness: 15,
+                title: huetitle,
+            },
+        }];
+    }
+    else{
+        var data = [{
+            z: jv,
+            x: jx,
+            y: jy,
+            type: denplot,
+            colorscale: cs,
+            reversescale: false,
+            autocontour: false,
+            line: {
+                width: 0.5,
+                color: 'DimGray'
+            },
+            contours: {
+                start: minc,
+                end: maxc,
+                size: size
+            },
+            showscale:dbar,
+            colorbar: {
+                thickness: 15,
+                title:huetitle,            
+            },        
+        }];
+    }
    
     var dataR = [{
         z: jvr,
@@ -545,6 +573,8 @@
             title:"l1 norm of P1",            
         }
     }];
+    
+    var sizeL = (minl - maxl) / 20
 
     var dataL = [{
         z: jvl,
@@ -562,7 +592,12 @@
         colorbar: {
             thickness: 15,
             title:"sum of P2",
-        }
+        },
+        contours: {
+                start: maxl,
+                end: minl,
+                size: sizeL
+            },
     }];
     
     var layout = {
@@ -581,10 +616,10 @@
             visible: false,
         },
         margin: {
-            l: 50,
-            r: 50,
-            b: 100,
-            t: 100,
+            l: 20,
+            r: 20,
+            b: 20,
+            t: 20,
             pad: 4
         },  
         colorbar: {
