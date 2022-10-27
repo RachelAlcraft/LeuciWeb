@@ -71,7 +71,7 @@ namespace Leucippus.Models
                 }
             }
         }
-        private string _interp = "LINEAR";
+        private string _interp = "CUBIC";
         public string Interp
         {
             get { return _interp; }
@@ -83,6 +83,8 @@ namespace Leucippus.Models
                     {
                         ++_refresh;
                         if (_interp == "BSPLINE")
+                            _interp = "CUBIC";
+                        else if (_interp == "CUBIC")
                             _interp = "LINEAR";
                         else if (_interp == "LINEAR")
                             _interp = "NEAREST";
@@ -178,10 +180,9 @@ namespace Leucippus.Models
                     else if (_denhue == "BlackWhite")
                         _denhue = "RedBlueZero";
                     else if (_denhue == "RedBlueZero")
+                        _denhue = "RedBlue";                    
+                    else if (_denhue == "RedBlue")
                         _denhue = "RedBlueGrey";
-                    
-                    //else if (_denhue == "RedBlue")
-                    //    _denhue = "RedBlueGrey";
                     
                 }                
             }
@@ -248,10 +249,9 @@ namespace Leucippus.Models
                     else if (_radhue == "BlackWhite")
                         _radhue = "RedBlueZero";
                     else if (_radhue == "RedBlueZero")
-                        _radhue = "RedBlueGrey";
-                    
-                    //else if (_radhue == "RedBlue")
-                    //    _radhue = "RedBlueGrey";                    
+                        _radhue = "RedBlue";                    
+                    else if (_radhue == "RedBlue")
+                        _radhue = "RedBlueGrey";                    
                 }
             }
         }
@@ -287,9 +287,9 @@ namespace Leucippus.Models
                     else if (_laphue == "BlackWhite")
                         _laphue = "RedBlueZero";
                     else if (_laphue == "RedBlueZero")
-                        _laphue = "RedBlueGrey";
-                    //else if (_laphue == "RedBlue")
-                    //    _laphue = "RedBlueGrey";                    
+                        _laphue = "RedBlue";
+                    else if (_laphue == "RedBlue")
+                        _laphue = "RedBlueGrey";                    
                 }
             }
         }
@@ -386,7 +386,7 @@ namespace Leucippus.Models
             get { return _gap; }
             set
             {
-                //don;t maintain ratio when increasing the gap                
+                //don't maintain ratio when increasing the gap                
                 if (value == -2) // this means increase by 0.05
                 {
                     _gap += 0.01;                    
@@ -456,8 +456,7 @@ namespace Leucippus.Models
                 _width = Math.Round(_width, 4);
                 _gap = Math.Round(_gap, 4);
             }
-        }
-                  
+        }                  
         // Handle setting the central-linear-planar
         public VectorThree Central = new VectorThree(-1, -1, -1);
         private string _cxyz = "(-1,-1,-1)";

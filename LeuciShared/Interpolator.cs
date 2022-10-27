@@ -32,7 +32,7 @@ namespace LeuciShared
             XLen = x;
             YLen = y;
             ZLen = z;
-            h = 0.001;
+            h = 0.0001;
             _binary = binary;
             _bStart = bstart;
             _bLength = blength;
@@ -132,31 +132,37 @@ namespace LeuciShared
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public class Linear : Interpolator
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+    public class Multivariate : Interpolator
     {
+        protected int _degree;
+        protected int _dimsize;
+        protected int _points;
         // ****** Linear Implementation ****************************************
-        public Linear(byte[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
+        public Multivariate(byte[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
         {
-
-        }        
+            // the degree must be an odd number
+            _degree = degree;            
+            _points = _degree + 1;
+            _dimsize = (int)Math.Pow(_points, 3);
+        }
         public override double getValue(double x, double y, double z)
         {
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
             // 1. Build the points around the centre as a cube - 8 points
-            double[] vals = new double[8];
+            double[] vals = new double[_dimsize];
             int count = 0;
-            for (int i=0; i < 2; ++i)
+            for (int i = 0; i < _points; ++i)
             {
-                int xp = Convert.ToInt32(Math.Floor(x+i));
-                for (int j = 0; j < 2; ++j)
+                int xp = Convert.ToInt32(Math.Floor(x + i));
+                for (int j = 0; j < _points; ++j)
                 {
-                    int yp = Convert.ToInt32(Math.Floor(y+j));
-                    for (int k = 0; k < 2; ++k)
+                    int yp = Convert.ToInt32(Math.Floor(y + j));
+                    for (int k = 0; k < _points; ++k)
                     {
-                        int zp = Convert.ToInt32(Math.Floor(z+k));
+                        int zp = Convert.ToInt32(Math.Floor(z + k));
                         double p = getExactValueBinary(xp, yp, zp);
                         vals[count] = p;
                         ++count;
@@ -164,32 +170,32 @@ namespace LeuciShared
                 }
             }
             //2. Multiply with the precomputed matrix to find the multivariate polynomial
-            double[] ABC = multMatrixVector(getInverseLinear(), vals);
+            double[] ABC = multMatrixVector(getInverse(), vals);
 
             //3. Put the 8 values back into a cube
-            double[,,] coeffs = new double[2, 2, 2];
+            double[,,] coeffs = new double[_points, _points, _points];
             int pos = 0;
-            for (int i = 0; i < 2; ++i)
+            for (int i = 0; i < _points; ++i)
             {
-                for (int j = 0; j < 2; ++j)
+                for (int j = 0; j < _points; ++j)
                 {
-                    for (int k = 0; k < 2; ++k)
+                    for (int k = 0; k < _points; ++k)
                     {
                         coeffs[i, j, k] = ABC[pos];
                         ++pos;
                     }
                 }
             }
-            
+
             //4. Adjust the values to be within this cube
             double xn = x - Math.Floor(x);
             double yn = y - Math.Floor(y);
             double zn = z - Math.Floor(z);
-            
+
             //5. Apply the multivariate polynomial coefficents to find the value
-            return getValueMultVariate(zn,yn,xn,coeffs);
+            return getValueMultiVariate(zn, yn, xn, coeffs);
         }
-        double getValueMultVariate(double x, double y, double z, double[,,] coeffs)
+        double getValueMultiVariate(double x, double y, double z, double[,,] coeffs)
         {/*This is using a value scheme that makes sens of our new fitted polyCube
           * In a linear case it will be a decimal between 0 and 1
           */
@@ -227,76 +233,32 @@ namespace LeuciShared
             return results;
         }
 
-        private double[,] getInverseLinear()
-        {
-            double[,] inverse1 = new double[8, 8];
-            inverse1[0, 0] = 1.0;
-            inverse1[0, 1] = 0.0;
-            inverse1[0, 2] = 0.0;
-            inverse1[0, 3] = 0.0;
-            inverse1[0, 4] = 0.0;
-            inverse1[0, 5] = 0.0;
-            inverse1[0, 6] = 0.0;
-            inverse1[0, 7] = 0.0;
-            inverse1[1, 0] = -1.0;
-            inverse1[1, 1] = 1.0;
-            inverse1[1, 2] = 0.0;
-            inverse1[1, 3] = 0.0;
-            inverse1[1, 4] = 0.0;
-            inverse1[1, 5] = 0.0;
-            inverse1[1, 6] = 0.0;
-            inverse1[1, 7] = 0.0;
-            inverse1[2, 0] = -1.0;
-            inverse1[2, 1] = 0.0;
-            inverse1[2, 2] = 1.0;
-            inverse1[2, 3] = 0.0;
-            inverse1[2, 4] = 0.0;
-            inverse1[2, 5] = 0.0;
-            inverse1[2, 6] = 0.0;
-            inverse1[2, 7] = 0.0;
-            inverse1[3, 0] = 1.0;
-            inverse1[3, 1] = -1.0;
-            inverse1[3, 2] = -1.0;
-            inverse1[3, 3] = 1.0;
-            inverse1[3, 4] = 0.0;
-            inverse1[3, 5] = 0.0;
-            inverse1[3, 6] = 0.0;
-            inverse1[3, 7] = 0.0;
-            inverse1[4, 0] = -1.0;
-            inverse1[4, 1] = 0.0;
-            inverse1[4, 2] = 0.0;
-            inverse1[4, 3] = 0.0;
-            inverse1[4, 4] = 1.0;
-            inverse1[4, 5] = 0.0;
-            inverse1[4, 6] = 0.0;
-            inverse1[4, 7] = 0.0;
-            inverse1[5, 0] = 1.0;
-            inverse1[5, 1] = -1.0;
-            inverse1[5, 2] = 0.0;
-            inverse1[5, 3] = 0.0;
-            inverse1[5, 4] = -1.0;
-            inverse1[5, 5] = 1.0;
-            inverse1[5, 6] = 0.0;
-            inverse1[5, 7] = 0.0;
-            inverse1[6, 0] = 1.0;
-            inverse1[6, 1] = 0.0;
-            inverse1[6, 2] = -1.0;
-            inverse1[6, 3] = 0.0;
-            inverse1[6, 4] = -1.0;
-            inverse1[6, 5] = 0.0;
-            inverse1[6, 6] = 1.0;
-            inverse1[6, 7] = 0.0;
-            inverse1[7, 0] = -1.0;
-            inverse1[7, 1] = 1.0;
-            inverse1[7, 2] = 1.0;
-            inverse1[7, 3] = -1.0;
-            inverse1[7, 4] = 1.0;
-            inverse1[7, 5] = -1.0;
-            inverse1[7, 6] = -1.0;
-            inverse1[7, 7] = 1.0;
-            return inverse1;
+        private double[,] getInverse()
+        {            
+            if (_degree == 5)
+                return InvariantVandermonde.Instance.inverse5;            
+            else if (_degree == 3)
+                return InvariantVandermonde.Instance.inverse3;
+            else
+                return InvariantVandermonde.Instance.inverse1;                        
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -310,25 +272,28 @@ namespace LeuciShared
         private int _degree;
         //private Dictionary<int,double> _coefficients = new Dictionary<int,double>();
         private byte[] _coefficients;
-        protected Dictionary<int, double> Matrix;
+        //protected Dictionary<int, double> Matrix;
+        protected Single[] Matrix;
 
         public BetaSpline(byte[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = 5;
             _coefficients = new byte[bytes.Length];
-            makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
+            //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
             createCoefficients();
         }        
         public void makeSubMatrix(int minx, int miny, int minz, int maxx, int maxy, int maxz)
         {
-            int count = 0;
-            Matrix = new Dictionary<int, double>();
+            //int count = 0;
+            //Matrix = new Dictionary<int, double>();
+            Matrix = new float[_binary.Length - _bStart];
             for (int i = _bStart; i < _binary.Length; i += 4)
             {
                 Single value = BitConverter.ToSingle(_binary, i);
-                Matrix[count] = value;
-                count++;
+                //Matrix[count] = value;
+                Matrix[i-_bStart] = value;
+                //count++;
             }            
         }
         public double getExactValueMat(int x, int y, int z)
@@ -336,8 +301,9 @@ namespace LeuciShared
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
             pos += XLen * y;
-            pos += x;
-            if (Matrix.ContainsKey(pos))
+            pos += x;            
+            //if (Matrix.ContainsKey(pos))
+            if (pos < Matrix.Length)
                 return Matrix[pos];
             else
                 return 0;

@@ -72,8 +72,10 @@ namespace LeuciShared
             _interp = interp;
             if (interp == "BSPLINE")
                 _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C,_B, _A);
-            else if (interp == "LINEAR")
-                _interpMap = new Linear(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
+            else if (interp == "LINEAR")                
+                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 1);
+            else if (interp == "CUBIC")
+                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A,3);
             else
                 _interpMap = new Nearest(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
 
@@ -84,8 +86,10 @@ namespace LeuciShared
             _interp = interp;
             if (_interp == "BSPLINE")
                 _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
-            else if (_interp == "LINEAR")
-                _interpMap = new Linear(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
+            else if (_interp == "LINEAR")                
+                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 1);
+            else if (_interp == "CUBIC")
+                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 3);
             else
                 _interpMap = new Nearest(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength,_C, _B, _A);
         }        
@@ -96,8 +100,10 @@ namespace LeuciShared
                 _densityBinary.Init();
                 if (_interp == "BSPLINE")
                     _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
-                else if (_interp == "LINEAR")
-                    _interpMap = new Linear(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
+                else if (_interp == "LINEAR")                    
+                    _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 1);
+                else if (_interp == "CUBIC")
+                    _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 3);
                 else
                     _interpMap = new Nearest(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
             }
@@ -106,8 +112,8 @@ namespace LeuciShared
         {
             if (!_densityBinary.INIT)            
                 _densityBinary.Init();
-            if (_interp == "BSPLINE")
-                (_interpMap as BetaSpline).makeSubMatrix(0,0,0,0,0,0);
+            //if (_interp == "BSPLINE")
+            //    (_interpMap as BetaSpline).makeSubMatrix(0,0,0,0,0,0);
                         
         }
         public void calculatePlane(string plane, int layer)
@@ -147,125 +153,7 @@ namespace LeuciShared
 
                 }
             }            
-        }
-
-        public void create_slice(double width, double gap, bool sd,double sdcap,
-                                VectorThree central, VectorThree linear, VectorThree planar)            
-        {
-            createData();
-            // we want general info of the max and min given the sd setting
-            DenMin = Convert.ToDouble(_densityBinary.Words["20_DMIN"]);
-            DenMax = Convert.ToDouble(_densityBinary.Words["21_DMAX"]);
-            ThreeSd = _densityBinary.Mean + (sdcap * _densityBinary.Sd);
-            if (sd)
-            {
-                DenMin = (Convert.ToDouble(_densityBinary.Words["20_DMIN"]) - _densityBinary.Mean)/ _densityBinary.Sd;
-                DenMax = (Convert.ToDouble(_densityBinary.Words["21_DMAX"]) - _densityBinary.Mean)/ _densityBinary.Sd;
-                ThreeSd = sdcap;
-            }
-            ThreeSd = Math.Round(ThreeSd, 2);
-
-            int nums = Convert.ToInt32(width / gap);
-            int halfLength = Convert.ToInt32((nums) / 2);
-            DMin = 100;
-            LMin = 100;
-            DMax = -100;
-            LMax = -100;
-
-            SpaceTransformation space = new SpaceTransformation(central, linear, planar);
-
-            SliceDensity = new double[nums][];
-            SliceRadient = new double[nums][];
-            SliceLaplacian = new double[nums][];
-            SliceAxis = new double[nums];
-            if (_interp == "NEAREST")
-            {
-                SliceRadient = new double[0][];
-                SliceLaplacian = new double[0][];
-            }
-            if (_interp == "LINEAR")
-            {            
-                SliceLaplacian = new double[0][];
-            }
-            
-
-
-            for (int m = 0; m< nums; ++m)
-            {
-                int i = m - halfLength;
-                List<double> row_d = new List<double>();
-                List<double> row_r = new List<double>();
-                List<double> row_l = new List<double>();
-                SliceAxis[m] = m;
-
-                if (_interp == "NEAREST")
-                {
-                    SliceDensity[m] = new double[nums];
-                }
-                else if (_interp == "LINEAR")
-                {
-                    SliceDensity[m] = new double[nums];
-                    SliceRadient[m] = new double[nums];
-                }
-                else
-                {
-                    SliceDensity[m] = new double[nums];
-                    SliceRadient[m] = new double[nums];
-                    SliceLaplacian[m] = new double[nums];
-                }
-
-                for (int n = 0; n < nums; ++n)
-                {
-                    int j = n - halfLength;
-                    double x0 = (i * gap);
-                    double y0 = (j * gap);
-                    double z0 = 0;
-                    VectorThree transformed = space.applyTransformation(new VectorThree(x0, y0, z0));
-                    VectorThree crs = _densityBinary.getCRSFromXYZ(transformed);
-                    if (_densityBinary.AllValid(crs))
-                    {
-                        double density = _interpMap.getValue(crs.A, crs.B, crs.C);
-                        if (sd)//convert to standard deviations
-                        {
-                            density = (density - _densityBinary.Mean) / _densityBinary.Sd;
-                        }               
-                        SliceDensity[m][n] = density;
-                        if (density > ThreeSd)
-                            SliceDensity[m][n] = ThreeSd;
-                        DMin = Math.Min(DMin, density);
-                        DMax = Math.Max(DMax, density);
-                        if (_interp == "BSPLINE" || _interp == "LINEAR")
-                        {
-                            double radient = _interpMap.getRadient(crs.A, crs.B, crs.C);
-                            SliceRadient[m][n] = radient;
-                        }
-                        if (_interp == "BSPLINE")
-                        {
-                            double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
-                            SliceLaplacian[m][n] = laplacian;
-                            LMin = Math.Min(LMin, density);
-                            LMax = Math.Max(LMax, density);
-                        }
-                        
-                    }
-                    else
-                    {
-                        SliceDensity[m][n] = -1;
-                        if (_interp == "BSPLINE")
-                        {
-                            SliceRadient[m][n] = -1;
-                            SliceLaplacian[m][n] = -1;
-                        }
-                        else if (_interp == "LINEAR")
-                        {
-                            SliceRadient[m][n] = -1;
-                        }                                                    
-                    }
-
-                }                
-            }            
-        }
-
+        }        
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap,
                                 VectorThree central, VectorThree linear, VectorThree planar)
         {
@@ -299,10 +187,10 @@ namespace LeuciShared
             {
                 poses.Add(_interpMap.getExactPos(xyz[0], xyz[1], xyz[2]));
             }
-            Dictionary<int, double> doubles = _densityBinary.getShorterList(poses);
-                        
+            
+            //Dictionary<int, double> doubles = _densityBinary.getShorterList(poses);                        
             //then create a smaller interpolator                        
-            createNewInterpData(doubles,32,32,32);
+            //createNewInterpData(doubles,32,32,32);
             
             
 
@@ -375,12 +263,12 @@ namespace LeuciShared
                             SliceDensity[m][n] = ThreeSd;
                         DMin = Math.Min(DMin, density);
                         DMax = Math.Max(DMax, density);
-                        if (_interp == "BSPLINE" || _interp == "LINEAR")
+                        if (_interp == "BSPLINE" || _interp == "LINEAR" || _interp == "CUBIC")
                         {
                             double radient = _interpMap.getRadient(crs.A, crs.B, crs.C);
                             SliceRadient[m][n] = radient;
                         }
-                        if (_interp == "BSPLINE")
+                        if (_interp == "BSPLINE" || _interp == "CUBIC")
                         {
                             double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
                             SliceLaplacian[m][n] = laplacian;

@@ -473,7 +473,7 @@
         cs = [[0, 'CornflowerBlue'], [String(zero_frac), 'Snow'], [1, 'Crimson']]
     }
     else {
-        cs = [[0, 'CornflowerBlue'], [0.5, 'Snow'], [1, 'Crimson']]
+        cs = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
     }
          
     zero_frac_lap = (0 - minl) / (maxl - minl)  
@@ -490,7 +490,7 @@
         cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'],[String(lev1), 'Snow'], [1, 'Crimson']]
     }
     else {
-        cs_lap = [[0, 'CornflowerBlue'], [0.5, 'Snow'], [1, 'Crimson']]
+        cs_lap = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
     }
       
    if (rhue == "RedBlueGrey") {
@@ -500,7 +500,7 @@
         cs_rad = [[0, 'Black'], [1, 'Snow']]
    }
    else {
-        cs_rad = [[0, 'CornflowerBlue'], [String(0.5), 'Snow'], [1, 'Crimson']]
+        cs_rad = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
    }
 
    var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
