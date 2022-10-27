@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.ExceptionServices;
 using System.Runtime.Intrinsics;
 using System.Text;
 using System.Threading.Tasks;
@@ -307,14 +308,15 @@ namespace LeuciShared
         // *******************************************************************************
         private double TOLERANCE;
         private int _degree;
-        private Dictionary<int,double> _coefficients = new Dictionary<int,double>();
-        //private Dictionary<int,int> _poses = new Dictionary<int,int>();
+        //private Dictionary<int,double> _coefficients = new Dictionary<int,double>();
+        private byte[] _coefficients;
         protected Dictionary<int, double> Matrix;
 
         public BetaSpline(byte[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = 5;
+            _coefficients = new byte[bytes.Length];
             makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
             createCoefficients();
         }        
@@ -456,28 +458,42 @@ namespace LeuciShared
 
         private double getCoef(int x, int y, int z)
         {
-            int pos = getPosition(x,y,z);
-            if (_coefficients.ContainsKey(pos))
-                return _coefficients[pos];
-            else            
-            return 0;
+            int pos = getPosition(x, y, z);
+            try
+            {
+                Single value = BitConverter.ToSingle(_coefficients, _bStart + pos * 4);
+                return value;
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }            
+            //if (_coefficients.ContainsKey(pos))
+            //    return _coefficients[pos];
+            //else            
+            //return 0;
         }
         private void putCoef(int x, int y, int z,double v)
         {
             int pos = getPosition(x, y, z);
-            if (_coefficients.ContainsKey(pos))
-                _coefficients[pos] = v;
-            
+            byte[] bv = BitConverter.GetBytes(Convert.ToSingle(v));
+            int start = _bStart + pos * 4;
+            foreach (byte b in bv)
+            {
+                _coefficients[start] = b;
+                start++;
+            }
+            //if (_coefficients.ContainsKey(pos))
+            //    _coefficients[pos] = v;            
         }
         private void createCoefficients()
         {
-            //for (int i = 0; i < XLen * YLen * ZLen; ++i)
-            //_coefficients.Add(Matrix[i]);
-            foreach (var v in Matrix)
-            {
-                _coefficients.Add(v.Key,v.Value);
-                //_poses.Add(v.Key);
-            }
+            //foreach (var v in Matrix)
+            //{
+            //    _coefficients.Add(v.Key,v.Value);                
+            //}
+            for (int b = 0; b < _binary.Length; ++b)
+                _coefficients[b] = _binary[b];
 
             List<double> pole = getPole(_degree);
             int numPoles = Convert.ToInt32(pole.Count);

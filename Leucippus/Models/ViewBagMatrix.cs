@@ -56,6 +56,7 @@ namespace Leucippus.Models
                     if (value != _pdbcode)
                     {                        
                         ++_refresh;
+                        _interp = "LINEAR";
                         //FileDownloads fd = new FileDownloads(value);
                         //fd.downloadAll();
                         //EmCode = fd.EmCode;
