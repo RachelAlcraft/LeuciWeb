@@ -28,19 +28,20 @@
                     <div class="inner-tbl">
                 <table>
                             <tr>
-                                <td width="25%">
+                                <td width="20%">
                                     Interp=
                                 </td>
-                                <td width="40%">
+                                <td width="25%">
                                     @ViewBag.Interp
                                 </td>
-                                <td width="35%">
-                                    [@Html.ActionLink(
-                                linkText: "Tgl Interp",
+                                <td width="55%">
+                                    [
+                                    @Html.ActionLink(
+                                linkText: "0",
                                 actionName: "Slice",
                                 controllerName: "Matrix",
                                 routeValues: new {
-                                interp = "+1",
+                                interp = "0",
                                 pdbcode = @ViewBag.PdbCode,
                                 c_xyz = @ViewBag.cXYZ,
                                 l_xyz = @ViewBag.lXYZ,
@@ -50,7 +51,73 @@
                                 pa = @ViewBag.pAtom,
                                 },
                                 htmlAttributes: null
-                                )]
+                                )
+                                ,                                
+                                    @Html.ActionLink(
+                                linkText: "1",
+                                actionName: "Slice",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                interp = "1",
+                                pdbcode = @ViewBag.PdbCode,
+                                c_xyz = @ViewBag.cXYZ,
+                                l_xyz = @ViewBag.lXYZ,
+                                p_xyz = @ViewBag.pXYZ,
+                                ca = @ViewBag.cAtom,
+                                la = @ViewBag.lAtom,
+                                pa = @ViewBag.pAtom,
+                                },
+                                htmlAttributes: null
+                                ),
+                                   @Html.ActionLink(
+                                linkText: "3",
+                                actionName: "Slice",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                interp = "3",
+                                pdbcode = @ViewBag.PdbCode,
+                                c_xyz = @ViewBag.cXYZ,
+                                l_xyz = @ViewBag.lXYZ,
+                                p_xyz = @ViewBag.pXYZ,
+                                ca = @ViewBag.cAtom,
+                                la = @ViewBag.lAtom,
+                                pa = @ViewBag.pAtom,
+                                },
+                                htmlAttributes: null
+                                ),
+                                @Html.ActionLink(
+                                linkText: "s3",
+                                actionName: "Slice",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                interp = "s3",
+                                pdbcode = @ViewBag.PdbCode,
+                                c_xyz = @ViewBag.cXYZ,
+                                l_xyz = @ViewBag.lXYZ,
+                                p_xyz = @ViewBag.pXYZ,
+                                ca = @ViewBag.cAtom,
+                                la = @ViewBag.lAtom,
+                                pa = @ViewBag.pAtom,
+                                },
+                                htmlAttributes: null
+                                ),
+                                   @Html.ActionLink(
+                                linkText: "s5",
+                                actionName: "Slice",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                interp = "s5",
+                                pdbcode = @ViewBag.PdbCode,
+                                c_xyz = @ViewBag.cXYZ,
+                                l_xyz = @ViewBag.lXYZ,
+                                p_xyz = @ViewBag.pXYZ,
+                                ca = @ViewBag.cAtom,
+                                la = @ViewBag.lAtom,
+                                pa = @ViewBag.pAtom,
+                                },
+                                htmlAttributes: null
+                                )
+                            ]
                                 </td>
                             </tr>
                     <tr>
@@ -473,9 +540,10 @@
         cs = [[0, 'CornflowerBlue'], [String(zero_frac), 'Snow'], [1, 'Crimson']]
     }
     else {
-        cs = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
+        cs = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[0.99, 'Black']]
     }
-         
+                 
+    var sizel = (maxl - minl) / 20
     zero_frac_lap = (0 - minl) / (maxl - minl)  
     var lev1 = zero_frac_lap + 0.1 * (1 - zero_frac)
     var lev2 = zero_frac_lap + 0.3 * (1 - zero_frac)
@@ -490,7 +558,7 @@
         cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'],[String(lev1), 'Snow'], [1, 'Crimson']]
     }
     else {
-        cs_lap = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
+        cs_lap = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
     }
       
    if (rhue == "RedBlueGrey") {
@@ -499,8 +567,11 @@
     else if (rhue == "BlackWhite") {
         cs_rad = [[0, 'Black'], [1, 'Snow']]
    }
+   else if (rhue == "RedBlueZero") {
+        cs_lap = [[0, 'CornflowerBlue'], [0.49, 'AliceBlue'],[0.51, 'Snow'], [1, 'Crimson']]
+    }
    else {
-        cs_rad = [[0, 'LightBlue'], [1, 'rgb(100, 0, 0)']]
+        cs_rad = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
    }
 
    var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
@@ -573,9 +644,7 @@
             title:"l1 norm of P1",            
         }
     }];
-    
-    var sizeL = (minl - maxl) / 20
-
+        
     var dataL = [{
         z: jvl,
         x: jx,
@@ -594,9 +663,9 @@
             title:"sum of P2",
         },
         contours: {
-                start: maxl,
-                end: minl,
-                size: sizeL
+                start: minl,
+                end: maxl,
+                size: sizel
             },
     }];
     

@@ -7,6 +7,7 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.Intrinsics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace LeuciShared
 {
@@ -32,7 +33,7 @@ namespace LeuciShared
             XLen = x;
             YLen = y;
             ZLen = z;
-            h = 0.0001;
+            h = 0.00001;
             _binary = binary;
             _bStart = bstart;
             _bLength = blength;
@@ -111,6 +112,33 @@ namespace LeuciShared
             double dd = (va + vb - 2 * val) / (h * h);
             return dd;
         }
+
+        protected double[] getSmallerCube(double x, double y, double z,int width)
+        {
+            // 1. Build the points around the centre as a cube - 8 points
+            double[] vals = new double[width*width*width];
+            int pstart = (-1 * width / 2) + 1; //so if it is 
+            int pend = (width / 2) + 1;
+            int count = 0;
+            for (int i = pstart; i < pend; ++i)
+            {
+                int xp = Convert.ToInt32(Math.Floor(x + i));
+                for (int j = pstart; j < pend; ++j)
+                {
+                    int yp = Convert.ToInt32(Math.Floor(y + j));
+                    for (int k = pstart; k < pend; ++k)
+                    {
+                        int zp = Convert.ToInt32(Math.Floor(z + k));
+                        double p = -1;
+                        if (xp >= 0 && yp >= 0 && zp >= 0 && xp < XLen && yp < YLen && zp < ZLen)
+                            p = getExactValueBinary(xp, yp, zp);
+                        vals[count] = p;
+                        ++count;
+                    }
+                }
+            }
+            return vals;
+        }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,23 +180,8 @@ namespace LeuciShared
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
             // 1. Build the points around the centre as a cube - 8 points
-            double[] vals = new double[_dimsize];
-            int count = 0;
-            for (int i = 0; i < _points; ++i)
-            {
-                int xp = Convert.ToInt32(Math.Floor(x + i));
-                for (int j = 0; j < _points; ++j)
-                {
-                    int yp = Convert.ToInt32(Math.Floor(y + j));
-                    for (int k = 0; k < _points; ++k)
-                    {
-                        int zp = Convert.ToInt32(Math.Floor(z + k));
-                        double p = getExactValueBinary(xp, yp, zp);
-                        vals[count] = p;
-                        ++count;
-                    }
-                }
-            }
+            double[] vals = getSmallerCube(x, y, z, _points);
+                        
             //2. Multiply with the precomputed matrix to find the multivariate polynomial
             double[] ABC = multMatrixVector(getInverse(), vals);
 
@@ -188,9 +201,10 @@ namespace LeuciShared
             }
 
             //4. Adjust the values to be within this cube
-            double xn = x - Math.Floor(x);
-            double yn = y - Math.Floor(y);
-            double zn = z - Math.Floor(z);
+            int pstart = (-1 * _points / 2) + 1; 
+            double xn = x - Math.Floor(x) - pstart;
+            double yn = y - Math.Floor(y) - pstart;
+            double zn = z - Math.Floor(z) - pstart;
 
             //5. Apply the multivariate polynomial coefficents to find the value
             return getValueMultiVariate(zn, yn, xn, coeffs);
@@ -215,7 +229,6 @@ namespace LeuciShared
             }
             return value;
         }
-
         private double[] multMatrixVector(double[,] A, double[] V)
         {
             int length = V.Length;
@@ -232,7 +245,6 @@ namespace LeuciShared
             }
             return results;
         }
-
         private double[,] getInverse()
         {            
             if (_degree == 5)
@@ -243,22 +255,54 @@ namespace LeuciShared
                 return InvariantVandermonde.Instance.inverse1;                        
         }
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+    public class OptBSpline : Interpolator
+    {
+        protected int _degree;
+        protected int _dimsize;
+        protected int _points;
+        // ****** Linear Implementation ****************************************
+        public OptBSpline(byte[] bytes, int start, int length, int x, int y, int z, int degree, int points) : base(bytes, start, length, x, y, z)
+        {
+            // the degree must be an odd number
+            _degree = degree;
+            _points = points;
+            _dimsize = (int)Math.Pow(_points, 3);
+        }
+        public override double getValue(double x, double y, double z)
+        {
+            // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
+            // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
+            // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
+            // 1. Build the points around the centre as a cube - 8 points
+            double[] vals = getSmallerCube(x, y, z, _points);
 
+            //2. Kind of recursive, make a smaller BSlipe interpolator out of this.             
+            byte[] bytes = new byte[vals.Length * 4];
+            for (int i = 0; i < vals.Length; ++i)
+            {
+                byte[] bv = BitConverter.GetBytes(Convert.ToSingle(vals[i]));
+                int start = i * 4;
+                foreach (byte b in bv)
+                {
+                    bytes[start] = b;
+                    start++;
+                }
+            }
+            BetaSpline psp = new BetaSpline(bytes, 0, bytes.Length, _points, _points, _points);
 
+            //4. Adjust the values to be within this cube
+            int pstart = (-1 * _points / 2) + 1;
+            double xn = x - Math.Floor(x) - pstart;
+            double yn = y - Math.Floor(y) - pstart;
+            double zn = z - Math.Floor(z) - pstart;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+            //5. Apply the multivariate polynomial coefficents to find the value
+            return psp.getValue(xn, yn, zn);
+        }                
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +322,7 @@ namespace LeuciShared
         public BetaSpline(byte[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
-            _degree = 5;
+            _degree = 3;
             _coefficients = new byte[bytes.Length];
             //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
             createCoefficients();
