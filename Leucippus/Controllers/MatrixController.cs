@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ScottPlot;
 using ScottPlot.Statistics.Interpolation;
 using System.Collections.Generic;
+using System.Net;
 using System.Numerics;
 using System.Threading;
 using static Plotly.NET.StyleParam;
@@ -216,6 +217,10 @@ namespace Leucippus.Controllers
 
         public async Task<IActionResult> Browse(string pdbcode = "")
         {
+            ViewBag.SmallPdbs = new List<DataFile>();
+            ViewBag.HighPdbs = new List<DataFile>();
+            ViewBag.SmallEmPdbs = new List<DataFile>();
+            ViewBag.HighEmPdbs = new List<DataFile>();
             try
             {
                 ViewBag.Error = "";
@@ -257,8 +262,8 @@ namespace Leucippus.Controllers
                 return View();
             }
             catch (Exception e)
-            {
-                ViewBag.Error = e.Message;
+            {                
+                ViewBag.Error = "Error from server:" + e.Message;
                 return View();
             }
         }

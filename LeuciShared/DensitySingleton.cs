@@ -61,7 +61,24 @@ namespace LeuciShared
                 PA = new PdbAtoms(FD.PdbLines);
                 
                 _pdbcode = pdbcode;
-                _dm = await DensityMatrix.CreateAsync(pdbcode,FD.EmFilePath,interp);
+                try
+                {
+                    _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, interp);
+                }
+                catch(Exception e)
+                {
+                    try
+                    {
+                        _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, interp);
+                    }
+                    catch (Exception ee)
+                    {
+                        _pdbcode = "";
+                        File.Delete(FD.EmFilePath);
+                        throw new Exception("Error creating binary so deleted " + FD.EmFilePath + " - " + ee.Message);                        
+                    }
+
+                }
                 NewMatrix = true;
                 return _dm;
             }
