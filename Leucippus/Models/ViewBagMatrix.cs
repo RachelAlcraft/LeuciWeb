@@ -56,7 +56,7 @@ namespace Leucippus.Models
                     if (value != _pdbcode)
                     {                        
                         ++_refresh;
-                        _interp = "LINEAR";
+                        _interp = "BSPLINE3";
                         //FileDownloads fd = new FileDownloads(value);
                         //fd.downloadAll();
                         //EmCode = fd.EmCode;
@@ -71,7 +71,7 @@ namespace Leucippus.Models
                 }
             }
         }
-        private string _interp = "CUBIC";
+        private string _interp = "BSPLINE3";
         public string Interp
         {
             get { return _interp; }
@@ -79,18 +79,19 @@ namespace Leucippus.Models
             {
                 if (value != "")
                 {
-                    if (value == "+1")
-                    {
-                        ++_refresh;
-                        if (_interp == "BSPLINE")
-                            _interp = "CUBIC";
-                        else if (_interp == "CUBIC")
-                            _interp = "LINEAR";
-                        else if (_interp == "LINEAR")
-                            _interp = "NEAREST";
-                        else if (_interp == "NEAREST")
-                            _interp = "BSPLINE";
-                    }                    
+                    ++_refresh;
+                    if (value == "0")                                                                   
+                        _interp = "NEAREST";
+                    else if (value == "1")                        
+                        _interp = "LINEAR";
+                    else if (value == "3")
+                        _interp = "CUBIC";
+                    else if (value == "s3")
+                        _interp = "BSPLINE3";
+                    else if (value == "s5")
+                        _interp = "BSPLINE5";
+                    else
+                        _interp = "LINEAR";                                   
                 }
             }
         }
@@ -147,6 +148,23 @@ namespace Leucippus.Models
                 }
             }
         }
+        
+        private string getNextColour(string colour)
+        {
+            string retcolour = "BlackWhite";
+
+            if (colour == "RedBlueGrey")
+                retcolour = "BlackWhite";
+            else if (colour == "BlackWhite")
+                retcolour = "RedBlueZero";
+            else if (_denhue == "RedBlueZero")
+                retcolour = "RedBlueGrey";
+            //else if (_denhue == "RedBlue")
+            //    retcolour = "RedBlueGrey";
+            
+            return retcolour;
+        }
+
         private string _denplot = "contour";
         public string DenPlot
         {
@@ -173,18 +191,10 @@ namespace Leucippus.Models
             get { return _denhue; }
             set
             {
-                if (value == "+1")
-                {
-                    if (_denhue == "RedBlueGrey")
-                        _denhue = "BlackWhite";
-                    else if (_denhue == "BlackWhite")
-                        _denhue = "RedBlueZero";
-                    else if (_denhue == "RedBlueZero")
-                        _denhue = "RedBlue";                    
-                    else if (_denhue == "RedBlue")
-                        _denhue = "RedBlueGrey";
-                    
-                }                
+                if (value == "+1")                
+                    _denhue = getNextColour(_denhue);                                                        
+                else if (value != "")
+                    _denhue = value;
             }
         }
         private string _radplot = "heatmap";
@@ -220,7 +230,12 @@ namespace Leucippus.Models
                         _valsd = "∝ electrons/cube";
                     else
                         _valsd = "st.dev.";
-                }                
+                }
+                else if (value == "s.d.")
+                    _valsd = "st.dev.";
+                else if (value == "electrons")
+                    _valsd = "∝ electrons/cube";
+
             }
         }
         private double _sdcap = 3.0;
@@ -242,17 +257,10 @@ namespace Leucippus.Models
             get { return _radhue; }
             set
             {
-                if (value == "+1")
-                {
-                    if (_radhue == "RedBlueGrey")
-                        _radhue = "BlackWhite";
-                    else if (_radhue == "BlackWhite")
-                        _radhue = "RedBlueZero";
-                    else if (_radhue == "RedBlueZero")
-                        _radhue = "RedBlue";                    
-                    else if (_radhue == "RedBlue")
-                        _radhue = "RedBlueGrey";                    
-                }
+                if (value == "+1")                
+                    _radhue = getNextColour(_radhue);                                    
+                else if (value != "")
+                    _radhue = value;
             }
         }
         private string _lapplot = "contour";
@@ -280,17 +288,10 @@ namespace Leucippus.Models
             get { return _laphue; }
             set
             {
-                if (value == "+1")
-                {
-                    if (_laphue == "RedBlueGrey")
-                        _laphue = "BlackWhite";
-                    else if (_laphue == "BlackWhite")
-                        _laphue = "RedBlueZero";
-                    else if (_laphue == "RedBlueZero")
-                        _laphue = "RedBlue";
-                    else if (_laphue == "RedBlue")
-                        _laphue = "RedBlueGrey";                    
-                }
+                if (value == "+1")                
+                    _laphue = getNextColour(_radhue);                                    
+                else if (value != "")                
+                    _laphue = value;                
             }
         }
         private string _denbar = "N";
@@ -380,7 +381,7 @@ namespace Leucippus.Models
             }
         }
 
-        private double _gap = 0.1;
+        private double _gap = 0.05;
         public double Gap
         {
             get { return _gap; }

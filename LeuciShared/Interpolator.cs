@@ -7,6 +7,7 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.Intrinsics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace LeuciShared
 {
@@ -32,7 +33,7 @@ namespace LeuciShared
             XLen = x;
             YLen = y;
             ZLen = z;
-            h = 0.0001;
+            h = 0.00001;
             _binary = binary;
             _bStart = bstart;
             _bLength = blength;
@@ -57,7 +58,7 @@ namespace LeuciShared
             //else
             //    return 0;//what should this return? -1, throw an error? TODO
         }
-        public double getExactValueBinary(int x, int y, int z)
+        public Single getExactValueBinary(int x, int y, int z)
         {
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
@@ -111,6 +112,76 @@ namespace LeuciShared
             double dd = (va + vb - 2 * val) / (h * h);
             return dd;
         }
+
+        protected Single[] getSmallerCubeMultivariate(double x, double y, double z,int width)
+        {
+            // 1. Build the points around the centre as a cube - 8 points
+            Single[] vals = new Single[width*width*width];
+            
+            int count = 0;
+            int xp = 0;
+            int yp = 0;
+            int zp = 0;
+            for (int i = (-1 * width / 2) + 1; i < (width / 2) + 1; ++i)
+            {
+                xp = Convert.ToInt32(Math.Floor(x + i));                
+                for (int j = (-1 * width / 2) + 1; j < (width / 2) + 1; ++j)
+                {
+                    yp = Convert.ToInt32(Math.Floor(y + j));
+                    for (int k = (-1 * width / 2) + 1; k < (width / 2) + 1; ++k)
+                    {
+                        zp = Convert.ToInt32(Math.Floor(z + k));                                                
+                        double p = -1;
+                        if (xp >= 0 && yp >= 0 && zp >= 0 && xp < XLen && yp < YLen && zp < ZLen)
+                            p = getExactValueBinary(xp, yp, zp);
+                        vals[count] = Convert.ToSingle(p);
+                        ++count;
+                    }
+                }
+            }
+            return vals;
+        }
+
+        protected Single[] getSmallerCubeThevenaz(int x, int y, int z, int width)
+        {
+            // 1. Build the points around the centre as a cube - 8 points
+            Single[] vals = new Single[width * width * width];
+
+            int count = 0;            
+            for (int i = z; i < z+width; ++i)
+            {                                
+                for (int j = y; j < y + width; ++j)
+                {                    
+                    for (int k = x; k < x + width; ++k)
+                    {                        
+                        Single p = getExactValueBinary(k, j, i);
+                        vals[count] = p;
+                        ++count;
+                    }
+                }
+            }
+            return vals;
+        }
+        protected Single[] getCubeWhole()
+        {
+            // 1. Build the points around the centre as a cube - 8 points
+            Single[] vals = new Single[XLen*YLen*ZLen];
+
+            int count = 0;
+            for (int i = 0; i < ZLen; ++i)
+            {                
+                for (int j = 0; j < YLen; ++j)
+                {                    
+                    for (int k = 0; k < XLen; ++k)
+                    {
+                        Single p = getExactValueBinary(k,j,i);                        
+                        vals[count] = p;
+                        ++count;
+                    }
+                }
+            }
+            return vals;
+        }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,23 +223,8 @@ namespace LeuciShared
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
             // 1. Build the points around the centre as a cube - 8 points
-            double[] vals = new double[_dimsize];
-            int count = 0;
-            for (int i = 0; i < _points; ++i)
-            {
-                int xp = Convert.ToInt32(Math.Floor(x + i));
-                for (int j = 0; j < _points; ++j)
-                {
-                    int yp = Convert.ToInt32(Math.Floor(y + j));
-                    for (int k = 0; k < _points; ++k)
-                    {
-                        int zp = Convert.ToInt32(Math.Floor(z + k));
-                        double p = getExactValueBinary(xp, yp, zp);
-                        vals[count] = p;
-                        ++count;
-                    }
-                }
-            }
+            Single[] vals = getSmallerCubeMultivariate(x, y, z, _points);
+                        
             //2. Multiply with the precomputed matrix to find the multivariate polynomial
             double[] ABC = multMatrixVector(getInverse(), vals);
 
@@ -188,9 +244,10 @@ namespace LeuciShared
             }
 
             //4. Adjust the values to be within this cube
-            double xn = x - Math.Floor(x);
-            double yn = y - Math.Floor(y);
-            double zn = z - Math.Floor(z);
+            int pstart = (-1 * _points / 2) + 1; 
+            double xn = x - Math.Floor(x) - pstart;
+            double yn = y - Math.Floor(y) - pstart;
+            double zn = z - Math.Floor(z) - pstart;
 
             //5. Apply the multivariate polynomial coefficents to find the value
             return getValueMultiVariate(zn, yn, xn, coeffs);
@@ -215,8 +272,7 @@ namespace LeuciShared
             }
             return value;
         }
-
-        private double[] multMatrixVector(double[,] A, double[] V)
+        private double[] multMatrixVector(double[,] A, Single[] V)
         {
             int length = V.Length;
             double[] results = new double[length];
@@ -232,7 +288,6 @@ namespace LeuciShared
             }
             return results;
         }
-
         private double[,] getInverse()
         {            
             if (_degree == 5)
@@ -243,22 +298,113 @@ namespace LeuciShared
                 return InvariantVandermonde.Instance.inverse1;                        
         }
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+    public class OptBSpline : Interpolator
+    {
+        protected int _degree;
+        protected int _dimsize;
+        protected int _points;
+        protected BetaSpline? _bsp;
+        protected int _xFloor = 0;
+        protected int _yFloor = 0;
+        protected int _zFloor = 0;
+
+        // ****** Linear Implementation ****************************************
+        public OptBSpline(byte[] bytes, int start, int length, int x, int y, int z, int degree, int points) : base(bytes, start, length, x, y, z)
+        {
+            // the degree must be an odd number
+            _degree = degree;
+            _points = points;
+            if (_points > XLen)
+                _points = XLen;
+            if (_points > YLen)
+                _points = YLen;
+            if (_points > ZLen)
+                _points = ZLen;
+
+            _dimsize = (int)Math.Pow(_points, 3);
+            _bsp = null;            
+        }
+        public override double getValue(double x, double y, double z)
+        {
+            // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
+            // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
+            // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
+
+            //1.  do we need a new cube?
+            // a) we do if we don't have one
+            bool needNewMatrix = false;
+            if (_bsp == null)
+                needNewMatrix = true;
+            // b) we do if we are within points/2 of the edges of the edges
+            int myxFloor = (int)Math.Floor(x + (-1 * _points / 2) + 1);
+            int myyFloor = (int)Math.Floor(y + (-1 * _points / 2) + 1);
+            int myzFloor = (int)Math.Floor(z + (-1 * _points / 2) + 1);
+
+            //if (myyFloor - _yFloor > _points / 4)
+            double pointsBound = _points/2;
+            if (!(Math.Abs(myxFloor - _xFloor) < pointsBound))
+                needNewMatrix = true;
+            if (!(Math.Abs(myyFloor - _yFloor) < pointsBound))
+                needNewMatrix = true;
+            if (!(Math.Abs(myzFloor - _zFloor) < pointsBound))
+                needNewMatrix = true;
+
+            //if (_bsp != null)
+            //    needNewMatrix = false;
+
+            if (needNewMatrix)
+            {
+                _xFloor = (int)Math.Floor(x + (-1 * _points / 2) + 1);
+                _yFloor = (int)Math.Floor(y + (-1 * _points / 2) + 1);
+                _zFloor = (int)Math.Floor(z + (-1 * _points / 2) + 1);
+                if (_xFloor < 0)
+                    _xFloor = 0;
+                if (_yFloor < 0)
+                    _yFloor = 0;
+                if (_zFloor < 0)
+                    _zFloor = 0;
+                if (_xFloor + _points > XLen)
+                    _xFloor = XLen - _points;
+                if (_yFloor + _points > YLen)
+                    _yFloor = YLen - _points;
+                if (_zFloor + _points > ZLen)
+                    _zFloor = ZLen - _points;
+
+                // 1. Build the points around the centre as a cube - x*x*x points                
+                
+                Single[] vals = getSmallerCubeThevenaz(_xFloor, _yFloor, _zFloor, _points);
+                //3. Kind of recursive, make a smaller BSlipe interpolator out of this.                             
+                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree); 
 
 
 
+                //3. alt test it all                
+                /*Single[] vals = getSmallerCubeThevenaz(0, 0, 0, _points);
+                _xFloor = 0;
+                _yFloor = 0;
+                _zFloor = 0;
+                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree);*/
 
+            }
+            else
+            {
 
+            }
 
+            //1. Find the values that would be in this cube 
+            int pstart = (-1 * _points / 2) + 1;
+            double xn = x - _xFloor;
+            double yn = y - _yFloor;
+            double zn = z - _zFloor;
 
-
-
-
-
-
-
-
-
-
+            //5. Apply the multivariate polynomial coefficents to find the value
+            return _bsp.getValue(xn, yn, zn);
+            //return _bsp.getValue(x, y, z);
+        }                
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -271,19 +417,27 @@ namespace LeuciShared
         private double TOLERANCE;
         private int _degree;
         //private Dictionary<int,double> _coefficients = new Dictionary<int,double>();
-        private byte[] _coefficients;
+        private Single[] _coefficients;
         //protected Dictionary<int, double> Matrix;
-        protected Single[] Matrix;
+        //protected Single[] Matrix;
 
-        public BetaSpline(byte[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
+        public BetaSpline(byte[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
-            _degree = 5;
-            _coefficients = new byte[bytes.Length];
+            _degree = degree;
+            _coefficients = getCubeWhole();
+        //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
+        createCoefficients();
+        }
+        public BetaSpline(Single[] vals, int start, int length, int x, int y, int z, int degree) : base(new byte[0], start, length, x, y, z)
+        {
+            TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
+            _degree = degree;
+            _coefficients = vals;
             //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
             createCoefficients();
-        }        
-        public void makeSubMatrix(int minx, int miny, int minz, int maxx, int maxy, int maxz)
+        }
+        /*public void makeSubMatrix(int minx, int miny, int minz, int maxx, int maxy, int maxz)
         {
             //int count = 0;
             //Matrix = new Dictionary<int, double>();
@@ -295,8 +449,8 @@ namespace LeuciShared
                 Matrix[i-_bStart] = value;
                 //count++;
             }            
-        }
-        public double getExactValueMat(int x, int y, int z)
+        }*/
+        /*public double getExactValueMat(int x, int y, int z)
         {
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
@@ -307,7 +461,7 @@ namespace LeuciShared
                 return Matrix[pos];
             else
                 return 0;
-        }
+        }*/
         public override double getValue(double x, double y, double z)
         {            
             int weight_length = _degree + 1;
@@ -427,7 +581,8 @@ namespace LeuciShared
             int pos = getPosition(x, y, z);
             try
             {
-                Single value = BitConverter.ToSingle(_coefficients, _bStart + pos * 4);
+                //Single value = BitConverter.ToSingle(_coefficients, _bStart + pos * 4);
+                Single value = _coefficients[pos];
                 return value;
             }
             catch (Exception e)
@@ -442,13 +597,14 @@ namespace LeuciShared
         private void putCoef(int x, int y, int z,double v)
         {
             int pos = getPosition(x, y, z);
-            byte[] bv = BitConverter.GetBytes(Convert.ToSingle(v));
+            /*byte[] bv = BitConverter.GetBytes(Convert.ToSingle(v));
             int start = _bStart + pos * 4;
             foreach (byte b in bv)
             {
                 _coefficients[start] = b;
                 start++;
-            }
+            }*/
+            _coefficients[pos] = Convert.ToSingle(v);
             //if (_coefficients.ContainsKey(pos))
             //    _coefficients[pos] = v;            
         }
@@ -458,8 +614,8 @@ namespace LeuciShared
             //{
             //    _coefficients.Add(v.Key,v.Value);                
             //}
-            for (int b = 0; b < _binary.Length; ++b)
-                _coefficients[b] = _binary[b];
+            //for (int b = 0; b < _binary.Length; ++b)
+            //    _coefficients[b] = _binary[b];
 
             List<double> pole = getPole(_degree);
             int numPoles = Convert.ToInt32(pole.Count);

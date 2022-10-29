@@ -29,7 +29,7 @@ namespace LeuciShared
         }
 
         private string _pdbcode = "";
-        private string _interp = "";
+        private string _interp = "LINEAR";
         private DensityMatrix _dm;
         public FileDownloads FD;
         public PdbAtoms PA;
@@ -40,10 +40,10 @@ namespace LeuciShared
             bool calc = false;
             NewMatrix = false;
             if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
-            {
+            { 
                 calc = true;
             }
-            else if (interp != _interp)
+            else if (interp != _interp && interp != "")
             {                
                 _interp = interp;
                 _dm.changeInterp(_interp);

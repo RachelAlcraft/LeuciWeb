@@ -68,45 +68,28 @@ namespace LeuciShared
             _B = _densityBinary.Y2_cap;//Convert.ToInt32(_densityBinary.Words["02_NY"]);
             _C = _densityBinary.X1_cap;//Convert.ToInt32(_densityBinary.Words["01_NX"]);
             Info = _densityBinary.Info;            
-            _cublet = new Cubelet(_A, _B, _C);
-            _interp = interp;
-            if (interp == "BSPLINE")
-                _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C,_B, _A);
-            else if (interp == "LINEAR")                
-                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 1);
-            else if (interp == "CUBIC")
-                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A,3);
-            else
-                _interpMap = new Nearest(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
-
+            _cublet = new Cubelet(_A, _B, _C);            
+            changeInterp(interp);            
         }
 
         public void changeInterp(string interp)
         {
             _interp = interp;
-            if (_interp == "BSPLINE")
-                _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
+            if (_interp == "BSPLINE5")
+                _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A,3);
             else if (_interp == "LINEAR")                
                 _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 1);
             else if (_interp == "CUBIC")
-                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 3);
+                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A,3);                
+            else if (_interp == "BSPLINE3")                
+                _interpMap = new OptBSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 3, 64);
             else
                 _interpMap = new Nearest(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength,_C, _B, _A);
         }        
         private void createData()
         {
-            if (!_densityBinary.INIT)
-            {
-                _densityBinary.Init();
-                if (_interp == "BSPLINE")
-                    _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
-                else if (_interp == "LINEAR")                    
-                    _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 1);
-                else if (_interp == "CUBIC")
-                    _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 3);
-                else
-                    _interpMap = new Nearest(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
-            }
+            if (!_densityBinary.INIT)            
+                changeInterp(_interp);                            
         }
         private void createNewInterpData(Dictionary<int,double> shorterlist,int x,int y,int z)
         {
@@ -263,12 +246,12 @@ namespace LeuciShared
                             SliceDensity[m][n] = ThreeSd;
                         DMin = Math.Min(DMin, density);
                         DMax = Math.Max(DMax, density);
-                        if (_interp == "BSPLINE" || _interp == "LINEAR" || _interp == "CUBIC")
+                        if (_interp.Contains("BSPLINE") || _interp == "LINEAR" || _interp == "CUBIC")
                         {
                             double radient = _interpMap.getRadient(crs.A, crs.B, crs.C);
                             SliceRadient[m][n] = radient;
                         }
-                        if (_interp == "BSPLINE" || _interp == "CUBIC")
+                        if (_interp.Contains("BSPLINE") || _interp == "CUBIC")
                         {
                             double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
                             SliceLaplacian[m][n] = laplacian;
@@ -280,7 +263,7 @@ namespace LeuciShared
                     else
                     {
                         SliceDensity[m][n] = -1;
-                        if (_interp == "BSPLINE")
+                        if (_interp.Contains("BSPLINE") || _interp == "CUBIC")
                         {
                             SliceRadient[m][n] = -1;
                             SliceLaplacian[m][n] = -1;
