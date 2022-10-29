@@ -56,7 +56,7 @@ namespace Leucippus.Models
                     if (value != _pdbcode)
                     {                        
                         ++_refresh;
-                        _interp = "LINEAR";
+                        _interp = "BSPLINE3";
                         //FileDownloads fd = new FileDownloads(value);
                         //fd.downloadAll();
                         //EmCode = fd.EmCode;
@@ -71,7 +71,7 @@ namespace Leucippus.Models
                 }
             }
         }
-        private string _interp = "LINEAR";
+        private string _interp = "BSPLINE3";
         public string Interp
         {
             get { return _interp; }
@@ -230,7 +230,12 @@ namespace Leucippus.Models
                         _valsd = "∝ electrons/cube";
                     else
                         _valsd = "st.dev.";
-                }                
+                }
+                else if (value == "s.d.")
+                    _valsd = "st.dev.";
+                else if (value == "electrons")
+                    _valsd = "∝ electrons/cube";
+
             }
         }
         private double _sdcap = 3.0;
@@ -376,7 +381,7 @@ namespace Leucippus.Models
             }
         }
 
-        private double _gap = 0.1;
+        private double _gap = 0.05;
         public double Gap
         {
             get { return _gap; }

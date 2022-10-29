@@ -76,13 +76,13 @@ namespace LeuciShared
         {
             _interp = interp;
             if (_interp == "BSPLINE5")
-                _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A);
+                _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A,3);
             else if (_interp == "LINEAR")                
                 _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 1);
             else if (_interp == "CUBIC")
                 _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A,3);                
             else if (_interp == "BSPLINE3")                
-                _interpMap = new OptBSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 3, 16);
+                _interpMap = new OptBSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 3, 64);
             else
                 _interpMap = new Nearest(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength,_C, _B, _A);
         }        

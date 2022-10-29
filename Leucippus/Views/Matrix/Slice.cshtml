@@ -16,8 +16,8 @@
                 <th style="width:8%;" colspan="1" align="center">Atom</th>
                 <th style="width:15%;" colspan="1" align="center">(x,y,z)</th>
                 <th style="width:6%;" colspan="1" align="center">distance</th>
-                <th style="width:30%;" colspan="1" align="center">Controls</th>
-                <th style="width:35%;" colspan="1" align="center">Navigation</th>
+                <th style="width:35%;" colspan="1" align="center">Controls</th>
+                <th style="width:30%;" colspan="1" align="center">Navigation</th>
             </tr>                        
             <tr>
                 <td>central</td>
@@ -37,7 +37,7 @@
                                 <td width="55%">
                                     [
                                     @Html.ActionLink(
-                                linkText: "0",
+                                linkText: "nearest",
                                 actionName: "Slice",
                                 controllerName: "Matrix",
                                 routeValues: new {
@@ -54,7 +54,7 @@
                                 )
                                 ,                                
                                     @Html.ActionLink(
-                                linkText: "1",
+                                linkText: "linear",
                                 actionName: "Slice",
                                 controllerName: "Matrix",
                                 routeValues: new {
@@ -68,45 +68,13 @@
                                 pa = @ViewBag.pAtom,
                                 },
                                 htmlAttributes: null
-                                ),
-                                   @Html.ActionLink(
-                                linkText: "3",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                interp = "3",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                },
-                                htmlAttributes: null
-                                ),
+                                ),                                 
                                 @Html.ActionLink(
-                                linkText: "s3",
+                                linkText: "bspline",
                                 actionName: "Slice",
                                 controllerName: "Matrix",
                                 routeValues: new {
                                 interp = "s3",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                },
-                                htmlAttributes: null
-                                ),
-                                   @Html.ActionLink(
-                                linkText: "s5",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                interp = "s5",
                                 pdbcode = @ViewBag.PdbCode,
                                 c_xyz = @ViewBag.cXYZ,
                                 l_xyz = @ViewBag.lXYZ,
@@ -196,40 +164,13 @@
                     },htmlAttributes: null
                     )]</td>
 
-                    </tr>
-                    
+                    </tr>                                                
                             <tr>
                                 <td>
-                                    Density=
+                                    Vol Level=
                                 </td>
                                 <td>
-                                    @ViewBag.ValSd
-                                </td>
-                                <td>
-                                    [@Html.ActionLink(
-                                linkText: "Tgl Density",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                valsd = "+1",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                },
-                                htmlAttributes: null
-                                )]
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Hue cap=
-                                </td>
-                                <td>
-                                    <span><input style="width:70%;" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap> (sd's)</span>
+                                    <span><input style="width:70%;" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span>
                                 </td>
                                 <td>
                                     [@Html.ActionLink(
@@ -261,6 +202,7 @@
                                 pa = @ViewBag.pAtom,
                                 },htmlAttributes: null
                                 )]
+                                (sd's)
                                 </td>
                             </tr>
 
@@ -487,6 +429,166 @@
     </table>
 </div>
 <hr />
+
+
+
+<div>
+    </p>@ViewBag.Error<p>
+</div>
+
+
+
+<div>
+    <h3>Admin Area</h3>
+    <div>
+        <p>Extra interpolations</p>    
+    <table>
+        <tr>
+            <td width="20%">
+                Interp=
+            </td>
+            <td width="25%">
+                @ViewBag.Interp
+            </td>
+            <td width="55%">
+                [
+                @Html.ActionLink(
+                linkText: "nearest",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                interp = "0",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                },
+                htmlAttributes: null
+                )
+                ,
+                @Html.ActionLink(
+                linkText: "linear",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                interp = "1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                },
+                htmlAttributes: null
+                ),
+                @Html.ActionLink(
+                linkText: "cubic",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                interp = "3",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                },
+                htmlAttributes: null
+                ),
+                @Html.ActionLink(
+                linkText: "bspline",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                interp = "s3",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                },
+                htmlAttributes: null
+                ),
+                @Html.ActionLink(
+                linkText: "bs-whole",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                interp = "s5",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                },
+                htmlAttributes: null
+                )
+                ]
+            </td>
+        </tr>
+    </table>
+    </div>
+    <div>
+        <p>Toggle between values and standard deviation</p>
+        <table>
+            <tr>
+                <td>
+                    Density=
+                </td>
+                <td>
+                    @ViewBag.ValSd
+                </td>
+                <td>
+                    [@Html.ActionLink(
+                    linkText: "st.devs",
+                    actionName: "Slice",
+                    controllerName: "Matrix",
+                    routeValues: new {
+                    valsd = "s.d.",
+                    pdbcode = @ViewBag.PdbCode,
+                    c_xyz = @ViewBag.cXYZ,
+                    l_xyz = @ViewBag.lXYZ,
+                    p_xyz = @ViewBag.pXYZ,
+                    ca = @ViewBag.cAtom,
+                    la = @ViewBag.lAtom,
+                    pa = @ViewBag.pAtom,
+                    },
+                    htmlAttributes: null
+                    ),@Html.ActionLink(
+                    linkText: "values",
+                    actionName: "Slice",
+                    controllerName: "Matrix",
+                    routeValues: new {
+                    valsd = "electrons",
+                    pdbcode = @ViewBag.PdbCode,
+                    c_xyz = @ViewBag.cXYZ,
+                    l_xyz = @ViewBag.lXYZ,
+                    p_xyz = @ViewBag.pXYZ,
+                    ca = @ViewBag.cAtom,
+                    la = @ViewBag.lAtom,
+                    pa = @ViewBag.pAtom,
+                    },
+                    htmlAttributes: null
+                    )]
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+
+
 
 <script>
     var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
