@@ -209,6 +209,11 @@ namespace LeuciShared
         protected int _degree;
         protected int _dimsize;
         protected int _points;
+        protected bool _neednewVals = true;
+        protected int _xFloor = 0;
+        protected int _yFloor = 0;
+        protected int _zFloor = 0;
+        protected double[,,] _polyCoeffs = new double[0, 0, 0];
         // ****** Linear Implementation ****************************************
         public Multivariate(byte[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
         {
@@ -216,31 +221,52 @@ namespace LeuciShared
             _degree = degree;            
             _points = _degree + 1;
             _dimsize = (int)Math.Pow(_points, 3);
+            
         }
         public override double getValue(double x, double y, double z)
         {
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
-            // 1. Build the points around the centre as a cube - 8 points
-            Single[] vals = getSmallerCubeMultivariate(x, y, z, _points);
-                        
-            //2. Multiply with the precomputed matrix to find the multivariate polynomial
-            double[] ABC = multMatrixVector(getInverse(), vals);
 
-            //3. Put the 8 values back into a cube
-            double[,,] coeffs = new double[_points, _points, _points];
-            int pos = 0;
-            for (int i = 0; i < _points; ++i)
+            bool recalc = _neednewVals;
+
+            // we can reuse our last matrix if the points are within the same unit cube
+            int xFloor = (int)Math.Floor(x);
+            int yFloor = (int)Math.Floor(y);
+            int zFloor = (int)Math.Floor(z);
+            if (xFloor != _xFloor)
+                recalc = true;
+            if (yFloor != _yFloor)
+                recalc = true;
+            if (zFloor != _zFloor)
+                recalc = true;
+
+            if (recalc)
             {
-                for (int j = 0; j < _points; ++j)
+                _xFloor = (int)Math.Floor(x);
+                _yFloor = (int)Math.Floor(y);
+                _zFloor = (int)Math.Floor(z);
+                // 1. Build the points around the centre as a cube - 8 points
+                Single[] vals = getSmallerCubeMultivariate(x, y, z, _points);
+                //2. Multiply with the precomputed matrix to find the multivariate polynomial
+                double[] ABC = multMatrixVector(getInverse(), vals);
+
+                //3. Put the 8 values back into a cube
+                _polyCoeffs = new double[_points, _points, _points];
+                int pos = 0;
+                for (int i = 0; i < _points; ++i)
                 {
-                    for (int k = 0; k < _points; ++k)
+                    for (int j = 0; j < _points; ++j)
                     {
-                        coeffs[i, j, k] = ABC[pos];
-                        ++pos;
+                        for (int k = 0; k < _points; ++k)
+                        {
+                            _polyCoeffs[i, j, k] = ABC[pos];
+                            ++pos;
+                        }
                     }
                 }
+                _neednewVals = false;
             }
 
             //4. Adjust the values to be within this cube
@@ -250,7 +276,7 @@ namespace LeuciShared
             double zn = z - Math.Floor(z) - pstart;
 
             //5. Apply the multivariate polynomial coefficents to find the value
-            return getValueMultiVariate(zn, yn, xn, coeffs);
+            return getValueMultiVariate(zn, yn, xn, _polyCoeffs);
         }
         double getValueMultiVariate(double x, double y, double z, double[,,] coeffs)
         {/*This is using a value scheme that makes sens of our new fitted polyCube

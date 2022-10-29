@@ -15,7 +15,7 @@ namespace LeuciShared
         public Dictionary<string, string> Words = new Dictionary<string, string>();
         public string Info = "";
         private string _fileName;
-        public byte[] Bytes;
+        public byte[] Bytes = new byte[0];
         public int Blength = 0;
         public int Bstart = 0;
         //private double[,,] _myMatrix;
@@ -48,8 +48,23 @@ namespace LeuciShared
 
         public DensityBinary(string fileName)
         {
+            //I am going to try to read this twice and if it fails throw an error and delete the potentially corrupt file
             _fileName = fileName;
-            Bytes = ReadBinaryFile(_fileName);
+            try
+            {
+                Bytes = ReadBinaryFile(_fileName);
+            }
+            catch(Exception e)
+            {
+                try
+                {
+                    Bytes = ReadBinaryFile(_fileName);
+                }
+                catch(Exception ee)
+                {
+                    throw new Exception("Error creating binary so deleted " + _fileName + " - " + ee.Message);
+                }
+            }
             createWords(Bytes);
             //List<Single> sings = bytesToSingles(_bytes);                        
         }
