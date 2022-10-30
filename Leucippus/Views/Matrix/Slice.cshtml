@@ -27,7 +27,22 @@
                 <td rowspan="3" style="height:30px;text-align:justify">    
                     <div class="inner-tbl">
                 <table>
+                    <tr>
+                        <td>
+                        <table>
                             <tr>
+                                <td>Fos=</td>
+                                <td><input style=";" type="text" id="fos" name="fos" value=@ViewBag.Fos></td>
+                                <td>Fcs=</td>
+                                <td><input style=";" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs></td>
+                            </tr>
+                            </table>
+                         </td>                        
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
                                 <td width="20%">
                                     Interp=
                                 </td>
@@ -49,6 +64,8 @@
                                 ca = @ViewBag.cAtom,
                                 la = @ViewBag.lAtom,
                                 pa = @ViewBag.pAtom,
+                                fos = @ViewBag.Fos,
+                                fcs = @ViewBag.Fcs,
                                 },
                                 htmlAttributes: null
                                 )
@@ -66,6 +83,8 @@
                                 ca = @ViewBag.cAtom,
                                 la = @ViewBag.lAtom,
                                 pa = @ViewBag.pAtom,
+                                fos = @ViewBag.Fos,
+                                fcs = @ViewBag.Fcs,
                                 },
                                 htmlAttributes: null
                                 ),                                 
@@ -82,14 +101,22 @@
                                 ca = @ViewBag.cAtom,
                                 la = @ViewBag.lAtom,
                                 pa = @ViewBag.pAtom,
+                                fos = @ViewBag.Fos,
+                                fcs = @ViewBag.Fcs,
                                 },
                                 htmlAttributes: null
                                 )
                             ]
                                 </td>
                             </tr>
+                            </table>
+                        </td>
+                    </tr>                            
                     <tr>
-                                <td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>
                             Width(Å)=
                         </td>
                                 <td>
@@ -110,6 +137,8 @@
                     ca = @ViewBag.cAtom,
                     la = @ViewBag.lAtom,
                     pa = @ViewBag.pAtom,
+                    fos = @ViewBag.Fos,
+                    fcs = @ViewBag.Fcs,
                     },
                     htmlAttributes: null
                     )
@@ -127,86 +156,109 @@
                     ca = @ViewBag.cAtom,
                     la = @ViewBag.lAtom,
                     pa = @ViewBag.pAtom,
+                    fos = @ViewBag.Fos,
+                    fcs = @ViewBag.Fcs,
                     },
                     htmlAttributes: null
                     )
                     ]
                         </td>
+                    
                     </tr>
+                    </table>
+                    </td>                         
                     <tr>
                         <td>
-                            Gap(Å)  =
+                            <table>
+                                <tr>
+                                            <td>
+                                                Gap(Å)  =
+                                            </td>
+                                            <td>
+                                                <input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>
+                                            </td>
+                                            <td>
+                                                [@Html.ActionLink(
+                                            linkText: "+0.01",
+                                            actionName: "Slice",
+                                            controllerName: "Matrix",
+                                            routeValues: new {
+                                            gap = "-2",
+                                            pdbcode = @ViewBag.PdbCode,
+                                            },htmlAttributes: null
+                                            ),@Html.ActionLink(
+                                            linkText: "-0.01",
+                                            actionName: "Slice",
+                                            controllerName: "Matrix",
+                                            routeValues: new {
+                                            gap = "-3",
+                                            pdbcode = @ViewBag.PdbCode,
+                                            c_xyz = @ViewBag.cXYZ,
+                                            l_xyz = @ViewBag.lXYZ,
+                                            p_xyz = @ViewBag.pXYZ,
+                                            ca = @ViewBag.cAtom,
+                                            la = @ViewBag.lAtom,
+                                            pa = @ViewBag.pAtom,
+                                            fos = @ViewBag.Fos,
+                                            fcs = @ViewBag.Fcs,
+                                            },htmlAttributes: null
+                                            )]
+                                            </td>
+                                </tr>
+                            </table>
+                        </td>                        
+                    </tr>                                                
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>
+                            Vol Level=
                         </td>
                         <td>
-                            <input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>                        
+                            <span><input style="width:70%;" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span>
                         </td>
-                        <td>[@Html.ActionLink(
-                    linkText: "+0.01",
-                    actionName: "Slice",
-                    controllerName: "Matrix",
-                    routeValues: new {
-                    gap = "-2",
-                    pdbcode = @ViewBag.PdbCode,
-                    },htmlAttributes: null
-                    ),@Html.ActionLink(
-                    linkText: "-0.01",
-                    actionName: "Slice",
-                    controllerName: "Matrix",
-                    routeValues: new {
-                    gap = "-3",
-                    pdbcode = @ViewBag.PdbCode,
-                    c_xyz = @ViewBag.cXYZ,
-                    l_xyz = @ViewBag.lXYZ,
-                    p_xyz = @ViewBag.pXYZ,
-                    ca = @ViewBag.cAtom,
-                    la = @ViewBag.lAtom,
-                    pa = @ViewBag.pAtom,
-                    },htmlAttributes: null
-                    )]</td>
-
-                    </tr>                                                
-                            <tr>
-                                <td>
-                                    Vol Level=
-                                </td>
-                                <td>
-                                    <span><input style="width:70%;" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span>
-                                </td>
-                                <td>
-                                    [@Html.ActionLink(
-                                linkText: "+0.1",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                sdcap = @ViewBag.SdCap + 0.1,
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                },htmlAttributes: null
-                                ),@Html.ActionLink(
-                                linkText: "-0.1",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                sdcap = @ViewBag.SdCap - 0.1,
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                },htmlAttributes: null
-                                )]
-                                (sd's)
-                                </td>
-                            </tr>
-
-                        </table>     
+                        <td>
+                            [@Html.ActionLink(
+                        linkText: "+0.1",
+                        actionName: "Slice",
+                        controllerName: "Matrix",
+                        routeValues: new {
+                        sdcap = @ViewBag.SdCap + 0.1,
+                        pdbcode = @ViewBag.PdbCode,
+                        c_xyz = @ViewBag.cXYZ,
+                        l_xyz = @ViewBag.lXYZ,
+                        p_xyz = @ViewBag.pXYZ,
+                        ca = @ViewBag.cAtom,
+                        la = @ViewBag.lAtom,
+                        pa = @ViewBag.pAtom,
+                        fos = @ViewBag.Fos,
+                        fcs = @ViewBag.Fcs,
+                        },htmlAttributes: null
+                        ),@Html.ActionLink(
+                        linkText: "-0.1",
+                        actionName: "Slice",
+                        controllerName: "Matrix",
+                        routeValues: new {
+                        sdcap = @ViewBag.SdCap - 0.1,
+                        pdbcode = @ViewBag.PdbCode,
+                        c_xyz = @ViewBag.cXYZ,
+                        l_xyz = @ViewBag.lXYZ,
+                        p_xyz = @ViewBag.pXYZ,
+                        ca = @ViewBag.cAtom,
+                        la = @ViewBag.lAtom,
+                        pa = @ViewBag.pAtom,
+                        fos = @ViewBag.Fos,
+                        fcs = @ViewBag.Fcs,
+                        },htmlAttributes: null
+                        )]
+                        (sd's)
+                        </td>
+                                </tr>
+                            </table>
+                        </td>                        
+                    </tr>
+                    </table>     
                     </div>
                     <!--<input type="image" src="~/images/calc.png" style="width:18px;height:18px;vertical-align:text-bottom" />-->
                </td>
@@ -267,6 +319,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -284,6 +338,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -301,6 +357,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -321,6 +379,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -338,6 +398,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -355,6 +417,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -375,6 +439,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -392,6 +458,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -409,6 +477,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -465,6 +535,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                    fos = @ViewBag.Fos,
+                    fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -482,6 +554,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                        fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 ),
@@ -498,6 +572,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                    fos = @ViewBag.Fos,
+                    fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 ),
@@ -514,6 +590,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                        fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 ),
@@ -530,6 +608,8 @@
                 ca = @ViewBag.cAtom,
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
+                    fos = @ViewBag.Fos,
+                    fcs = @ViewBag.Fcs,
                 },
                 htmlAttributes: null
                 )
@@ -562,6 +642,8 @@
                     ca = @ViewBag.cAtom,
                     la = @ViewBag.lAtom,
                     pa = @ViewBag.pAtom,
+                    fos = @ViewBag.Fos,
+                    fcs = @ViewBag.Fcs,
                     },
                     htmlAttributes: null
                     ),@Html.ActionLink(
@@ -577,6 +659,8 @@
                     ca = @ViewBag.cAtom,
                     la = @ViewBag.lAtom,
                     pa = @ViewBag.pAtom,
+                    fos = @ViewBag.Fos,
+                    fcs = @ViewBag.Fcs,
                     },
                     htmlAttributes: null
                     )]
@@ -594,7 +678,8 @@
     var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
     var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
     var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
-    var jv2 = @Html.Raw(Json.Serialize(@ViewBag.Slice2Density));
+    var jpX = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionX));    
+    var jpY = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionY));    
     var jvr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
     var jvl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
     var minv = -2
@@ -682,9 +767,23 @@
 
 
     var huetitle = @Html.Raw(Json.Serialize(@ViewBag.ValSd)) + "<br>max=" + denmax;
+    
+    var dataP = {        
+        x: jpX,
+        y: jpY,
+        mode: 'markers',
+        type: "scatter",
+        colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
+        showscale: false,     
+        name:"pos data",
+        marker: {
+            color: 'yellow',
+            size: 5,            
+        },
+    }
 
     if (denplot == "heatmap"){
-        var data = [{
+        var dataV = {
             z: jv,
             x: jx,
             y: jy,
@@ -699,11 +798,12 @@
             colorbar: {
                 thickness: 15,
                 title: huetitle,
-            },
-        }];
+            },            
+            name:"val data",
+        };
     }
     else{
-        var data = [{
+        var dataV = {
             z: jv,
             x: jx,
             y: jy,
@@ -724,9 +824,12 @@
             colorbar: {
                 thickness: 15,
                 title:huetitle,            
-            },        
-        }];
+            },
+            name: "val data",
+        };
     }
+
+    data = [dataV,dataP]
    
     var dataR = [{
         z: jvr,
@@ -745,7 +848,7 @@
             thickness: 15,
             title:"l1 norm of P1",            
         }
-    }];
+    }, dataP];
         
     var dataL = [{
         z: jvl,
@@ -769,7 +872,7 @@
                 end: maxl,
                 size: sizel
             },
-    }];
+    }, dataP];
     
     var layout = {
         grid: { rows: 1, columns: 1, pattern: 'independent' },
@@ -781,7 +884,17 @@
             zeroline: false,
             visible: false,
         },
+        xaxis2: {
+            showgrid: false,
+            zeroline: false,
+            visible: false,
+        },
         yaxis: {
+            scaleanchor: 'x',
+            scaleratio: 1,
+            visible: false,
+        },
+        yaxis2: {
             scaleanchor: 'x',
             scaleratio: 1,
             visible: false,
@@ -795,7 +908,7 @@
         },  
         colorbar: {
             textangle:-90,            
-        }
+        },        
     };
     
     var config = { responsive: true }

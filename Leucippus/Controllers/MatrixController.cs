@@ -22,7 +22,7 @@ namespace Leucippus.Controllers
                 ViewBag.Error = "";
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp,2,-1);
                 if (DensitySingleton.Instance.NewMatrix)
                 {
                     string[] first_three = DensitySingleton.Instance.PA.getFirstThreeCoords();
@@ -71,7 +71,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.Layer = layer;
                 ViewBagMatrix.Instance.PlanePlot = planeplot;
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp,2,-1);
                 dm.calculatePlane(ViewBagMatrix.Instance.Plane, ViewBagMatrix.Instance.Layer);
 
                 if (ViewBagMatrix.Instance.EmCode == "" && layer == -1 && plane == "")
@@ -109,7 +109,8 @@ namespace Leucippus.Controllers
             string denhue = "", string radhue = "", string laphue = "",
             string denbar = "", string radbar = "", string lapbar = "",
             double width = -1, double gap = -1, string interp = "", 
-            string valsd = "",double sdcap = -1)
+            string valsd = "",double sdcap = -1,
+            int Fos=2, int Fcs=-1)
         {
             try
             {
@@ -117,6 +118,7 @@ namespace Leucippus.Controllers
 
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
                 ViewBagMatrix.Instance.Interp = interp;
+                ViewBagMatrix.Instance.setFoFc(Fos, Fcs);
 
                 if (ViewBagMatrix.Instance.Refresh)
                 {
@@ -125,7 +127,7 @@ namespace Leucippus.Controllers
                     ViewBagMatrix.Instance.SetPlanar("", "", DensitySingleton.Instance.PA, true);
                 }
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp,ViewBagMatrix.Instance.Fos,ViewBagMatrix.Instance.Fcs);
 
                 ViewBagMatrix.Instance.DenPlot = denplot;
                 ViewBagMatrix.Instance.RadPlot = radplot;
@@ -155,6 +157,8 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.DensityType = DensitySingleton.Instance.FD.DensityType;
 
                 ViewBag.SliceDensity = dm.SliceDensity;
+                ViewBag.SlicePositionX = dm.SlicePositionX;
+                ViewBag.SlicePositionY = dm.SlicePositionY;
                 ViewBag.SliceRadient = dm.SliceRadient;
                 ViewBag.SliceLaplacian = dm.SliceLaplacian;
                 ViewBag.SliceAxis = dm.SliceAxis;
@@ -171,6 +175,8 @@ namespace Leucippus.Controllers
                 ViewBag.pXYZ = "(" + Convert.ToString(ViewBagMatrix.Instance.Planar.A) + "," + Convert.ToString(ViewBagMatrix.Instance.Planar.B) + "," + Convert.ToString(ViewBagMatrix.Instance.Planar.C) + ")";
 
                 ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
+                ViewBag.Fos = ViewBagMatrix.Instance.Fos;
+                ViewBag.Fcs = ViewBagMatrix.Instance.Fcs;
 
                 ViewBag.DenPlot = ViewBagMatrix.Instance.DenPlot;
                 ViewBag.RadPlot = ViewBagMatrix.Instance.RadPlot;
@@ -225,7 +231,7 @@ namespace Leucippus.Controllers
             {
                 ViewBag.Error = "";
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
                 if (ViewBagMatrix.Instance.Refresh)
                 {
                     ViewBagMatrix.Instance.SetCentral("", "", DensitySingleton.Instance.PA, true);

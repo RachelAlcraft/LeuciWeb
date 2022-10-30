@@ -95,6 +95,18 @@ namespace Leucippus.Models
                 }
             }
         }
+
+        public int Fos = 2;
+        public int Fcs = -1;
+        public void setFoFc(int fos, int fcs)
+        {
+            if (fos != Fos)
+                ++_refresh;
+            Fos = fos;
+            if (fcs != Fcs)
+                ++_refresh;
+            Fcs = fcs;
+        }
         public string EmCode
         {
             get;set;

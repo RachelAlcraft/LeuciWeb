@@ -276,7 +276,7 @@ namespace LeuciShared
             return pointPrime;
         }
 
-        private VectorThree reverseTransformation(VectorThree point)
+        public VectorThree reverseTransformation(VectorThree point)
         {
             VectorThree pointPrime = new VectorThree(point.A, point.B, point.C);
             VectorThree point2;
@@ -298,13 +298,8 @@ namespace LeuciShared
             point2 = rotate(pointPrime.B, pointPrime.C, rotationYZ_4);
             pointPrime.B = point2.A;
             pointPrime.C = point2.B;
-
+            
             return pointPrime;
         }
-
-
-
-
-
     }
 }
