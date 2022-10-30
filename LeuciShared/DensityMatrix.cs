@@ -27,6 +27,7 @@ namespace LeuciShared
 
 
         private DensityBinary _densityBinary;
+        private DensityBinary _densityDiffBinary;
         private Cubelet _cublet;        
         public double[] MatA = new double[0];
         public double[] MatB = new double[0];
@@ -47,23 +48,30 @@ namespace LeuciShared
         public double[][]? SliceDensity;
         public double[][]? SliceRadient;
         public double[][]? SliceLaplacian;
+        public double[]? SlicePositionX;
+        public double[]? SlicePositionY;
         public double[]? SliceAxis;       
         private Interpolator _interpMap;
         private string _interp;
+        private int _fos;
+        private int _fcs;
 
-        public static async Task<DensityMatrix> CreateAsync(string pdbcode,string empath,string interp)
-        {
+        public static async Task<DensityMatrix> CreateAsync(string pdbcode,string empath,string diffpath,string interp, int fos, int fcs)
+        {            
             DensityMatrix x = new DensityMatrix();
-            x.InitializeAsync(empath,interp);
+            x.InitializeAsync(empath,diffpath,interp,fos,fcs);
             return x;
         }
         private DensityMatrix() { }
-        private void InitializeAsync(string edFile,string interp)
+        private void InitializeAsync(string edFile,string difFile,string interp, int fos, int fcs)
         {
             //_emcode = emcode;
             //string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
             //await DownloadAsync(edFile);
+            _fos = fos;
+            _fcs = fcs;
             _densityBinary = new DensityBinary(edFile);
+            _densityDiffBinary = new DensityBinary(difFile);
             _A = _densityBinary.Z3_cap;//Convert.ToInt32(_densityBinary.Words["03_NZ"]);
             _B = _densityBinary.Y2_cap;//Convert.ToInt32(_densityBinary.Words["02_NY"]);
             _C = _densityBinary.X1_cap;//Convert.ToInt32(_densityBinary.Words["01_NX"]);
@@ -74,17 +82,34 @@ namespace LeuciShared
 
         public void changeInterp(string interp)
         {
+            // main density is 2Fo-Fc
+            // diff density is Fo-Fc
+            int m = 0;
+            int d = 0;
+            m = _fos;
+            d = -1 * _fos;
+            m += _fcs;
+            d += -2 * _fcs;
+
+            Single[] fofc = new Single[_densityBinary.Blength];            
+            for (int i = 0; i < _densityBinary.Blength; ++i)
+            {
+                Single valueM = BitConverter.ToSingle(_densityBinary.Bytes, _densityBinary.Bstart + i * 4);
+                Single valueD = BitConverter.ToSingle(_densityDiffBinary.Bytes, _densityBinary.Bstart + i * 4);                
+                fofc[i] = m * valueM + d * valueD;
+            }
+
             _interp = interp;
             if (_interp == "BSPLINE5")
-                _interpMap = new BetaSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A,3);
+                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A,3);
             else if (_interp == "LINEAR")                
-                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 1);
+                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 1);
             else if (_interp == "CUBIC")
-                _interpMap = new Multivariate(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A,3);                
+                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A,3);                
             else if (_interp == "BSPLINE3")                
-                _interpMap = new OptBSpline(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength, _C, _B, _A, 3, 64);
+                _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64);
             else
-                _interpMap = new Nearest(_densityBinary.Bytes, _densityBinary.Bstart, _densityBinary.Blength,_C, _B, _A);
+                _interpMap = new Nearest(fofc, 0, _densityBinary.Blength,_C, _B, _A);
         }        
         private void createData()
         {
@@ -186,9 +211,26 @@ namespace LeuciShared
 
             SpaceTransformation space = new SpaceTransformation(central, linear, planar);
 
+            SlicePositionX = new double[3];
+            SlicePositionY = new double[3];
+            VectorThree posC = space.reverseTransformation(central);
+            VectorThree posL = space.reverseTransformation(linear);
+            VectorThree posP = space.reverseTransformation(planar);
+            VectorThree posCp = posC.getPointPosition(gap, width);
+            VectorThree posLp = posL.getPointPosition(gap, width);
+            VectorThree posPp = posP.getPointPosition(gap, width);
+
+
+            SlicePositionX[0] = posCp.A;
+            SlicePositionX[1] = posLp.A;
+            SlicePositionX[2] = posPp.A;
+            SlicePositionY[0] = posCp.B;
+            SlicePositionY[1] = posLp.B;
+            SlicePositionY[2] = posPp.B;
+
             SliceDensity = new double[nums][];
             SliceRadient = new double[nums][];
-            SliceLaplacian = new double[nums][];
+            SliceLaplacian = new double[nums][];            
             SliceAxis = new double[nums];
             if (_interp == "NEAREST")
             {
@@ -212,16 +254,16 @@ namespace LeuciShared
 
                 if (_interp == "NEAREST")
                 {
-                    SliceDensity[m] = new double[nums];
+                    SliceDensity[m] = new double[nums];                    
                 }
                 else if (_interp == "LINEAR")
                 {
-                    SliceDensity[m] = new double[nums];
+                    SliceDensity[m] = new double[nums];                    
                     SliceRadient[m] = new double[nums];
                 }
                 else
                 {
-                    SliceDensity[m] = new double[nums];
+                    SliceDensity[m] = new double[nums];                    
                     SliceRadient[m] = new double[nums];
                     SliceLaplacian[m] = new double[nums];
                 }
@@ -241,7 +283,8 @@ namespace LeuciShared
                         {
                             density = (density - _densityBinary.Mean) / _densityBinary.Sd;
                         }
-                        SliceDensity[m][n] = density;
+                        SliceDensity[m][n] = density;                        
+                        if (m == n)                            
                         if (density > ThreeSd)
                             SliceDensity[m][n] = ThreeSd;
                         DMin = Math.Min(DMin, density);
@@ -262,7 +305,7 @@ namespace LeuciShared
                     }
                     else
                     {
-                        SliceDensity[m][n] = -1;
+                        SliceDensity[m][n] = -1;                        
                         if (_interp.Contains("BSPLINE") || _interp == "CUBIC")
                         {
                             SliceRadient[m][n] = -1;

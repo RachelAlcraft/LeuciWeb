@@ -138,5 +138,23 @@ namespace LeuciShared
         {
             return new VectorThree(C, B, A);
         }
+
+        public VectorThree getPointPosition(double gap,double width)
+        {
+            VectorThree PP = new VectorThree(A, B, C);
+            PP.A = PP.A / gap;
+            PP.B = PP.B / gap;
+            PP.C = PP.C / gap;
+            int adj = (int)Math.Floor((width / (2 * gap)));
+            int num = (int)Math.Floor((width / (2 * gap))) * 2 + 1;
+            PP.A += (int)adj;// + 1;
+            PP.B += (int)adj;
+            //B.z += adj;
+
+            //adjust in the x direction
+            //PP.A = num - PP.A;
+
+            return new VectorThree(PP.B,PP.A,PP.C);
+        }
     }
 }

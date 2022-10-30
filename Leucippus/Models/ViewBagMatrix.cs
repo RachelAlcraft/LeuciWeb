@@ -45,6 +45,11 @@ namespace Leucippus.Models
             _refresh = 0;
         }
 
+        public string T1Display { get; set; } = "block";
+        public string T2Display { get; set; } = "none";
+        public string T3Display { get; set; } = "none";
+        public string T4Display { get; set; } = "none";
+
         private string _pdbcode = "6eex";
         public string PdbCode
         {
@@ -56,7 +61,7 @@ namespace Leucippus.Models
                     if (value != _pdbcode)
                     {                        
                         ++_refresh;
-                        _interp = "BSPLINE3";
+                        _interp = "LINEAR";
                         //FileDownloads fd = new FileDownloads(value);
                         //fd.downloadAll();
                         //EmCode = fd.EmCode;
@@ -71,7 +76,7 @@ namespace Leucippus.Models
                 }
             }
         }
-        private string _interp = "BSPLINE3";
+        private string _interp = "LINEAR";
         public string Interp
         {
             get { return _interp; }
@@ -94,6 +99,18 @@ namespace Leucippus.Models
                         _interp = "LINEAR";                                   
                 }
             }
+        }
+
+        public int Fos = 2;
+        public int Fcs = -1;
+        public void setFoFc(int fos, int fcs)
+        {
+            if (fos != Fos)
+                ++_refresh;
+            Fos = fos;
+            if (fcs != Fcs)
+                ++_refresh;
+            Fcs = fcs;
         }
         public string EmCode
         {

@@ -34,8 +34,10 @@ namespace LeuciShared
         public FileDownloads FD;
         public PdbAtoms PA;
         public bool NewMatrix = false;
+        private int _fos = 2;
+        private int _fcs = -1;
 
-        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp)
+        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp,int fos,int fcs)
         {
             bool calc = false;
             NewMatrix = false;
@@ -43,10 +45,17 @@ namespace LeuciShared
             { 
                 calc = true;
             }
+            if (fos != _fos || fcs != _fcs)
+            {
+                calc = true;
+                _fos = fos;
+                _fcs = fcs;
+            }
             else if (interp != _interp && interp != "")
             {                
                 _interp = interp;
-                _dm.changeInterp(_interp);
+                if (_dm != null)
+                    _dm.changeInterp(_interp);
             }
 
             if (!calc)
@@ -63,13 +72,13 @@ namespace LeuciShared
                 _pdbcode = pdbcode;
                 try
                 {
-                    _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, interp);
+                    _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs);
                 }
                 catch(Exception e)
                 {
                     try
                     {
-                        _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, interp);
+                        _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs);
                     }
                     catch (Exception ee)
                     {

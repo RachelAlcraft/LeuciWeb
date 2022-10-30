@@ -20,7 +20,7 @@ namespace LeuciShared
         public string EmFilePath = "";
         public string DiffViewLink = "";
         public string DiffDownloadLink = "";
-        private string DiffFilePath = "";
+        public string DiffFilePath = "";
         public string[] PdbLines = new string[0];
         public string Resolution = "";
 
@@ -39,6 +39,7 @@ namespace LeuciShared
             PdbDownloadLink = "https://files.rcsb.org/download/" + PdbCode + ".pdb";
             PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";
             EmFilePath = "wwwroot/App_Data/" + PdbCode + ".ccp4";
+            DiffFilePath = "wwwroot/App_Data/" + PdbCode + "_diff.ccp4";
             PdbViewLink = "https://www.ebi.ac.uk/pdbe/entry-files/pdb" + PdbCode + ".ent";
             bool ok = await downloadAsync(PdbFilePath, PdbDownloadLink);
             if (ok)
@@ -79,6 +80,7 @@ namespace LeuciShared
                                 System.IO.File.Delete("wwwroot/App_Data/emd_" + ems[1] + ".ccp4.gz");
 
                         EmFilePath = "wwwroot/App_Data/emd_" + ems[1] + ".ccp4";
+                        DiffFilePath = ""; //there is no difference density for cryo-em
                         // we can delete the zipped version now
                         
                     }
@@ -88,8 +90,12 @@ namespace LeuciShared
                     EmDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + ".ccp4";
                     ok = await downloadAsync(EmFilePath, EmDownloadLink);
                     if (ok)
+                    {
+                        DiffDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + "_diff.ccp4";
+                        ok = await downloadAsync(DiffFilePath, DiffDownloadLink);                        
+                    }
+                    if (ok)
                         DensityType = "x-ray";
-
                 }
 
 

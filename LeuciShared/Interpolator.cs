@@ -14,7 +14,8 @@ namespace LeuciShared
     // ****** ABSTRACT CLASS ****************************************
     public abstract class Interpolator
     {        
-        protected byte[] _binary;
+        //protected byte[] _binary;
+        protected Single[] _singles;
         protected int _bStart;
         protected int _bLength;
         protected int XLen;
@@ -27,14 +28,16 @@ namespace LeuciShared
 
         //--------------------------------------------------------------------
 
-        public Interpolator(byte[] binary,int bstart,int blength,int x, int y, int z)
+        //public Interpolator(byte[] binary,int bstart,int blength,int x, int y, int z)
+        public Interpolator(Single[] binary, int bstart, int blength, int x, int y, int z)
         {//init without data for conversions
             //x = slowest, y = middle, z = fastest changing axis         
             XLen = x;
             YLen = y;
             ZLen = z;
             h = 0.00001;
-            _binary = binary;
+            _singles = binary;
+            //_binary = binary;
             _bStart = bstart;
             _bLength = blength;
         }        
@@ -66,7 +69,8 @@ namespace LeuciShared
             pos += x;
             try
             {
-                Single value = BitConverter.ToSingle(_binary, _bStart + pos * 4);
+                //Single value = BitConverter.ToSingle(_binary, _bStart + pos * 4);
+                Single value = _singles[pos];
                 return value;
             }
             catch(Exception e)
@@ -189,7 +193,7 @@ namespace LeuciShared
     public class Nearest: Interpolator
     {
         // ****** Nearest Neighbour Implementation ****************************************
-        public Nearest(byte[] bytes,int start,int length,int x, int y, int z) : base(bytes,start,length,x, y, z)
+        public Nearest(Single[] bytes,int start,int length,int x, int y, int z) : base(bytes,start,length,x, y, z)
         {
 
         }        
@@ -215,7 +219,7 @@ namespace LeuciShared
         protected int _zFloor = 0;
         protected double[,,] _polyCoeffs = new double[0, 0, 0];
         // ****** Linear Implementation ****************************************
-        public Multivariate(byte[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
+        public Multivariate(Single[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
         {
             // the degree must be an odd number
             _degree = degree;            
@@ -338,7 +342,7 @@ namespace LeuciShared
         protected int _zFloor = 0;
 
         // ****** Linear Implementation ****************************************
-        public OptBSpline(byte[] bytes, int start, int length, int x, int y, int z, int degree, int points) : base(bytes, start, length, x, y, z)
+        public OptBSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree, int points) : base(bytes, start, length, x, y, z)
         {
             // the degree must be an odd number
             _degree = degree;
@@ -403,7 +407,7 @@ namespace LeuciShared
                 
                 Single[] vals = getSmallerCubeThevenaz(_xFloor, _yFloor, _zFloor, _points);
                 //3. Kind of recursive, make a smaller BSlipe interpolator out of this.                             
-                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree); 
+                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree,true); 
 
 
 
@@ -447,7 +451,7 @@ namespace LeuciShared
         //protected Dictionary<int, double> Matrix;
         //protected Single[] Matrix;
 
-        public BetaSpline(byte[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
+        public BetaSpline(Single[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = degree;
@@ -455,7 +459,7 @@ namespace LeuciShared
         //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
         createCoefficients();
         }
-        public BetaSpline(Single[] vals, int start, int length, int x, int y, int z, int degree) : base(new byte[0], start, length, x, y, z)
+        public BetaSpline(Single[] vals, int start, int length, int x, int y, int z, int degree,bool smaller) : base(vals, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = degree;
