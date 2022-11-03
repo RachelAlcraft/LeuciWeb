@@ -42,9 +42,7 @@ namespace LeuciShared
 
         public double DenMin = 0;
         public double DenMax = 0;
-        public double ThreeSd = 0;
-
-
+        
         public double[][]? SliceDensity;
         public double[][]? SliceRadient;
         public double[][]? SliceLaplacian;
@@ -162,21 +160,23 @@ namespace LeuciShared
                 }
             }            
         }        
-        public void create_scratch_slice(double width, double gap, bool sd, double sdcap,
+        public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
                                 VectorThree central, VectorThree linear, VectorThree planar)
         {
             ////////////// general settings for the view /////////////////////
             // we want general info of the max and min given the sd setting
             DenMin = Convert.ToDouble(_densityBinary.Words["20_DMIN"]);
             DenMax = Convert.ToDouble(_densityBinary.Words["21_DMAX"]);
-            ThreeSd = _densityBinary.Mean + (sdcap * _densityBinary.Sd);
+            //ThreeSd = _densityBinary.Mean + (sdcap * _densityBinary.Sd);
             if (sd)
             {
                 DenMin = (Convert.ToDouble(_densityBinary.Words["20_DMIN"]) - _densityBinary.Mean) / _densityBinary.Sd;
                 DenMax = (Convert.ToDouble(_densityBinary.Words["21_DMAX"]) - _densityBinary.Mean) / _densityBinary.Sd;
-                ThreeSd = sdcap;
+                //ThreeSd = sdcap;
+                //ThreeSdMin = sdfloor;
             }
-            ThreeSd = Math.Round(ThreeSd, 2);
+            //ThreeSd = Math.Round(ThreeSd, 2);
+            //ThreeSdMin = Math.Round(ThreeSdMin, 2);
             ////////////////////////////////////////////////////////////////////
 
             // we want to first build a smaller cube around the centre
@@ -210,9 +210,7 @@ namespace LeuciShared
             LMax = -100;
 
             SpaceTransformation space = new SpaceTransformation(central, linear, planar);
-
-            SlicePositionX = new double[3];
-            SlicePositionY = new double[3];
+            
             VectorThree posC = space.reverseTransformation(central);
             VectorThree posL = space.reverseTransformation(linear);
             VectorThree posP = space.reverseTransformation(planar);
@@ -220,13 +218,23 @@ namespace LeuciShared
             VectorThree posLp = posL.getPointPosition(gap, width);
             VectorThree posPp = posP.getPointPosition(gap, width);
 
+            List<VectorThree> lSlicePosition = new List<VectorThree>(); // central linear and planar            
+            List<VectorThree> lpSlicePositionX = new List<VectorThree>(); // for off plane
 
-            SlicePositionX[0] = posCp.A;
-            SlicePositionX[1] = posLp.A;
-            SlicePositionX[2] = posPp.A;
-            SlicePositionY[0] = posCp.B;
-            SlicePositionY[1] = posLp.B;
-            SlicePositionY[2] = posPp.B;
+            if (posCp.A < nums && posCp.B < nums)            
+                lSlicePosition.Add(posCp);                            
+            if (posLp.A < nums && posLp.B < nums)            
+                lSlicePosition.Add(posLp);                            
+            if (posPp.A < nums && posPp.B < nums)            
+                lSlicePosition.Add(posPp);             
+
+            SlicePositionX = new double[lSlicePosition.Count];
+            SlicePositionY = new double[lSlicePosition.Count];
+            for (int i = 0; i < lSlicePosition.Count; i++)
+            {
+                SlicePositionX[i] = lSlicePosition[i].A;
+                SlicePositionY[i] = lSlicePosition[i].B;
+            }
 
             SliceDensity = new double[nums][];
             SliceRadient = new double[nums][];
@@ -284,9 +292,7 @@ namespace LeuciShared
                             density = (density - _densityBinary.Mean) / _densityBinary.Sd;
                         }
                         SliceDensity[m][n] = density;                        
-                        if (m == n)                            
-                        if (density > ThreeSd)
-                            SliceDensity[m][n] = ThreeSd;
+                        
                         DMin = Math.Min(DMin, density);
                         DMax = Math.Max(DMax, density);
                         if (_interp.Contains("BSPLINE") || _interp == "LINEAR" || _interp == "CUBIC")
@@ -298,8 +304,8 @@ namespace LeuciShared
                         {
                             double laplacian = _interpMap.getLaplacian(crs.A, crs.B, crs.C);
                             SliceLaplacian[m][n] = laplacian;
-                            LMin = Math.Min(LMin, density);
-                            LMax = Math.Max(LMax, density);
+                            LMin = Math.Min(LMin, laplacian);
+                            LMax = Math.Max(LMax, laplacian);
                         }
 
                     }

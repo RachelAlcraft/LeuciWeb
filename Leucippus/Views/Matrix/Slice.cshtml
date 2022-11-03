@@ -63,6 +63,15 @@
     <button class="tablinks" onclick="openTab(event, 'Navigation')">Navigation</button>
     <button class="tablinks" onclick="openTab(event, 'Admin')">Admin</button>-->
 </div>
+<script>
+    function openTab(evt, tabName) {
+    @ViewBag.T1Display = 'block'
+    @ViewBag.T2Display = 'block'
+    @ViewBag.T3Display = 'block'
+    @ViewBag.T4Display = 'block'
+
+    }
+</script>
 <div id="Atoms" class="tabcontent" style="display:@ViewBag.T1Display">
     <h3>Atoms</h3>
     <div>
@@ -108,147 +117,121 @@
 </div>
 <div id="Settings" class="tabcontent" style="display:@ViewBag.T2Display">
     <h3>Settings</h3>
-    <div class="inner-tbl">
-        @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-        {            
+          
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+@using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+{
+        <table>
+            <tr>
+                <td style="background-color:aliceblue;color:crimson">Interpolation method</td>
+                <td>
+                    Interp=
+                </td>
+                <td>
+                    @ViewBag.Interp
+                </td>
+                <td>
+                    [
+                    @Html.ActionLink(
+                linkText: "nearest",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                interp = "0",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
+                },
+                htmlAttributes: null
+                )
+                    ,
+                    @Html.ActionLink(
+                linkText: "linear",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                interp = "1",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
+                },
+                htmlAttributes: null
+                ),
+                    @Html.ActionLink(
+                linkText: "bspline",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                interp = "s3",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
+                },
+                htmlAttributes: null
+                )
+                    ]
+                </td>
+            </tr>
+        </table>
+    
+<p>Density Range (standard deviations)</p>
+    <table>
+        <tr>
+            <td>                
+                Min=@ViewBag.DenMin
+            </td>
+            <td>
+                Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span>                    
+            </td>
+            <td>
+                <input type="range" min=@ViewBag.DenMin max=0 value=@ViewBag.SdFloor step="0.1" style="direction:ltr" id="rangeValueMin">
+            </td>
+            <td>
+                <input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax">
+            </td>
+            <td>
+                Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span>                
+            </td>
+            <td>
+                Max=@ViewBag.DenMax
+            </td>
+        </tr>        
+    </table>    
+        
+
+    <div class="inner-tbl">                    
             <!--everything we want to submit hidden from the viewbag goes here-->        
         <table>
             <tr>
                 <td>
                     <table>
-                        <tr>
-                            <th>                                    
-                            <input type="submit" value="Submit" />
-                            <!--everythng we want to submit hidden from the viewbag goes here-->
-                            <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
-                            <input style="visibility:hidden;display:none" type="text" id="inter" name="inter" value=@ViewBag.Interp>                                    
-                            <input style="visibility:hidden;display:none" type="text" id="fos" name="fos" value=@ViewBag.Fos>                  
-                            <input style="visibility:hidden;display:none" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs>                                                                                  
-                            </th>
-                                
+                        <tr>                            
                             <td>Fos=</td>
                             <td><input style=";" type="text" id="fos" name="fos" value=@ViewBag.Fos></td>
                             <td>Fcs=</td>
-                            <td><input style=";" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs></td>
-                                <td>
-                                    Vol Level=
-                                </td>
-                                <td>
-                                    <span><input style="width:70%;" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span>
-                                </td>
-                                <td>
-                                    [@Html.ActionLink(
-                                linkText: "+0.1",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                sdcap = @ViewBag.SdCap + 0.1,
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                fos = @ViewBag.Fos,
-                                fcs = @ViewBag.Fcs,
-                                },htmlAttributes: null
-                                ),@Html.ActionLink(
-                                linkText: "-0.1",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                sdcap = @ViewBag.SdCap - 0.1,
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                fos = @ViewBag.Fos,
-                                fcs = @ViewBag.Fcs,
-                                },htmlAttributes: null
-                                )]
-                                    (sd's)
-                                </td>
+                            <td><input style=";" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs></td>                                                                
                         </tr>
                     </table>
                 </td>
-            </tr>
-            <tr>
-                <td>
-                    <table>
-                        <tr>
-                            <td width="20%">
-                                Interp=
-                            </td>
-                            <td width="25%">
-                                @ViewBag.Interp
-                            </td>
-                            <td width="55%">
-                                [
-                                @Html.ActionLink(
-                                linkText: "nearest",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                interp = "0",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                fos = @ViewBag.Fos,
-                                fcs = @ViewBag.Fcs,
-                                },
-                                htmlAttributes: null
-                                )
-                                ,
-                                @Html.ActionLink(
-                                linkText: "linear",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                interp = "1",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                fos = @ViewBag.Fos,
-                                fcs = @ViewBag.Fcs,
-                                },
-                                htmlAttributes: null
-                                ),
-                                @Html.ActionLink(
-                                linkText: "bspline",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                interp = "s3",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                fos = @ViewBag.Fos,
-                                fcs = @ViewBag.Fcs,
-                                },
-                                htmlAttributes: null
-                                )
-                                ]
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+            </tr>            
             <tr>
                 <td>
                     <table>
@@ -333,6 +316,14 @@
                                 },htmlAttributes: null
                                 )]
                                 </td>
+                                <th>
+                                    <div>
+                                        <input type="submit" value="Submit" />
+                                        <!--everythng we want to submit hidden from the viewbag goes here-->
+                                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
+                                        <input style="visibility:hidden;display:none" type="text" id="inter" name="inter" value=@ViewBag.Interp>
+                                    </div>
+                                </th>
 
                         </tr>
                     </table>
@@ -355,9 +346,9 @@
                     </table>
                 </td>
             </tr>
-        </table>            
-    }
+        </table>                
 </div>
+}
 </div>
 <div id="Navigation" class="tabcontent" style="display:@ViewBag.T3Display">
     <h3>Navigation</h3>
@@ -743,12 +734,6 @@
     </p>@ViewBag.Error<p>
 </div>
 
-
-
-
-
-
-
 <script>
     function openCity(evt, cityName) {
         var i, tabcontent, tablinks;
@@ -781,248 +766,303 @@
 
 
 <script>
-    var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
-    var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
-    var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
-    var jpX = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionX));    
-    var jpY = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionY));    
-    var jvr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
-    var jvl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
-    var minv = -2
-    var maxv = 10    
-    var minl = @Html.Raw(Json.Serialize(@ViewBag.LMin));
-    var maxl = @Html.Raw(Json.Serialize(@ViewBag.LMax));
-    
-    var denmin = @Html.Raw(Json.Serialize(@ViewBag.DenMin));
-    var denmax = @Html.Raw(Json.Serialize(@ViewBag.DenMax));
-    var numsd = @Html.Raw(Json.Serialize(@ViewBag.ThreeSd));
-    
-    var dhue = @Html.Raw(Json.Serialize(@ViewBag.DenHue));
-    var rhue = @Html.Raw(Json.Serialize(@ViewBag.RadHue));
-    var lhue = @Html.Raw(Json.Serialize(@ViewBag.LapHue));
 
-    var dbar = @Html.Raw(Json.Serialize(@ViewBag.DenBar));
-    var rbar = @Html.Raw(Json.Serialize(@ViewBag.RadBar));
-    var lbar = @Html.Raw(Json.Serialize(@ViewBag.LapBar));
+   function makePlots(sdfloor,sdcap) {
+        var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
+        var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
+        var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
+        var jpX = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionX));    
+        var jpY = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionY));    
+        var jvr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
+        var jvl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
+        var minv = -2
+        var maxv = 10    
+        var minl = @Html.Raw(Json.Serialize(@ViewBag.LMin));
+        var maxl = @Html.Raw(Json.Serialize(@ViewBag.LMax));
+    
+        var denmin = @Html.Raw(Json.Serialize(@ViewBag.DenMin));
+        var denmax = @Html.Raw(Json.Serialize(@ViewBag.DenMax));
+        var numsd = @Html.Raw(Json.Serialize(@ViewBag.SdCap));
+        var numsdfloor = @Html.Raw(Json.Serialize(@ViewBag.SdFloor));
 
-    var minc = denmin
-    var maxc = Math.round(numsd*100)/100
-    var size = (maxc - minc) / 20
-    var zero_frac = 0.001            
-    zero_frac = (0 - minc) / (maxc - minc)
-    var lev1 = zero_frac + 0.1 * (1 - zero_frac)    
-    var lev2 = zero_frac + 0.2 * (1 - zero_frac)
-    var lev3 = zero_frac + 0.75 * (1 - zero_frac)
+        if (sdfloor != -1){
+            numsdfloor = sdfloor
+        }
+        if (sdcap != -1){
+            numsd = sdcap
+        }
+    
+        var dhue = @Html.Raw(Json.Serialize(@ViewBag.DenHue));
+        var rhue = @Html.Raw(Json.Serialize(@ViewBag.RadHue));
+        var lhue = @Html.Raw(Json.Serialize(@ViewBag.LapHue));
+
+        var dbar = @Html.Raw(Json.Serialize(@ViewBag.DenBar));
+        var rbar = @Html.Raw(Json.Serialize(@ViewBag.RadBar));
+        var lbar = @Html.Raw(Json.Serialize(@ViewBag.LapBar));
+
+        var minc = Math.round(numsdfloor * 100) / 100
+        var maxc = Math.round(numsd*100)/100
+        var size = (maxc - minc) / 20
+        var zero_frac = 0.001            
+        zero_frac = (0 - minc) / (maxc - minc)
+        var lev1 = zero_frac + 0.1 * (1 - zero_frac)    
+        var lev2 = zero_frac + 0.2 * (1 - zero_frac)
+        var lev3 = zero_frac + 0.75 * (1 - zero_frac)
+        var cs = []
             
-    var zero_frac_lap = 0.001
-    var cs = []
-            
-    if (dhue == "RedBlueGrey"){
-        cs = [  [0, 'DimGray'], 
-                [String(zero_frac + 0.0001), 'Snow'], 
-                [String(zero_frac + 0.0002), 'LightBlue'], 
-                [String(lev1), 'LightBlue'], 
-                [String(lev2), 'CornflowerBlue'], 
-                [String(lev3), 'Crimson'],
-                [1, 'rgb(100, 0, 0)']]
-    }    
-    else if (dhue == "BlackWhite") {
-        cs = [[0, 'Snow'], [1, 'Black']]
-    }
-    else if (dhue == "RedBlueZero") {
-        cs = [[0, 'CornflowerBlue'], [String(zero_frac), 'Snow'], [1, 'Crimson']]
-    }
-    else {
-        cs = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[0.99, 'Black']]
-    }
+        if (dhue == "RedBlueGrey"){
+            cs = [  [0, 'DimGray'], 
+                    [String(zero_frac + 0.0001), 'Snow'], 
+                    [String(zero_frac + 0.0002), 'LightBlue'], 
+                    [String(lev1), 'LightBlue'], 
+                    [String(lev2), 'CornflowerBlue'], 
+                    [String(lev3), 'Crimson'],
+                    [1, 'rgb(100, 0, 0)']]
+        }    
+        else if (dhue == "BlackWhite") {
+            cs = [[0, 'Snow'], [1, 'Black']]
+        }
+        else if (dhue == "RedBlueZero") {
+            cs = [[0, 'CornflowerBlue'], [String(zero_frac), 'Snow'], [1, 'Crimson']]
+        }
+        else {
+            cs = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[0.99, 'Black']]
+        }
                  
-    var sizel = (maxl - minl) / 20
-    zero_frac_lap = (0 - minl) / (maxl - minl)  
-    var lev1 = zero_frac_lap + 0.1 * (1 - zero_frac)
-    var lev2 = zero_frac_lap + 0.3 * (1 - zero_frac)
-    var lev3 = zero_frac_lap + 0.5 * (1 - zero_frac)
-    if (lhue == "RedBlueGrey") {
-        cs_lap = [[0, 'DimGray'], [String(zero_frac_lap + 0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]
-    }
-    else if (lhue == "BlackWhite") {
-        cs_lap = [[0, 'Snow'], [1, 'Black']]
-    }
-    else if (lhue == "RedBlueZero") {
-        cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'],[String(lev1), 'Snow'], [1, 'Crimson']]
-    }
-    else {
-        cs_lap = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
-    }
+        var sizel = (maxl - minl) / 20
+        zero_frac_lap = (0 - minl) / (maxl - minl)  
+        zero_frac_lap = 1 - zero_frac_lap
+        var lev1 = zero_frac_lap + 0.1 * (1 - zero_frac_lap)
+        var lev2 = zero_frac_lap + 0.3 * (1 - zero_frac_lap)
+        var lev3 = zero_frac_lap + 0.5 * (1 - zero_frac_lap)
+        if (lhue == "RedBlueGrey") {
+            cs_lap = [[0, 'DimGray'], [String(zero_frac_lap + 0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]
+        }
+        else if (lhue == "BlackWhite") {
+            cs_lap = [[0, 'Snow'], [1, 'Black']]
+        }
+        else if (lhue == "RedBlueZero") {
+            cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'],[String(lev1), 'Snow'], [1, 'Crimson']]
+        }
+        else {
+            cs_lap = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
+        }
       
-   if (rhue == "RedBlueGrey") {
-        cs_rad = [[0, 'DimGray'], [String(0.001), 'AliceBlue'], [String(lev1), 'LightBlue'], [String(lev2), 'CornflowerBlue'], [String(lev3), 'Crimson'], [1, 'rgb(100, 0, 0)']]
-   }
-    else if (rhue == "BlackWhite") {
-        cs_rad = [[0, 'Black'], [1, 'Snow']]
-   }
-   else if (rhue == "RedBlueZero") {
-        cs_lap = [[0, 'CornflowerBlue'], [0.49, 'AliceBlue'],[0.51, 'Snow'], [1, 'Crimson']]
-    }
-   else {
-        cs_rad = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
-   }
+       if (rhue == "RedBlueGrey") {
+            cs_rad = [[0, 'DimGray'], [0.2, 'AliceBlue'], [0.4, 'LightBlue'], [0.6, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']]
+       }
+        else if (rhue == "BlackWhite") {
+            cs_rad = [[0, 'Black'], [1, 'Snow']]
+       }
+       else if (rhue == "RedBlueZero") {
+            cs_rad = [[0, 'CornflowerBlue'], [0.49, 'AliceBlue'], [0.51, 'Snow'], [1, 'Crimson']]
+        }
+       else {
+            cs_rad = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
+       }
 
-   var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
-   var radplot = @Html.Raw(Json.Serialize(@ViewBag.RadPlot));
-   var lapplot = @Html.Raw(Json.Serialize(@ViewBag.LapPlot));
+       var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
+       var radplot = @Html.Raw(Json.Serialize(@ViewBag.RadPlot));
+       var lapplot = @Html.Raw(Json.Serialize(@ViewBag.LapPlot));
 
 
-    var huetitle = @Html.Raw(Json.Serialize(@ViewBag.ValSd)) + "<br>max=" + denmax;
+        var huetitle = @Html.Raw(Json.Serialize(@ViewBag.ValSd)) + "<br>max=" + denmax;
     
-    var dataP = {        
-        x: jpX,
-        y: jpY,
-        mode: 'markers',
-        type: "scatter",
-        colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
-        showscale: false,     
-        name:"pos data",
-        marker: {
-            color: 'yellow',
-            size: 5,            
-        },
-    }
+        var dataP = {        
+            x: jpX,
+            y: jpY,
+            mode: 'markers',
+            type: "scatter",
+            colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
+            showscale: false,     
+            name:"pos data",
+            marker: {
+                color: 'yellow',
+                size: 5,            
+            },
+        }
 
-    if (denplot == "heatmap"){
-        var dataV = {
-            z: jv,
+        if (denplot == "heatmap"){
+            var dataV = {
+                z: jv,
+                x: jx,
+                y: jy,
+                zmin: minc,
+                zmax:maxc,
+                type: denplot,
+                colorscale: cs,
+                reversescale: false,            
+                line: {
+                    width: 0.5,
+                    color: 'DimGray'
+                },            
+                showscale: dbar,
+                colorbar: {
+                    thickness: 15,
+                    title: huetitle,
+                },            
+                name:"val data",
+            };
+        }
+        else{
+            var dataV = {
+                z: jv,
+                x: jx,
+                y: jy,
+                type: denplot,
+                colorscale: cs,
+                reversescale: false,
+                autocontour: false,
+                line: {
+                    width: 0.5,
+                    color: 'DimGray'
+                },
+                contours: {
+                    start: minc,
+                    end: maxc,
+                    size: size
+                },
+                showscale:dbar,
+                colorbar: {
+                    thickness: 15,
+                    title:huetitle,            
+                },
+                name: "val data",
+            };
+        }
+
+        data = [dataV,dataP]
+   
+        var dataR = [{
+            z: jvr,
             x: jx,
             y: jy,
-            type: denplot,
-            colorscale: cs,
-            reversescale: false,            
+            type: radplot,
+            colorscale: cs_rad,
+            reversescale: false,
+            autocontour: true,
             line: {
-                width: 0.5,
+                width: 0,
                 color: 'DimGray'
-            },            
-            showscale: dbar,
+            },        
+            showscale: rbar,
             colorbar: {
                 thickness: 15,
-                title: huetitle,
-            },            
-            name:"val data",
-        };
-    }
-    else{
-        var dataV = {
-            z: jv,
+                title:"l1 norm of P1",            
+            }
+        }, dataP];
+
+        if (lapplot == "heatmap") {
+            var dataL = [{
+                z: jvl,
+                x: jx,
+                y: jy,
+                zmin: minl,
+                zmax: maxl,
+                type: lapplot,
+                colorscale: cs_lap,
+                reversescale: true,                
+                line: {
+                    width: 0.5,
+                    color: 'DimGray'
+                },
+                showscale: lbar,
+                colorbar: {
+                    thickness: 15,
+                    title: "sum of P2",
+                },                
+            }, dataP];
+        }
+        else{
+            var dataL = [{
+            z: jvl,
             x: jx,
-            y: jy,
-            type: denplot,
-            colorscale: cs,
-            reversescale: false,
+            y: jy,            
+            type: lapplot,
+            colorscale: cs_lap,
+            reversescale: true,
             autocontour: false,
             line: {
                 width: 0.5,
                 color: 'DimGray'
-            },
-            contours: {
-                start: minc,
-                end: maxc,
-                size: size
-            },
-            showscale:dbar,
+            },        
+            showscale: lbar,
             colorbar: {
                 thickness: 15,
-                title:huetitle,            
+                title:"sum of P2",
             },
-            name: "val data",
-        };
-    }
-
-    data = [dataV,dataP]
-   
-    var dataR = [{
-        z: jvr,
-        x: jx,
-        y: jy,
-        type: radplot,
-        colorscale: cs_rad,
-        reversescale: false,
-        autocontour: true,
-        line: {
-            width: 0,
-            color: 'DimGray'
-        },        
-        showscale: rbar,
-        colorbar: {
-            thickness: 15,
-            title:"l1 norm of P1",            
+            contours: {
+                    start: minl,
+                    end: maxl,
+                    size: sizel
+                },
+        }, dataP];
         }
-    }, dataP];
         
-    var dataL = [{
-        z: jvl,
-        x: jx,
-        y: jy,
-        type: lapplot,
-        colorscale: cs_lap,
-        reversescale: true,
-        autocontour: true,
-        line: {
-            width: 0.5,
-            color: 'DimGray'
-        },        
-        showscale: lbar,
-        colorbar: {
-            thickness: 15,
-            title:"sum of P2",
-        },
-        contours: {
-                start: minl,
-                end: maxl,
-                size: sizel
+       
+    
+        var layout = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,        
+            xaxis: {
+                showgrid: false,
+                zeroline: false,
+                visible: false,
             },
-    }, dataP];
+            xaxis2: {
+                showgrid: false,
+                zeroline: false,
+                visible: false,
+            },
+            yaxis: {
+                scaleanchor: 'x',
+                scaleratio: 1,
+                visible: false,
+            },
+            yaxis2: {
+                scaleanchor: 'x',
+                scaleratio: 1,
+                visible: false,
+            },
+            margin: {
+                l: 20,
+                r: 20,
+                b: 20,
+                t: 20,
+                pad: 4
+            },                  
+        };
     
-    var layout = {
-        grid: { rows: 1, columns: 1, pattern: 'independent' },
-        autosize: true,
-        title: '',
-        showlegend: false,        
-        xaxis: {
-            showgrid: false,
-            zeroline: false,
-            visible: false,
-        },
-        xaxis2: {
-            showgrid: false,
-            zeroline: false,
-            visible: false,
-        },
-        yaxis: {
-            scaleanchor: 'x',
-            scaleratio: 1,
-            visible: false,
-        },
-        yaxis2: {
-            scaleanchor: 'x',
-            scaleratio: 1,
-            visible: false,
-        },
-        margin: {
-            l: 20,
-            r: 20,
-            b: 20,
-            t: 20,
-            pad: 4
-        },  
-        colorbar: {
-            textangle:-90,            
-        },        
-    };
-    
-    var config = { responsive: true }
+        var config = { responsive: true }
 
-    annos = {}
+        annos = {}
          
-    Plotly.newPlot('myCountour', data, layout, config,annos);    
-    Plotly.newPlot('myCountourRad', dataR, layout, config);
-    Plotly.newPlot('myCountourLap', dataL, layout, config);
+        Plotly.newPlot('myCountour', data, layout, config,annos);    
+        Plotly.newPlot('myCountourRad', dataR, layout, config);
+        Plotly.newPlot('myCountourLap', dataL, layout, config);
+    }
+    var numsd = @Html.Raw(Json.Serialize(@ViewBag.SdCap));
+    var numsdfloor = @Html.Raw(Json.Serialize(@ViewBag.SdFloor));
+    makePlots(numsdfloor,numsd)
     
+</script>
+
+<script>
+    var slider = document.getElementById("rangeValueMin");
+    var output = document.getElementById("sdfloor");        
+    slider.oninput = function () {    
+        output.value = this.value;
+        makePlots(output.value,-1)
+    }
+</script>
+
+<script>
+    var slidera = document.getElementById("rangeValueMax");
+    var outputa = document.getElementById("sdcap");
+    slidera.oninput = function () {
+        outputa.value = this.value;
+        makePlots(-1,outputa.value)
+    }
 </script>

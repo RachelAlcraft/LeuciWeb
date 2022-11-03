@@ -174,7 +174,7 @@ namespace Leucippus.Models
                 retcolour = "BlackWhite";
             else if (colour == "BlackWhite")
                 retcolour = "RedBlueZero";
-            else if (_denhue == "RedBlueZero")
+            else if (colour == "RedBlueZero")
                 retcolour = "RedBlueGrey";
             //else if (_denhue == "RedBlue")
             //    retcolour = "RedBlueGrey";
@@ -261,9 +261,21 @@ namespace Leucippus.Models
             get { return _sdcap; }
             set
             {
-                if (value != -1)
+                if (value != -100)
                 {
-                    _sdcap = value;
+                    _sdcap = Math.Max(0,value);
+                }
+            }
+        }
+        private double _sdfloor = -1.0;
+        public double SdFloor
+        {
+            get { return _sdfloor; }
+            set
+            {
+                if (value != -100)
+                {
+                    _sdfloor = Math.Min(0, value);
                 }
             }
         }
@@ -306,7 +318,7 @@ namespace Leucippus.Models
             set
             {
                 if (value == "+1")                
-                    _laphue = getNextColour(_radhue);                                    
+                    _laphue = getNextColour(_laphue);                                    
                 else if (value != "")                
                     _laphue = value;                
             }
