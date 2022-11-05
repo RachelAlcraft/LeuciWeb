@@ -112,6 +112,8 @@ namespace Leucippus.Models
                 ++_refresh;
             Fcs = fcs;
         }
+
+        public string YellowDots { get; set; } = "checked";
         public string EmCode
         {
             get;set;

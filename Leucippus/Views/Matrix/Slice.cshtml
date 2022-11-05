@@ -18,6 +18,7 @@
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
+        dots = @ViewBag.YellowDots,
     },htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Settings",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t2=1,
@@ -31,6 +32,7 @@
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
+        dots = @ViewBag.YellowDots,
     },htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Navigation",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t3=1,
@@ -43,7 +45,8 @@
         la = @ViewBag.lAtom,
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
-        fcs = @ViewBag.Fcs,},htmlAttributes: new { @class = "tab-header" })
+        fcs = @ViewBag.Fcs,
+        dots = @ViewBag.YellowDots,},htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Admin",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t4=1,
         pdbcode = @ViewBag.PdbCode,
@@ -56,6 +59,7 @@
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
+        dots = @ViewBag.YellowDots,
     },htmlAttributes: new { @class = "tab-header" })
     </span>
     <!--<button class="tablinks" onclick="openTab(event, 'Atoms')">Atoms</button>
@@ -123,7 +127,7 @@
 {
         <table>
             <tr>
-                <td style="background-color:aliceblue;color:crimson">Interpolation method</td>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Interpolation method</td>
                 <td>
                     Interp=
                 </td>
@@ -147,6 +151,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -166,6 +171,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 ),
@@ -184,17 +190,23 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
                     ]
                 </td>
+                <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Fo's and Fc's</td>
+                <td>Fos=</td>
+                <td><input style="width:35px;" type="text" id="fos" name="fos" value=@ViewBag.Fos></td>
+                <td>Fcs=</td>
+                <td><input style="width:35px;" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs></td>
             </tr>
-        </table>
-    
-<p>Density Range (standard deviations)</p>
+        </table>    
     <table>
         <tr>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Density Range (standard deviations)</td>
             <td>                
                 Min=@ViewBag.DenMin
             </td>
@@ -215,141 +227,127 @@
             </td>
         </tr>        
     </table>    
-        
-
-    <div class="inner-tbl">                    
-            <!--everything we want to submit hidden from the viewbag goes here-->        
-        <table>
+     <table>
             <tr>
-                <td>
-                    <table>
-                        <tr>                            
-                            <td>Fos=</td>
-                            <td><input style=";" type="text" id="fos" name="fos" value=@ViewBag.Fos></td>
-                            <td>Fcs=</td>
-                            <td><input style=";" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs></td>                                                                
-                        </tr>
-                    </table>
-                </td>
-            </tr>            
-            <tr>
-                <td>
-                    <table>
-                        <tr>
-                            <td>
-                                Width(Å)=
-                            </td>
-                            <td>
-                                <input style="width:80px;" type="text" id="width" name="width" value=@ViewBag.Width>
-                            </td>
-                            <td>
-                                [
-                                @Html.ActionLink(
-                                linkText: "+0.5",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                width = "-2",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                fos = @ViewBag.Fos,
-                                fcs = @ViewBag.Fcs,
-                                },
-                                htmlAttributes: null
-                                )
-                                ,
-                                @Html.ActionLink(
-                                linkText: "-0.5",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                width = "-3",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                fos = @ViewBag.Fos,
-                                fcs = @ViewBag.Fcs,
-                                },
-                                htmlAttributes: null
-                                )
-                                ]
-                            </td>
-                                <td>
-                                    Gap(Å)  =
-                                </td>
-                                <td>
-                                    <input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>
-                                </td>
-                                <td>
-                                    [@Html.ActionLink(
-                                linkText: "+0.01",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                gap = "-2",
-                                pdbcode = @ViewBag.PdbCode,
-                                },htmlAttributes: null
-                                ),@Html.ActionLink(
-                                linkText: "-0.01",
-                                actionName: "Slice",
-                                controllerName: "Matrix",
-                                routeValues: new {
-                                gap = "-3",
-                                pdbcode = @ViewBag.PdbCode,
-                                c_xyz = @ViewBag.cXYZ,
-                                l_xyz = @ViewBag.lXYZ,
-                                p_xyz = @ViewBag.pXYZ,
-                                ca = @ViewBag.cAtom,
-                                la = @ViewBag.lAtom,
-                                pa = @ViewBag.pAtom,
-                                fos = @ViewBag.Fos,
-                                fcs = @ViewBag.Fcs,
-                                },htmlAttributes: null
-                                )]
-                                </td>
-                                <th>
-                                    <div>
-                                        <input type="submit" value="Submit" />
-                                        <!--everythng we want to submit hidden from the viewbag goes here-->
-                                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
-                                        <input style="visibility:hidden;display:none" type="text" id="inter" name="inter" value=@ViewBag.Interp>
-                                    </div>
-                                </th>
-
-                        </tr>
-                    </table>
-                </td>
-            <tr>
-                <td>
-                    <table>
-                        <tr>
-                            
-                        </tr>
-                    </table>
-                </td>
+               
             </tr>
-            <tr>
+     </table>
+     <table>
+        <tr>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Width(Å)=</td>
+            <td>
+                <input style="width:80px;" type="text" id="width" name="width" value=@ViewBag.Width>
+            </td>
+            <td>
+                [
+                @Html.ActionLink(
+                linkText: "+0.5",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                width = "-2",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
+                },
+                htmlAttributes: null
+                )
+                ,
+                @Html.ActionLink(
+                linkText: "-0.5",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                width = "-3",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
+                },
+                htmlAttributes: null
+                )
+                ]
+            </td>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Gap(Å)=</td>
                 <td>
-                    <table>
-                        <tr>
-                            
-                        </tr>
-                    </table>
+                    <input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>
                 </td>
-            </tr>
-        </table>                
-</div>
+                <td>
+                    [@Html.ActionLink(
+                linkText: "+0.01",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                gap = "-2",
+                pdbcode = @ViewBag.PdbCode,
+                },htmlAttributes: null
+                ),@Html.ActionLink(
+                linkText: "-0.01",
+                actionName: "Slice",
+                controllerName: "Matrix",
+                routeValues: new {
+                gap = "-3",
+                pdbcode = @ViewBag.PdbCode,
+                c_xyz = @ViewBag.cXYZ,
+                l_xyz = @ViewBag.lXYZ,
+                p_xyz = @ViewBag.pXYZ,
+                ca = @ViewBag.cAtom,
+                la = @ViewBag.lAtom,
+                pa = @ViewBag.pAtom,
+                fos = @ViewBag.Fos,
+                fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
+                },htmlAttributes: null
+                )]
+                </td>
+                <td style="width:35px;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue">
+                </td>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Position dots=</td>
+                <td>
+                    
+                    <table class="inner-tbl">                    
+                    <tr>
+                    <td>
+                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="dots" name="dots" value=@ViewBag.YellowDots />
+                        <input type="radio" id="on" name="yell_dots" value="Y" onclick="myPositionDots()"/>
+                    </td>
+                    <td>
+                        <label for="on">Y</label>                    
+                    </td>
+                    <td>
+                        <input type="radio" id="off" name="yell_dots" value="N" onclick="myPositionDots()" />
+                    </td>
+                    <td>
+                        <label for="on">N</label>                        
+                    </td>                                        
+                    </tr>   
+                    </table>
+                    
+                </td>
+                <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>
+                <th style="background-color:aliceblue;color:crimson;border:hidden;">
+                    <input type="submit" value="Update" />
+                    <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
+                    <input style="visibility:hidden;display:none" type="text" id="inter" name="inter" value=@ViewBag.Interp>                    
+                </th>
+        </tr>
+    </table>
 }
 </div>
+
 <div id="Navigation" class="tabcontent" style="display:@ViewBag.T3Display">
     <h3>Navigation</h3>
     <p>Under construction</p>
@@ -384,6 +382,7 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        dots = @ViewBag.YellowDots,
                         },
                         htmlAttributes: null
                         )
@@ -403,6 +402,7 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        dots = @ViewBag.YellowDots,
                         },
                         htmlAttributes: null
                         ),
@@ -421,6 +421,7 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        dots = @ViewBag.YellowDots,
                         },
                         htmlAttributes: null
                         ),
@@ -439,6 +440,7 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        dots = @ViewBag.YellowDots,
                         },
                         htmlAttributes: null
                         ),
@@ -457,6 +459,7 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        dots = @ViewBag.YellowDots,
                         },
                         htmlAttributes: null
                         )
@@ -491,6 +494,7 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        dots = @ViewBag.YellowDots,
                         },
                         htmlAttributes: null
                         ),@Html.ActionLink(
@@ -508,6 +512,7 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        dots = @ViewBag.YellowDots,
                         },
                         htmlAttributes: null
                         )]
@@ -549,6 +554,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -568,6 +574,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -587,6 +594,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -609,6 +617,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -628,6 +637,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -647,6 +657,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -669,6 +680,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -688,6 +700,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -707,6 +720,7 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                dots = @ViewBag.YellowDots,
                 },
                 htmlAttributes: null
                 )
@@ -767,7 +781,7 @@
 
 <script>
 
-   function makePlots(sdfloor,sdcap) {
+   function makePlots(sdfloor,sdcap,isDots) {
         var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
         var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
         var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
@@ -785,11 +799,15 @@
         var numsd = @Html.Raw(Json.Serialize(@ViewBag.SdCap));
         var numsdfloor = @Html.Raw(Json.Serialize(@ViewBag.SdFloor));
 
+        var lenD = jv.length;
+        var lenR = jvr.length;
+        var lenL = jvl.length;
+
         if (sdfloor != -1){
-            numsdfloor = sdfloor
+            numsdfloor = sdfloor;
         }
         if (sdcap != -1){
-            numsd = sdcap
+            numsd = sdcap;
         }
     
         var dhue = @Html.Raw(Json.Serialize(@ViewBag.DenHue));
@@ -861,6 +879,11 @@
             cs_rad = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
        }
 
+       col_bar = {  title: "",
+                    thickness: 15,                                        
+                    len:0.85,
+                    x:+.95}
+
        var denplot = @Html.Raw(Json.Serialize(@ViewBag.DenPlot));
        var radplot = @Html.Raw(Json.Serialize(@ViewBag.RadPlot));
        var lapplot = @Html.Raw(Json.Serialize(@ViewBag.LapPlot));
@@ -868,18 +891,29 @@
 
         var huetitle = @Html.Raw(Json.Serialize(@ViewBag.ValSd)) + "<br>max=" + denmax;
     
-        var dataP = {        
-            x: jpX,
-            y: jpY,
-            mode: 'markers',
-            type: "scatter",
-            colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
-            showscale: false,     
-            name:"pos data",
-            marker: {
-                color: 'yellow',
-                size: 5,            
-            },
+        if (isDots){
+            var dataP = {        
+                x: jpX,
+                y: jpY,
+                mode: 'markers',
+                type: "scatter",
+                colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
+                showscale: false,     
+                name:"pos data",
+                marker: {
+                    color: 'yellow',
+                    size: 5,            
+                },
+            }
+        }
+        else{
+            var dataP = {
+                x: [],
+                y: [],
+                mode: 'markers',
+                type: "scatter",                
+            }
+
         }
 
         if (denplot == "heatmap"){
@@ -897,10 +931,7 @@
                     color: 'DimGray'
                 },            
                 showscale: dbar,
-                colorbar: {
-                    thickness: 15,
-                    title: huetitle,
-                },            
+                colorbar: col_bar,            
                 name:"val data",
             };
         }
@@ -923,10 +954,7 @@
                     size: size
                 },
                 showscale:dbar,
-                colorbar: {
-                    thickness: 15,
-                    title:huetitle,            
-                },
+                colorbar: col_bar,            
                 name: "val data",
             };
         }
@@ -946,10 +974,7 @@
                 color: 'DimGray'
             },        
             showscale: rbar,
-            colorbar: {
-                thickness: 15,
-                title:"l1 norm of P1",            
-            }
+            colorbar: col_bar,            
         }, dataP];
 
         if (lapplot == "heatmap") {
@@ -967,10 +992,7 @@
                     color: 'DimGray'
                 },
                 showscale: lbar,
-                colorbar: {
-                    thickness: 15,
-                    title: "sum of P2",
-                },                
+                colorbar: col_bar,            
             }, dataP];
         }
         else{
@@ -987,10 +1009,7 @@
                 color: 'DimGray'
             },        
             showscale: lbar,
-            colorbar: {
-                thickness: 15,
-                title:"sum of P2",
-            },
+            colorbar: col_bar,            
             contours: {
                     start: minl,
                     end: maxl,
@@ -1028,7 +1047,7 @@
             },
             margin: {
                 l: 20,
-                r: 20,
+                r: 80,
                 b: 20,
                 t: 20,
                 pad: 4
@@ -1038,31 +1057,60 @@
         var config = { responsive: true }
 
         annos = {}
-         
-        Plotly.newPlot('myCountour', data, layout, config,annos);    
-        Plotly.newPlot('myCountourRad', dataR, layout, config);
-        Plotly.newPlot('myCountourLap', dataL, layout, config);
+        
+        layoutD = layout
+        layoutR = layout
+        layoutL = layout
+        
+        if (lenD > 0){
+            Plotly.newPlot('myCountour', data, layoutD, config,annos);
+        }
+        if (lenR > 0){
+            Plotly.newPlot('myCountourRad', dataR, layoutR, config);
+        }
+        if (lenL > 0){
+            Plotly.newPlot('myCountourLap', dataL, layoutL, config);
+        }
     }
     var numsd = @Html.Raw(Json.Serialize(@ViewBag.SdCap));
-    var numsdfloor = @Html.Raw(Json.Serialize(@ViewBag.SdFloor));
-    makePlots(numsdfloor,numsd)
+    var numsdfloor = @Html.Raw(Json.Serialize(@ViewBag.SdFloor));        
+    var ydots = document.getElementById("dots").value.trim();
+    makePlots(numsdfloor, numsd, ydots=="Y");
+</script>
+
+<script>
+    var sliderMax = document.getElementById("rangeValueMax");
+    var outputMax = document.getElementById("sdcap");
+
+    var sliderMin = document.getElementById("rangeValueMin");
+    var outputMin = document.getElementById("sdfloor");    
     
-</script>
-
-<script>
-    var slider = document.getElementById("rangeValueMin");
-    var output = document.getElementById("sdfloor");        
-    slider.oninput = function () {    
-        output.value = this.value;
-        makePlots(output.value,-1)
+    sliderMin.oninput = function () {    
+        outputMin.value = this.value;
+        var outputMax = document.getElementById("sdcap");        
+        var ydots = document.getElementById("dots").value.trim();
+        makePlots(outputMin.value, outputMax.value, ydots == "Y");
+    }
+    sliderMax.oninput = function () {    
+        outputMax.value = this.value;
+        var outputMin = document.getElementById("sdfloor");          
+        var ydots = document.getElementById("dots").value.trim();
+        makePlots(outputMin.value, outputMax.value,ydots=="Y");  
+    }
+    function myPositionDots(){             
+        var outputMin = document.getElementById("sdfloor");        
+        var outputMax = document.getElementById("sdcap");                
+        var optOn = document.getElementById("on");
+        var optOff = document.getElementById("off");
+    
+        if (optOn.checked == true){
+            document.getElementById("dots").value = "Y";
+        }
+        if (optOff.checked == true){
+            document.getElementById("dots").value = "N";
+        }
+        var ydots = document.getElementById("dots").value.trim();
+        makePlots(outputMin.value,outputMax.value,ydots=="Y");  
     }
 </script>
 
-<script>
-    var slidera = document.getElementById("rangeValueMax");
-    var outputa = document.getElementById("sdcap");
-    slidera.oninput = function () {
-        outputa.value = this.value;
-        makePlots(-1,outputa.value)
-    }
-</script>

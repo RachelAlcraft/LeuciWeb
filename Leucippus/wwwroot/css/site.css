@@ -46,6 +46,17 @@ td input {
         text-align:center;
     }
 
+th input {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 95%;
+    border: 0.5px outset;
+    margin: 0.5px;
+    background-color: lightblue;
+    color:crimson;
+    text-align: center;
+}
+
 .inner-tbl td {
     border: 0.5px none;    
 }
@@ -202,6 +213,4 @@ td.browse {
     border: 1px solid #ccc;
     border-top: none;
 }
-
-
 

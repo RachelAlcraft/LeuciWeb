@@ -110,7 +110,7 @@ namespace Leucippus.Controllers
             string denbar = "", string radbar = "", string lapbar = "",
             double width = -1, double gap = -1, string interp = "", 
             string valsd = "",double sdcap = -100, double sdfloor = -100,
-            int Fos=2, int Fcs=-1,
+            int Fos=2, int Fcs=-1,string dots="Y",
             int t1=0,int t2=0,int t3=0,int t4=0)
         {
             if (t1 + t2 + t3 + t4 > 0)//then this is a view only change
@@ -171,6 +171,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.SdCap = Math.Round(ViewBagMatrix.Instance.SdCap, 2);
                 ViewBagMatrix.Instance.SdFloor = sdfloor;
                 ViewBagMatrix.Instance.SdFloor = Math.Round(ViewBagMatrix.Instance.SdFloor, 2);
+                ViewBagMatrix.Instance.YellowDots = dots;
 
                 bool recalc = ViewBagMatrix.Instance.Refresh;
                 dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
@@ -202,6 +203,7 @@ namespace Leucippus.Controllers
                 ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
                 ViewBag.Fos = ViewBagMatrix.Instance.Fos;
                 ViewBag.Fcs = ViewBagMatrix.Instance.Fcs;
+                ViewBag.YellowDots = ViewBagMatrix.Instance.YellowDots;
 
                 ViewBag.DenPlot = ViewBagMatrix.Instance.DenPlot;
                 ViewBag.RadPlot = ViewBagMatrix.Instance.RadPlot;
