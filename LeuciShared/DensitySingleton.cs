@@ -29,7 +29,7 @@ namespace LeuciShared
         }
 
         private string _pdbcode = "";
-        private string _interp = "LINEAR";
+        private string _interp = "BSPLINE3";
         private DensityMatrix _dm;
         public FileDownloads FD;
         public PdbAtoms PA;
@@ -57,6 +57,9 @@ namespace LeuciShared
                 if (_dm != null)
                     _dm.changeInterp(_interp);
             }
+
+            if (PA == null)
+                calc = true;
 
             if (!calc)
             {

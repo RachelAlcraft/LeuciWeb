@@ -61,7 +61,7 @@ namespace Leucippus.Models
                     if (value != _pdbcode)
                     {                        
                         ++_refresh;
-                        _interp = "LINEAR";
+                        _interp = "BSPLINE3";
                         //FileDownloads fd = new FileDownloads(value);
                         //fd.downloadAll();
                         //EmCode = fd.EmCode;
@@ -421,18 +421,18 @@ namespace Leucippus.Models
                         _gap = 0.01;                    
                     ++_refresh;
                 }
-                else if (value == -1) // this means don;t change
+                else if (value == -1) // this means go back to default
                 {
-                    
+                    _gap = 0.05;
                 }
-                else
-                {
+                else if (Math.Round(value, 4) != Math.Round(_gap, 4))
+                {                    
                     _gap = value;
                     ++_refresh;
                 }
-                if (_width / _gap > 200)
-                {                    
-                    _gap = _width / 200;
+                if (_width / _gap > 110)
+                {
+                    _gap = _width / 110;
                     ++_refresh;
                 }
                 _width = Math.Round(_width, 4);
@@ -447,13 +447,13 @@ namespace Leucippus.Models
             {
                 //maintain ratio
                 double nums = _width * _gap;
-                if (value == -2) // this means increase by 0.05
+                if (value == -2) // this means increase by 0.5
                 {
                     _width += 0.5;
                     _gap = nums / _width;
                     ++_refresh;
                 }
-                else if (value == -3)
+                else if (value == -3) //this means decrease by 0.5
                 {
                     _width -= 0.5;
                     if (_width <= 0.5)
@@ -461,18 +461,20 @@ namespace Leucippus.Models
                     _gap = nums / _width;
                     ++_refresh;
                 }
-                else if (value == -1) // this means don;t change
+                else if (value == -1) // this means go back to default
                 {
-
+                    _width = 5.0;
                 }
-                else 
-                { 
+                else if (Math.Round(value,4) != Math.Round(_width,4)) 
+                {
+                    double aspectRatio = _width * _gap;
                     _width = value;
+                    _gap = _width / aspectRatio;
                     ++_refresh;
                 }
-                if (_width / _gap > 200)
-                {
-                    _width = 200 * _gap;                    
+                if (_width / _gap > 110)
+                {                    
+                    _gap = _width / 110;
                     ++_refresh;
                 }
                 _width = Math.Round(_width, 4);

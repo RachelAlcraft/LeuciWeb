@@ -18,8 +18,10 @@
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
+        width = @ViewBag.Width,
+        gap = @ViewBag.Gap,
         dots = @ViewBag.YellowDots,
-        gdots = @ViewBag.GreenDots,
+        gdots = @ViewBag.GreenDots,        
     },htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Settings",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t2=1,
@@ -33,8 +35,11 @@
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
+        width = @ViewBag.Width,
+        gap = @ViewBag.Gap,
         dots = @ViewBag.YellowDots,
         gdots = @ViewBag.GreenDots,
+        
     },htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Navigation",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t3=1,
@@ -48,8 +53,11 @@
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
+        width = @ViewBag.Width,
+        gap = @ViewBag.Gap,
         dots = @ViewBag.YellowDots,
-        gdots = @ViewBag.GreenDots,},htmlAttributes: new { @class = "tab-header" })
+        gdots = @ViewBag.GreenDots,
+        },htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Admin",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t4=1,
         pdbcode = @ViewBag.PdbCode,
@@ -62,6 +70,8 @@
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
+        width = @ViewBag.Width,
+        gap = @ViewBag.Gap,
         dots = @ViewBag.YellowDots,
         gdots = @ViewBag.GreenDots,
     },htmlAttributes: new { @class = "tab-header" })
@@ -155,6 +165,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -176,6 +188,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -196,6 +210,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -261,7 +277,8 @@
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
+                fcs = @ViewBag.Fcs,                
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -282,7 +299,8 @@
                 la = @ViewBag.lAtom,
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
+                fcs = @ViewBag.Fcs,                                
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -290,7 +308,7 @@
                 )
                 ]
             </td>
-                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Gap(Å)=</td>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Sample spacing(Å)=</td>
                 <td>
                     <input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>
                 </td>
@@ -318,8 +336,9 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,                
                 dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
+                gdots = @ViewBag.GreenDots,                               
                 },htmlAttributes: null
                 )]
                 </td>
@@ -400,6 +419,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }</td>
@@ -419,6 +440,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
@@ -438,6 +461,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }</td>
@@ -461,6 +486,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
@@ -483,6 +510,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }</td>
@@ -502,6 +531,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
@@ -523,6 +554,8 @@
                             <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                             <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                             <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                            <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                            <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                             <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                             <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                         }
@@ -542,6 +575,8 @@
                         <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                         <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                         <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                        <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                        <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                         <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                         <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                     }
@@ -563,6 +598,8 @@
                                 <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                                 <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                                 <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                                <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                                <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                                 <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                                 <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                             }
@@ -582,6 +619,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }            
@@ -606,6 +645,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
@@ -631,6 +672,8 @@
                     <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
                     <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
@@ -670,6 +713,8 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        width = @ViewBag.Width,
+                        gap = @ViewBag.Gap,
                         dots = @ViewBag.YellowDots,
                         gdots = @ViewBag.GreenDots,
                         },
@@ -691,6 +736,8 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        width = @ViewBag.Width,
+                        gap = @ViewBag.Gap,
                         dots = @ViewBag.YellowDots,
                         gdots = @ViewBag.GreenDots,
                         },
@@ -711,6 +758,8 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        width = @ViewBag.Width,
+                        gap = @ViewBag.Gap,
                         dots = @ViewBag.YellowDots,
                         gdots = @ViewBag.GreenDots,
                         },
@@ -731,6 +780,8 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        width = @ViewBag.Width,
+                        gap = @ViewBag.Gap,
                         dots = @ViewBag.YellowDots,
                         gdots = @ViewBag.GreenDots,
                         },
@@ -751,6 +802,8 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        width = @ViewBag.Width,
+                        gap = @ViewBag.Gap,
                         dots = @ViewBag.YellowDots,
                         gdots = @ViewBag.GreenDots,
                         },
@@ -787,6 +840,8 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        width = @ViewBag.Width,
+                        gap = @ViewBag.Gap,
                         dots = @ViewBag.YellowDots,
                         gdots = @ViewBag.GreenDots,
                         },
@@ -806,6 +861,8 @@
                         pa = @ViewBag.pAtom,
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
+                        width = @ViewBag.Width,
+                        gap = @ViewBag.Gap,
                         dots = @ViewBag.YellowDots,
                         gdots = @ViewBag.GreenDots,
                         },
@@ -849,6 +906,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -870,6 +929,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -891,6 +952,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -915,6 +978,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -936,6 +1001,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -957,6 +1024,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -981,6 +1050,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width = @ViewBag.Width,
+                gap = @ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -1002,6 +1073,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width=@ViewBag.Width,
+                gap=@ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
@@ -1023,6 +1096,8 @@
                 pa = @ViewBag.pAtom,
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
+                width=@ViewBag.Width,
+                gap=@ViewBag.Gap,
                 dots = @ViewBag.YellowDots,
                 gdots = @ViewBag.GreenDots,
                 },
