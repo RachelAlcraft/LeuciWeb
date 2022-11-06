@@ -280,79 +280,69 @@ namespace LeuciShared
         public VectorThree extraNav(VectorThree point,string nav,double nav_mag)
         {            
             double angle = 2*Math.PI / 90;
+            point = reverseTransformation(point);
             if (nav == "down")
-            {
-                point += (xAxis *= nav_mag);
+            {                
+                point.A += nav_mag;                
             }
             else if (nav == "up")
-            {
-                point -= (xAxis *= nav_mag);
+            {                
+                point.A -= nav_mag;                
             }
             else if (nav == "left")
-            {
-                point += (yAxis *= nav_mag);
+            {                
+                point.B += nav_mag;             
             }
             else if (nav == "right")
-            {
-                point -= (yAxis *= nav_mag);
+            {                
+                point.B -= nav_mag;             
             }
             else if (nav == "fwd")
-            {
-                point += (zAxis *= nav_mag);
+            {                
+                point.C -= nav_mag;             
             }
             else if (nav == "back")
-            {
-                point -= (zAxis *= nav_mag);
+            {                
+                point.C += nav_mag;                
             }
             else if (nav == "tilt_left")
-            {
-                point = reverseTransformation(point);
+            {                
                 VectorThree ll =rotate(point.B, point.C, angle);
                 point.B = ll.A;
-                point.C = ll.B;
-                point = applyTransformation(point);
+                point.C = ll.B;                
             }
             else if (nav == "tilt_right")
-            {
-                point = reverseTransformation(point);
+            {                
                 VectorThree ll = rotate(point.B, point.C, -1* angle);
                 point.B = ll.A;
-                point.C = ll.B;
-                point = applyTransformation(point);
+                point.C = ll.B;                
             }
             else if (nav == "tilt_up")
-            {
-                point = reverseTransformation(point);
+            {                
                 VectorThree ll = rotate(point.A, point.C, angle);
                 point.A = ll.A;
-                point.C = ll.B;
-                point = applyTransformation(point);
+                point.C = ll.B;                
             }
             else if (nav == "tilt_down")
-            {
-                point = reverseTransformation(point);
+            {                
                 VectorThree ll = rotate(point.A, point.C, -1* angle);
                 point.A = ll.A;
-                point.C = ll.B;
-                point = applyTransformation(point);
+                point.C = ll.B;                
             }
             else if (nav == "clock")
-            {
-                point = reverseTransformation(point);
+            {                
                 VectorThree ll = rotate(point.A, point.B, angle);
                 point.A = ll.A;
-                point.B = ll.B;
-                point = applyTransformation(point);
+                point.B = ll.B;             
             }
             else if (nav == "anti")
-            {
-                point = reverseTransformation(point);
+            {                
                 VectorThree ll = rotate(point.A, point.B, -1 * angle);
                 point.A = ll.A;
-                point.B = ll.B;
-                point = applyTransformation(point);
+                point.B = ll.B;                
             }
-            
+            point = applyTransformation(point);
+
             return point;                
         }
 

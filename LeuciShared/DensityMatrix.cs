@@ -48,6 +48,10 @@ namespace LeuciShared
         public double[][]? SliceLaplacian;
         public double[]? SlicePositionX;
         public double[]? SlicePositionY;
+        public double[]? SliceProjAtomsX;
+        public double[]? SliceProjAtomsY;
+        public double[]? SlicePlaneAtomsX;
+        public double[]? SlicePlaneAtomsY;
         public double[]? SliceAxis;       
         private Interpolator _interpMap;
         private string _interp;
@@ -161,7 +165,8 @@ namespace LeuciShared
             }            
         }        
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
-                                VectorThree central, VectorThree linear, VectorThree planar)
+                                VectorThree central, VectorThree linear, VectorThree planar,
+                                VectorThree acentral, VectorThree alinear, VectorThree aplanar)
         {
             ////////////// general settings for the view /////////////////////
             // we want general info of the max and min given the sd setting
@@ -218,15 +223,46 @@ namespace LeuciShared
             VectorThree posLp = posL.getPointPosition(gap, width);
             VectorThree posPp = posP.getPointPosition(gap, width);
 
+            VectorThree aposC = Space.reverseTransformation(acentral);
+            VectorThree aposL = Space.reverseTransformation(alinear);
+            VectorThree aposP = Space.reverseTransformation(aplanar);
+            VectorThree aposCp = aposC.getPointPosition(gap, width);
+            VectorThree aposLp = aposL.getPointPosition(gap, width);
+            VectorThree aposPp = aposP.getPointPosition(gap, width);
+
             List<VectorThree> lSlicePosition = new List<VectorThree>(); // central linear and planar            
-            List<VectorThree> lpSlicePositionX = new List<VectorThree>(); // for off plane
+            List<VectorThree> lSlicePositionA = new List<VectorThree>(); // for off plane
+            List<VectorThree> lSlicePositionP = new List<VectorThree>(); // for on plane
 
             if (posCp.A < nums && posCp.B < nums)            
                 lSlicePosition.Add(posCp);                            
             if (posLp.A < nums && posLp.B < nums)            
                 lSlicePosition.Add(posLp);                            
             if (posPp.A < nums && posPp.B < nums)            
-                lSlicePosition.Add(posPp);             
+                lSlicePosition.Add(posPp);
+
+            // the atoms may be on of off plane
+            if (aposCp.A < nums && aposCp.B < nums)
+            {
+                if (Math.Abs(aposCp.C) < 0.01)
+                    lSlicePositionP.Add(aposCp);
+                else
+                    lSlicePositionA.Add(aposCp);
+            }
+            if (aposLp.A < nums && aposLp.B < nums)
+            {
+                if (Math.Abs(aposLp.C) < 0.01)
+                    lSlicePositionP.Add(aposLp);
+                else
+                    lSlicePositionA.Add(aposLp);
+            }
+            if (aposPp.A < nums && aposPp.B < nums)
+            {
+                if (Math.Abs(aposPp.C) < 0.01)
+                    lSlicePositionP.Add(aposPp);
+                else
+                    lSlicePositionA.Add(aposPp);
+            }
 
             SlicePositionX = new double[lSlicePosition.Count];
             SlicePositionY = new double[lSlicePosition.Count];
@@ -234,6 +270,21 @@ namespace LeuciShared
             {
                 SlicePositionX[i] = lSlicePosition[i].A;
                 SlicePositionY[i] = lSlicePosition[i].B;
+            }
+
+            SliceProjAtomsX = new double[lSlicePositionA.Count];
+            SliceProjAtomsY = new double[lSlicePositionA.Count];
+            for (int i = 0; i < lSlicePositionA.Count; i++)
+            {
+                SliceProjAtomsX[i] = lSlicePositionA[i].A;
+                SliceProjAtomsY[i] = lSlicePositionA[i].B;
+            }
+            SlicePlaneAtomsX = new double[lSlicePositionP.Count];
+            SlicePlaneAtomsY = new double[lSlicePositionP.Count];
+            for (int i = 0; i < lSlicePositionP.Count; i++)
+            {
+                SlicePlaneAtomsX[i] = lSlicePositionP[i].A;
+                SlicePlaneAtomsY[i] = lSlicePositionP[i].B;
             }
 
             SliceDensity = new double[nums][];

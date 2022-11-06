@@ -325,6 +325,30 @@
                 </td>
                 <td style="width:35px;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue">
                 </td>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Atom dots=</td>
+                <td>
+                    
+                    <table class="inner-tbl">                    
+                    <tr>
+                    <td>
+                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="gdots" name="gdots" value=@ViewBag.GreenDots />
+                        <input type="radio" id="gon" name="green_dots" value="Y" onclick="myAtomDots()"/>
+                    </td>
+                    <td>
+                        <label for="gon">Y</label>                    
+                    </td>
+                    <td>
+                        <input type="radio" id="goff" name="green_dots" value="N" onclick="myAtomDots()" />
+                    </td>
+                    <td>
+                        <label for="gon">N</label>                        
+                    </td>                                        
+                    </tr>   
+                    </table>
+                    
+                </td>
+                <td style="width:35px;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue">
+                </td>
                 <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Position dots=</td>
                 <td>
                     
@@ -346,28 +370,7 @@
                     </tr>   
                     </table>
                     
-                </td>
-                <td>
-                    
-                    <table class="inner-tbl">                    
-                    <tr>
-                    <td>
-                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="gdots" name="gdots" value=@ViewBag.GreenDots />
-                        <input type="radio" id="on" name="green_dots" value="Y" onclick="myAtomDots()"/>
-                    </td>
-                    <td>
-                        <label for="on">Y</label>                    
-                    </td>
-                    <td>
-                        <input type="radio" id="off" name="green_dots" value="N" onclick="myAtomDots()" />
-                    </td>
-                    <td>
-                        <label for="on">N</label>                        
-                    </td>                                        
-                    </tr>   
-                    </table>
-                    
-                </td>
+                </td>                
                 <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>
                 <th style="background-color:aliceblue;color:crimson;border:hidden;">
                     <input type="submit" value="Update" />
@@ -1088,8 +1091,10 @@
         var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
         var jpX = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionX));    
         var jpY = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionY));    
-        var jaX = @Html.Raw(Json.Serialize(@ViewBag.SliceAtomsX));    
-        var jaY = @Html.Raw(Json.Serialize(@ViewBag.SliceAtomsY));    
+        var jaX = @Html.Raw(Json.Serialize(@ViewBag.SliceProjAtomsX));    
+        var jaY = @Html.Raw(Json.Serialize(@ViewBag.SliceProjAtomsY));    
+        var japX = @Html.Raw(Json.Serialize(@ViewBag.SlicePlaneAtomsX));    
+        var japY = @Html.Raw(Json.Serialize(@ViewBag.SlicePlaneAtomsY));    
         var jvr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
         var jvl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
         var minv = -2
@@ -1204,8 +1209,8 @@
                 showscale: false,     
                 name:"pos data",
                 marker: {
-                    color: 'yellow',
-                    size: 5,            
+                    color: 'Gold',
+                    size: 4,            
                 },
             }
         }
@@ -1221,21 +1226,40 @@
 
         if (isAtoms){
             var dataA = {        
-                x: [],
-                y: [],
+                x: jaX,
+                y: jaY,
                 mode: 'markers',
                 type: "scatter",
                 colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
                 showscale: false,     
                 name:"atom data",
                 marker: {
-                    color: 'green',
-                    size: 5,            
+                    color: 'limegreen',
+                    size: 4,            
+                },
+            }
+            var dataAP = {        
+                x: japX,
+                y: japY,
+                mode: 'markers',
+                type: "scatter",
+                colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
+                showscale: false,     
+                name:"atom data",
+                marker: {
+                    color: 'yellow',
+                    size: 4,            
                 },
             }
         }
         else{
             var dataA = {
+                x: [],
+                y: [],
+                mode: 'markers',
+                type: "scatter",                
+            }
+            var dataAP = {
                 x: [],
                 y: [],
                 mode: 'markers',
@@ -1287,7 +1311,7 @@
             };
         }
 
-        data = [dataV,dataP,dataA]
+        data = [dataV,dataP,dataA,dataAP]
    
         var dataR = [{
             z: jvr,
@@ -1303,7 +1327,7 @@
             },        
             showscale: rbar,
             colorbar: col_bar,            
-        }, dataP,dataA];
+        }, dataP,dataA,dataAP];
 
         if (lapplot == "heatmap") {
             var dataL = [{
@@ -1321,7 +1345,7 @@
                 },
                 showscale: lbar,
                 colorbar: col_bar,            
-            }, dataP,dataA];
+            }, dataP,dataA,dataAP];
         }
         else{
             var dataL = [{
@@ -1343,7 +1367,7 @@
                     end: maxl,
                     size: sizel
                 },
-        }, dataP,dataA];
+        }, dataP,dataA,dataAP];
         }
         
        
@@ -1368,6 +1392,11 @@
                 zeroline: false,
                 visible: false,
             },
+            xaxis4: {
+                showgrid: false,
+                zeroline: false,
+                visible: false,
+            },
             yaxis: {
                 scaleanchor: 'x',
                 scaleratio: 1,
@@ -1379,6 +1408,11 @@
                 visible: false,
             },
             yaxis3: {
+                scaleanchor: 'x',
+                scaleratio: 1,
+                visible: false,
+            },
+            yaxis4: {
                 scaleanchor: 'x',
                 scaleratio: 1,
                 visible: false,
@@ -1457,13 +1491,13 @@
     function myAtomDots(){             
         var outputMin = document.getElementById("sdfloor");        
         var outputMax = document.getElementById("sdcap");                
-        var optOn = document.getElementById("on");
-        var optOff = document.getElementById("off");
+        var optgOn = document.getElementById("gon");
+        var optgOff = document.getElementById("goff");
     
-        if (optOn.checked == true){
+        if (optgOn.checked == true){
             document.getElementById("gdots").value = "Y";
         }
-        if (optOff.checked == true){
+        if (optgOff.checked == true) {
             document.getElementById("gdots").value = "N";
         }
         var ydots = document.getElementById("dots").value.trim();
