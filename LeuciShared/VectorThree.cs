@@ -87,6 +87,15 @@ namespace LeuciShared
             r.C = p.C / val;
             return r;
         }
+
+        public static VectorThree operator *(VectorThree p, double val)
+        {
+            VectorThree r = new VectorThree();
+            r.A = p.A * val;
+            r.B = p.B * val;
+            r.C = p.C * val;
+            return r;
+        }
         public double getAngle(VectorThree vec)
         {
             VectorThree BA = new VectorThree(0 - A, 0 - B, 0 - C);

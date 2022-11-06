@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.ExceptionServices;
@@ -60,13 +61,17 @@ namespace LeuciShared
             //    return pos;
             //else
             //    return 0;//what should this return? -1, throw an error? TODO
-        }
+        }        
         public Single getExactValueBinary(int x, int y, int z)
         {
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
             pos += XLen * y;
             pos += x;
+            if (pos >= _singles.Length)
+                return 0;
+            if (pos < 0)
+                return 0;
             try
             {
                 //Single value = BitConverter.ToSingle(_binary, _bStart + pos * 4);
@@ -186,7 +191,30 @@ namespace LeuciShared
             }
             return vals;
         }
+
+        public bool isValid(double x, double y, double z)
+        {
+            int i = Convert.ToInt32(Math.Round(x));
+            int j = Convert.ToInt32(Math.Round(y));
+            int k = Convert.ToInt32(Math.Round(z));
+            if (i < 0 || j < 0 || k < 0)
+                return false;
+
+            if (i > XLen || j > YLen || k > ZLen)
+                return false;
+
+            //int sliceSize = XLen * YLen;
+            //int pos = k * sliceSize;
+            //pos += XLen * j;
+            //pos += i;
+            //if (pos >= _singles.Length)
+            //    return false;
+            //else
+            return true;
+        }
     }
+
+   
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,10 +227,15 @@ namespace LeuciShared
         }        
         public override double getValue(double x, double y, double z)
         {
+            if (!isValid(x, y, z))
+                return 0;
             int i = Convert.ToInt32(Math.Round(x));
             int j = Convert.ToInt32(Math.Round(y));
             int k = Convert.ToInt32(Math.Round(z));
-            return getExactValueBinary(i, j, k);
+            if (i >= 0 && j >= 0 && k >= 0)
+                return getExactValueBinary(i, j, k);
+            else
+                return 0;
         }        
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,6 +266,9 @@ namespace LeuciShared
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
 
+            if (!isValid(x, y, z))
+                return 0;
+            
             bool recalc = _neednewVals;
 
             // we can reuse our last matrix if the points are within the same unit cube
@@ -359,6 +395,9 @@ namespace LeuciShared
         }
         public override double getValue(double x, double y, double z)
         {
+            if (!isValid(x, y, z))
+                return 0;
+
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
@@ -493,7 +532,10 @@ namespace LeuciShared
                 return 0;
         }*/
         public override double getValue(double x, double y, double z)
-        {            
+        {
+            if (!isValid(x, y, z))
+                return 0;
+
             int weight_length = _degree + 1;
             List<int> xIndex = new List<int>();
             List<int> yIndex = new List<int>();

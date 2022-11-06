@@ -109,9 +109,10 @@ namespace Leucippus.Controllers
             string denhue = "", string radhue = "", string laphue = "",
             string denbar = "", string radbar = "", string lapbar = "",
             double width = -1, double gap = -1, string interp = "", 
-            string valsd = "",double sdcap = -1,
-            int Fos=2, int Fcs=-1,
-            int t1=0,int t2=0,int t3=0,int t4=0)
+            string valsd = "",double sdcap = -100, double sdfloor = -100,
+            int Fos=2, int Fcs=-1,string dots="Y", string gdots="Y",
+            int t1=0,int t2=0,int t3=0,int t4=0,
+            string nav = "",double nav_mag=0.1)
         {
             if (t1 + t2 + t3 + t4 > 0)//then this is a view only change
             {
@@ -169,9 +170,25 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.ValSd = valsd;
                 ViewBagMatrix.Instance.SdCap = sdcap;
                 ViewBagMatrix.Instance.SdCap = Math.Round(ViewBagMatrix.Instance.SdCap, 2);
+                ViewBagMatrix.Instance.SdFloor = sdfloor;
+                ViewBagMatrix.Instance.SdFloor = Math.Round(ViewBagMatrix.Instance.SdFloor, 2);
+                ViewBagMatrix.Instance.YellowDots = dots;
+                ViewBagMatrix.Instance.GreenDots = gdots;
+
+                if (nav != "")
+                {
+                    dm.Space = new SpaceTransformation(ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
+                    ViewBagMatrix.Instance.Central = dm.Space.extraNav(ViewBagMatrix.Instance.Central,nav,nav_mag);
+                    ViewBagMatrix.Instance.Linear = dm.Space.extraNav(ViewBagMatrix.Instance.Linear, nav, nav_mag);
+                    ViewBagMatrix.Instance.Planar = dm.Space.extraNav(ViewBagMatrix.Instance.Planar, nav, nav_mag);
+                }
 
                 bool recalc = ViewBagMatrix.Instance.Refresh;
-                dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
+                dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, 
+                    ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, 
+                    ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar,
+                    ViewBagMatrix.Instance.CAtom, ViewBagMatrix.Instance.LAtom, ViewBagMatrix.Instance.PAtom);
+
                 if (recalc)
                 {
                     //dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap,ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear,ViewBagMatrix.Instance.Planar);
@@ -182,6 +199,10 @@ namespace Leucippus.Controllers
                 ViewBag.SliceDensity = dm.SliceDensity;
                 ViewBag.SlicePositionX = dm.SlicePositionX;
                 ViewBag.SlicePositionY = dm.SlicePositionY;
+                ViewBag.SliceProjAtomsX = dm.SliceProjAtomsX;
+                ViewBag.SliceProjAtomsY = dm.SliceProjAtomsY;
+                ViewBag.SlicePlaneAtomsX = dm.SlicePlaneAtomsX;
+                ViewBag.SlicePlaneAtomsY = dm.SlicePlaneAtomsY;
                 ViewBag.SliceRadient = dm.SliceRadient;
                 ViewBag.SliceLaplacian = dm.SliceLaplacian;
                 ViewBag.SliceAxis = dm.SliceAxis;
@@ -193,24 +214,26 @@ namespace Leucippus.Controllers
                 ViewBag.lAtom = ViewBagMatrix.Instance.LinearAtom;
                 ViewBag.pAtom = ViewBagMatrix.Instance.PlanarAtom;
 
-                ViewBag.cXYZ = "(" + Convert.ToString(ViewBagMatrix.Instance.Central.A) + "," + Convert.ToString(ViewBagMatrix.Instance.Central.B) + "," + Convert.ToString(ViewBagMatrix.Instance.Central.C) + ")";
-                ViewBag.lXYZ = "(" + Convert.ToString(ViewBagMatrix.Instance.Linear.A) + "," + Convert.ToString(ViewBagMatrix.Instance.Linear.B) + "," + Convert.ToString(ViewBagMatrix.Instance.Linear.C) + ")";
-                ViewBag.pXYZ = "(" + Convert.ToString(ViewBagMatrix.Instance.Planar.A) + "," + Convert.ToString(ViewBagMatrix.Instance.Planar.B) + "," + Convert.ToString(ViewBagMatrix.Instance.Planar.C) + ")";
+                ViewBag.cXYZ = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.A,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.B,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.C,4)) + ")";
+                ViewBag.lXYZ = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.A,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.B,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.C,4)) + ")";
+                ViewBag.pXYZ = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.A,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.B,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.C,4)) + ")";
 
                 ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
                 ViewBag.Fos = ViewBagMatrix.Instance.Fos;
                 ViewBag.Fcs = ViewBagMatrix.Instance.Fcs;
+                ViewBag.YellowDots = ViewBagMatrix.Instance.YellowDots;
+                ViewBag.GreenDots = ViewBagMatrix.Instance.GreenDots;
 
                 ViewBag.DenPlot = ViewBagMatrix.Instance.DenPlot;
                 ViewBag.RadPlot = ViewBagMatrix.Instance.RadPlot;
                 ViewBag.LapPlot = ViewBagMatrix.Instance.LapPlot;
                 ViewBag.ValSd = ViewBagMatrix.Instance.ValSd;
                 ViewBag.SdCap = ViewBagMatrix.Instance.SdCap;
+                ViewBag.SdFloor = ViewBagMatrix.Instance.SdFloor;
 
                 ViewBag.DenMax = Math.Round(dm.DenMax, 2);
-                ViewBag.DenMin = dm.DenMin;
-                ViewBag.ThreeSd = Math.Round(dm.ThreeSd, 2);
-
+                ViewBag.DenMin = Math.Round(dm.DenMin,2);
+                
                 ViewBag.Width = ViewBagMatrix.Instance.Width;
                 ViewBag.Gap = ViewBagMatrix.Instance.Gap;
                 ViewBag.Interp = ViewBagMatrix.Instance.Interp;
@@ -303,6 +326,6 @@ namespace Leucippus.Controllers
                 return View();
             }
         }
-
+       
     }
 }
