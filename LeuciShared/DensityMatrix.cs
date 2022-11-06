@@ -24,8 +24,7 @@ namespace LeuciShared
         private int _B;
         private int _C;
         public string Info = "";
-
-
+        
         private DensityBinary _densityBinary;
         private DensityBinary _densityDiffBinary;
         private Cubelet _cublet;        
@@ -39,6 +38,7 @@ namespace LeuciShared
         public double DMax = 0;
         public double LMin = 0;
         public double LMax = 0;
+        public SpaceTransformation Space;
 
         public double DenMin = 0;
         public double DenMax = 0;
@@ -161,7 +161,8 @@ namespace LeuciShared
             }            
         }        
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
-                                VectorThree central, VectorThree linear, VectorThree planar)
+                                VectorThree central, VectorThree linear, VectorThree planar,
+                                string nav, double nav_mag)
         {
             ////////////// general settings for the view /////////////////////
             // we want general info of the max and min given the sd setting
@@ -209,11 +210,18 @@ namespace LeuciShared
             DMax = -100;
             LMax = -100;
 
-            SpaceTransformation space = new SpaceTransformation(central, linear, planar);
+            Space = new SpaceTransformation(central, linear, planar);
+            if (nav != "")
+            {
+                Space.applyExtra(nav, nav_mag);
+            //    central = Space.extraNav(central);
+            //    linear = Space.extraNav(linear);
+            //    planar = Space.extraNav(planar);
+            }
             
-            VectorThree posC = space.reverseTransformation(central);
-            VectorThree posL = space.reverseTransformation(linear);
-            VectorThree posP = space.reverseTransformation(planar);
+            VectorThree posC = Space.reverseTransformation(central);
+            VectorThree posL = Space.reverseTransformation(linear);
+            VectorThree posP = Space.reverseTransformation(planar);
             VectorThree posCp = posC.getPointPosition(gap, width);
             VectorThree posLp = posL.getPointPosition(gap, width);
             VectorThree posPp = posP.getPointPosition(gap, width);
@@ -282,7 +290,7 @@ namespace LeuciShared
                     double x0 = (i * gap);
                     double y0 = (j * gap);
                     double z0 = 0;
-                    VectorThree transformed = space.applyTransformation(new VectorThree(x0, y0, z0));
+                    VectorThree transformed = Space.applyTransformation(new VectorThree(x0, y0, z0));
                     VectorThree crs = _densityBinary.getCRSFromXYZ(transformed);
                     if (_densityBinary.AllValid(crs))
                     {

@@ -58,8 +58,31 @@ th input {
 }
 
 .inner-tbl td {
-    border: 0.5px none;    
+    border: 0.5px none;
 }
+
+.nav-tbl {
+    background-color: black;
+    border: 5px double;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+}
+
+    .nav-tbl td {
+        border: 0.5px none;
+        padding: 0px 0px 0px 0px;
+        margin: 0px 0px 0px 0px;
+        background-color: black;
+        width: 50px;
+        height: 30px;
+    }
+
+.nav-tbl td input {
+        border: 0.0px none;
+        padding: 0px 0px 0px 0px;
+        margin: 0px 0px 0px 0px;
+        color: blue;
+    }
 
 .subheader {
     background-color: crimson;

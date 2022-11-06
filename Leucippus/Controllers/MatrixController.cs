@@ -111,7 +111,8 @@ namespace Leucippus.Controllers
             double width = -1, double gap = -1, string interp = "", 
             string valsd = "",double sdcap = -100, double sdfloor = -100,
             int Fos=2, int Fcs=-1,string dots="Y",
-            int t1=0,int t2=0,int t3=0,int t4=0)
+            int t1=0,int t2=0,int t3=0,int t4=0,
+            string nav = "")
         {
             if (t1 + t2 + t3 + t4 > 0)//then this is a view only change
             {
@@ -174,7 +175,13 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.YellowDots = dots;
 
                 bool recalc = ViewBagMatrix.Instance.Refresh;
-                dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
+                dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar, nav,1);
+                if (nav != "")
+                {
+                    ViewBagMatrix.Instance.Central = dm.Space.extraNav(ViewBagMatrix.Instance.Central);
+                    ViewBagMatrix.Instance.Linear = dm.Space.extraNav(ViewBagMatrix.Instance.Linear);
+                    ViewBagMatrix.Instance.Planar = dm.Space.extraNav(ViewBagMatrix.Instance.Planar);
+                }
                 if (recalc)
                 {
                     //dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap,ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear,ViewBagMatrix.Instance.Planar);
@@ -196,9 +203,9 @@ namespace Leucippus.Controllers
                 ViewBag.lAtom = ViewBagMatrix.Instance.LinearAtom;
                 ViewBag.pAtom = ViewBagMatrix.Instance.PlanarAtom;
 
-                ViewBag.cXYZ = "(" + Convert.ToString(ViewBagMatrix.Instance.Central.A) + "," + Convert.ToString(ViewBagMatrix.Instance.Central.B) + "," + Convert.ToString(ViewBagMatrix.Instance.Central.C) + ")";
-                ViewBag.lXYZ = "(" + Convert.ToString(ViewBagMatrix.Instance.Linear.A) + "," + Convert.ToString(ViewBagMatrix.Instance.Linear.B) + "," + Convert.ToString(ViewBagMatrix.Instance.Linear.C) + ")";
-                ViewBag.pXYZ = "(" + Convert.ToString(ViewBagMatrix.Instance.Planar.A) + "," + Convert.ToString(ViewBagMatrix.Instance.Planar.B) + "," + Convert.ToString(ViewBagMatrix.Instance.Planar.C) + ")";
+                ViewBag.cXYZ = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.A,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.B,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.C,4)) + ")";
+                ViewBag.lXYZ = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.A,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.B,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.C,4)) + ")";
+                ViewBag.pXYZ = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.A,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.B,4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.C,4)) + ")";
 
                 ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
                 ViewBag.Fos = ViewBagMatrix.Instance.Fos;

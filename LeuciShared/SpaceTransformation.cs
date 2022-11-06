@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LeuciShared
 {
-    internal class SpaceTransformation
+    public class SpaceTransformation
     {        
         private VectorThree Central;
         private VectorThree Linear;
@@ -26,6 +27,9 @@ namespace LeuciShared
         public VectorThree yOrthog;
         public VectorThree zOrthog;
         public VectorThree centre;
+        private bool _extra = false;
+        private string _nav;
+        private double _nav_mag;
 
         private const double M_PI = 3.14159265358979323846;
 
@@ -86,6 +90,13 @@ namespace LeuciShared
             double o2 = xAxis.getDotProduct(zAxis);
             double o3 = zAxis.getDotProduct(yAxis);
 
+        }
+
+        public void applyExtra(string nav, double nav_mag)
+        {
+            _extra = true;
+            _nav = nav;
+            _nav_mag = nav_mag;            
         }
 
         private double getRotationAngle(double x, double y)
@@ -251,10 +262,10 @@ namespace LeuciShared
         }
 
         public VectorThree applyTransformation(VectorThree point)
-        {
+        {                                        
             VectorThree pointPrime = point;
             VectorThree point2;
-
+            
             double rotationYZ_4 = _4_rotationYZ;
             double rotationXZ_3 = _3_rotationXZ;
             double rotationXY_2 = _2_rotationXY;
@@ -273,7 +284,77 @@ namespace LeuciShared
 
             pointPrime = pointPrime + _1_translation;
 
+            if (_extra)
+                pointPrime = extraNav(pointPrime);
+
             return pointPrime;
+        }
+
+        public VectorThree extraNav(VectorThree point)
+        {
+            double angle = Math.PI / 90;
+            if (_nav == "down")
+            {
+                point += (xAxis *= _nav_mag);
+            }
+            else if (_nav == "up")
+            {
+                point -= (xAxis *= _nav_mag);
+            }
+            else if (_nav == "left")
+            {
+                point += (yAxis *= _nav_mag);
+            }
+            else if (_nav == "right")
+            {
+                point -= (yAxis *= _nav_mag);
+            }
+            else if (_nav == "fwd")
+            {
+                point += (zAxis *= _nav_mag);
+            }
+            else if (_nav == "back")
+            {
+                point -= (zAxis *= _nav_mag);
+            }
+            else if (_nav == "tilt_up")
+            {
+                VectorThree ll =rotate(point.B, point.C, angle);
+                point.B = ll.A;
+                point.C = ll.B;                
+            }
+            else if (_nav == "tilt_down")
+            {
+                VectorThree ll = rotate(point.B, point.C, -1* angle);
+                point.B = ll.A;
+                point.C = ll.B;
+            }
+            else if (_nav == "tilt_left")
+            {
+                VectorThree ll = rotate(point.A, point.C, angle);
+                point.A = ll.A;
+                point.C = ll.B;
+            }
+            else if (_nav == "tilt_right")
+            {
+                VectorThree ll = rotate(point.A, point.C, -1* angle);
+                point.A = ll.A;
+                point.C = ll.B;
+            }
+            else if (_nav == "clock")
+            {
+                VectorThree ll = rotate(point.A, point.B, -1* angle);
+                point.A = ll.A;
+                point.B = ll.B;
+            }
+            else if (_nav == "anti")
+            {
+                VectorThree ll = rotate(point.A, point.B, angle);
+                point.A = ll.A;
+                point.B = ll.B;
+            }
+
+            return point;                
         }
 
         public VectorThree reverseTransformation(VectorThree point)

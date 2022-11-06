@@ -350,7 +350,249 @@
 
 <div id="Navigation" class="tabcontent" style="display:@ViewBag.T3Display">
     <h3>Navigation</h3>
-    <p>Under construction</p>
+    <table class="nav-tbl" style="margin-left:auto;margin-right:auto;">        
+        <tr>
+            <td>@using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <input type="image" src="~/images/pnlAnti.png" style="vertical-align:text-bottom" />
+                    <input id="nav" value="anti" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }</td>
+            <td></td>
+            <td>
+                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <input type="image" src="~/images/pnlTiltOver.png" style="vertical-align:text-bottom" />
+                    <input id="nav" value="tilt_up" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }
+            </td>            
+            <td></td>
+            <td>@using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <input type="image" src="~/images/pnlClock.png" style="vertical-align:text-bottom" />
+                    <input id="nav" value="clock" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <!--<input type="image" src="~/images/pnlUp.png" style="width:60px;height:30px;vertical-align:text-bottom" />-->
+                <input type="submit" value="Up" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" />                
+                    <input id="nav" value="up" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }
+            </td>            
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td> @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <input type="image" src="~/images/pnlTiltLeft.png" style="vertical-align:text-bottom" />
+                    <input id="nav" value="tilt_left" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }</td>
+            <td>
+                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <!--<input type="image" src="~/images/pnlLeft.png" style="width:60px;height:30px;vertical-align:text-bottom" />-->
+                <input type="submit" value="Left" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" />                
+                    <input id="nav" value="left" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }
+            </td>
+            <td>
+                
+                    @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                    {                    
+                        <!--<input type="image" src="~/images/pnlFwd2.png" style="width:60px;height:15px;vertical-align:text-bottom" />-->
+                        <input type="submit" value="Fwd" style="background-color:dodgerblue;color:black;vertical-align:text-bottom" />                
+                            <input id="nav" value="fwd" name="nav" type="text" style="visibility:hidden;display:none" />
+                            <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                            <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                            <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                            <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                            <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                            <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                            <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                            <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                            <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                            <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                            <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                        }
+                     
+                    @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                    {                    
+                    <!--<input type="image" src="~/images/pnlBack.png" style="width:60px;height:15px;vertical-align:text-bottom" />-->
+                    <input type="submit" value="Back" style="background-color:deepskyblue;color:black;vertical-align:text-bottom" />                
+                        <input id="nav" value="back" name="nav" type="text" style="visibility:hidden;display:none" />
+                        <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                        <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                        <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                        <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                        <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                        <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                        <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                        <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                        <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                        <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                        <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    }
+                      
+            </td>            
+            <td>
+                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                            {                    
+                            <!--<input type="image" src="~/images/pnlRight.png" style="width:60px;height:30px;vertical-align:text-bottom" />-->
+                            <input type="submit" value="Right" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" />                
+                                <input id="nav" value="right" name="nav" type="text" style="visibility:hidden;display:none" />
+                                <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                                <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                                <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                                <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                                <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                                <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                                <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                                <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                                <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                                <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                                <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                            }
+            </td>
+            <td>
+                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <input type="image" src="~/images/pnlTiltRight.png" style="vertical-align:text-bottom" />
+                    <input id="nav" value="tilt_right" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }            
+            </td>
+        </tr>        
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+               @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <!--<input type="image" src="~/images/pnlDown.png" style="width:60px;height:30px;vertical-align:text-bottom" />-->
+                <input type="submit" value="Down" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" />                
+                    <input id="nav" value="down" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+                {                    
+                <input type="image" src="~/images/pnlTiltUnder.png" style="vertical-align:text-bottom" />
+                    <input id="nav" value="tilt_down" name="nav" type="text" style="visibility:hidden;display:none" />
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                }
+            </td>            
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
 </div>
 <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display">
     <h3>Admin</h3>
