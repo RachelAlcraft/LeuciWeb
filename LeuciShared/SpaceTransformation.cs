@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.XPath;
 
 namespace LeuciShared
 {
@@ -27,10 +28,7 @@ namespace LeuciShared
         public VectorThree yOrthog;
         public VectorThree zOrthog;
         public VectorThree centre;
-        private bool _extra = false;
-        private string _nav;
-        private double _nav_mag;
-
+                
         private const double M_PI = 3.14159265358979323846;
 
         public SpaceTransformation(VectorThree central, VectorThree linear, VectorThree planar)
@@ -90,15 +88,7 @@ namespace LeuciShared
             double o2 = xAxis.getDotProduct(zAxis);
             double o3 = zAxis.getDotProduct(yAxis);
 
-        }
-
-        public void applyExtra(string nav, double nav_mag)
-        {
-            _extra = true;
-            _nav = nav;
-            _nav_mag = nav_mag;            
-        }
-
+        }        
         private double getRotationAngle(double x, double y)
         {
             double theta = 0.0;
@@ -262,7 +252,7 @@ namespace LeuciShared
         }
 
         public VectorThree applyTransformation(VectorThree point)
-        {                                        
+        {            
             VectorThree pointPrime = point;
             VectorThree point2;
             
@@ -283,77 +273,86 @@ namespace LeuciShared
             pointPrime.B = point2.B;
 
             pointPrime = pointPrime + _1_translation;
-
-            if (_extra)
-                pointPrime = extraNav(pointPrime);
-
+            
             return pointPrime;
         }
 
-        public VectorThree extraNav(VectorThree point)
-        {
-            double angle = Math.PI / 90;
-            if (_nav == "down")
+        public VectorThree extraNav(VectorThree point,string nav,double nav_mag)
+        {            
+            double angle = 2*Math.PI / 90;
+            if (nav == "down")
             {
-                point += (xAxis *= _nav_mag);
+                point += (xAxis *= nav_mag);
             }
-            else if (_nav == "up")
+            else if (nav == "up")
             {
-                point -= (xAxis *= _nav_mag);
+                point -= (xAxis *= nav_mag);
             }
-            else if (_nav == "left")
+            else if (nav == "left")
             {
-                point += (yAxis *= _nav_mag);
+                point += (yAxis *= nav_mag);
             }
-            else if (_nav == "right")
+            else if (nav == "right")
             {
-                point -= (yAxis *= _nav_mag);
+                point -= (yAxis *= nav_mag);
             }
-            else if (_nav == "fwd")
+            else if (nav == "fwd")
             {
-                point += (zAxis *= _nav_mag);
+                point += (zAxis *= nav_mag);
             }
-            else if (_nav == "back")
+            else if (nav == "back")
             {
-                point -= (zAxis *= _nav_mag);
+                point -= (zAxis *= nav_mag);
             }
-            else if (_nav == "tilt_up")
+            else if (nav == "tilt_left")
             {
+                point = reverseTransformation(point);
                 VectorThree ll =rotate(point.B, point.C, angle);
                 point.B = ll.A;
-                point.C = ll.B;                
+                point.C = ll.B;
+                point = applyTransformation(point);
             }
-            else if (_nav == "tilt_down")
+            else if (nav == "tilt_right")
             {
+                point = reverseTransformation(point);
                 VectorThree ll = rotate(point.B, point.C, -1* angle);
                 point.B = ll.A;
                 point.C = ll.B;
+                point = applyTransformation(point);
             }
-            else if (_nav == "tilt_left")
+            else if (nav == "tilt_up")
             {
+                point = reverseTransformation(point);
                 VectorThree ll = rotate(point.A, point.C, angle);
                 point.A = ll.A;
                 point.C = ll.B;
+                point = applyTransformation(point);
             }
-            else if (_nav == "tilt_right")
+            else if (nav == "tilt_down")
             {
+                point = reverseTransformation(point);
                 VectorThree ll = rotate(point.A, point.C, -1* angle);
                 point.A = ll.A;
                 point.C = ll.B;
+                point = applyTransformation(point);
             }
-            else if (_nav == "clock")
+            else if (nav == "clock")
             {
-                VectorThree ll = rotate(point.A, point.B, -1* angle);
-                point.A = ll.A;
-                point.B = ll.B;
-            }
-            else if (_nav == "anti")
-            {
+                point = reverseTransformation(point);
                 VectorThree ll = rotate(point.A, point.B, angle);
                 point.A = ll.A;
                 point.B = ll.B;
+                point = applyTransformation(point);
             }
-
+            else if (nav == "anti")
+            {
+                point = reverseTransformation(point);
+                VectorThree ll = rotate(point.A, point.B, -1 * angle);
+                point.A = ll.A;
+                point.B = ll.B;
+                point = applyTransformation(point);
+            }
+            
             return point;                
         }
 

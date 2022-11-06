@@ -85,18 +85,7 @@ namespace Leucippus.Models
                 if (value != "")
                 {
                     ++_refresh;
-                    if (value == "0")                                                                   
-                        _interp = "NEAREST";
-                    else if (value == "1")                        
-                        _interp = "LINEAR";
-                    else if (value == "3")
-                        _interp = "CUBIC";
-                    else if (value == "s3")
-                        _interp = "BSPLINE3";
-                    else if (value == "s5")
-                        _interp = "BSPLINE5";
-                    else
-                        _interp = "LINEAR";                                   
+                    _interp = value;                    
                 }
             }
         }
@@ -114,6 +103,7 @@ namespace Leucippus.Models
         }
 
         public string YellowDots { get; set; } = "checked";
+        public string GreenDots { get; set; } = "checked";
         public string EmCode
         {
             get;set;

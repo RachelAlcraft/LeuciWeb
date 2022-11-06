@@ -98,7 +98,7 @@ namespace LeuciShared
             }
 
             _interp = interp;
-            if (_interp == "BSPLINE5")
+            if (_interp == "BSPLINEWHOLE")
                 _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A,3);
             else if (_interp == "LINEAR")                
                 _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 1);
@@ -161,8 +161,7 @@ namespace LeuciShared
             }            
         }        
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
-                                VectorThree central, VectorThree linear, VectorThree planar,
-                                string nav, double nav_mag)
+                                VectorThree central, VectorThree linear, VectorThree planar)
         {
             ////////////// general settings for the view /////////////////////
             // we want general info of the max and min given the sd setting
@@ -211,14 +210,7 @@ namespace LeuciShared
             LMax = -100;
 
             Space = new SpaceTransformation(central, linear, planar);
-            if (nav != "")
-            {
-                Space.applyExtra(nav, nav_mag);
-            //    central = Space.extraNav(central);
-            //    linear = Space.extraNav(linear);
-            //    planar = Space.extraNav(planar);
-            }
-            
+                        
             VectorThree posC = Space.reverseTransformation(central);
             VectorThree posL = Space.reverseTransformation(linear);
             VectorThree posP = Space.reverseTransformation(planar);

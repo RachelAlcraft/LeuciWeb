@@ -110,9 +110,9 @@ namespace Leucippus.Controllers
             string denbar = "", string radbar = "", string lapbar = "",
             double width = -1, double gap = -1, string interp = "", 
             string valsd = "",double sdcap = -100, double sdfloor = -100,
-            int Fos=2, int Fcs=-1,string dots="Y",
+            int Fos=2, int Fcs=-1,string dots="Y", string gdots="Y",
             int t1=0,int t2=0,int t3=0,int t4=0,
-            string nav = "")
+            string nav = "",double nav_mag=0.1)
         {
             if (t1 + t2 + t3 + t4 > 0)//then this is a view only change
             {
@@ -173,15 +173,19 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.SdFloor = sdfloor;
                 ViewBagMatrix.Instance.SdFloor = Math.Round(ViewBagMatrix.Instance.SdFloor, 2);
                 ViewBagMatrix.Instance.YellowDots = dots;
+                ViewBagMatrix.Instance.GreenDots = gdots;
 
-                bool recalc = ViewBagMatrix.Instance.Refresh;
-                dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar, nav,1);
                 if (nav != "")
                 {
-                    ViewBagMatrix.Instance.Central = dm.Space.extraNav(ViewBagMatrix.Instance.Central);
-                    ViewBagMatrix.Instance.Linear = dm.Space.extraNav(ViewBagMatrix.Instance.Linear);
-                    ViewBagMatrix.Instance.Planar = dm.Space.extraNav(ViewBagMatrix.Instance.Planar);
+                    dm.Space = new SpaceTransformation(ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
+                    ViewBagMatrix.Instance.Central = dm.Space.extraNav(ViewBagMatrix.Instance.Central,nav,nav_mag);
+                    ViewBagMatrix.Instance.Linear = dm.Space.extraNav(ViewBagMatrix.Instance.Linear, nav, nav_mag);
+                    ViewBagMatrix.Instance.Planar = dm.Space.extraNav(ViewBagMatrix.Instance.Planar, nav, nav_mag);
                 }
+
+                bool recalc = ViewBagMatrix.Instance.Refresh;
+                dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
+                
                 if (recalc)
                 {
                     //dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap,ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear,ViewBagMatrix.Instance.Planar);
@@ -192,6 +196,8 @@ namespace Leucippus.Controllers
                 ViewBag.SliceDensity = dm.SliceDensity;
                 ViewBag.SlicePositionX = dm.SlicePositionX;
                 ViewBag.SlicePositionY = dm.SlicePositionY;
+                ViewBag.SliceAtomsX = dm.SlicePositionX;
+                ViewBag.SliceAtomsY = dm.SlicePositionY;
                 ViewBag.SliceRadient = dm.SliceRadient;
                 ViewBag.SliceLaplacian = dm.SliceLaplacian;
                 ViewBag.SliceAxis = dm.SliceAxis;
@@ -211,6 +217,7 @@ namespace Leucippus.Controllers
                 ViewBag.Fos = ViewBagMatrix.Instance.Fos;
                 ViewBag.Fcs = ViewBagMatrix.Instance.Fcs;
                 ViewBag.YellowDots = ViewBagMatrix.Instance.YellowDots;
+                ViewBag.GreenDots = ViewBagMatrix.Instance.GreenDots;
 
                 ViewBag.DenPlot = ViewBagMatrix.Instance.DenPlot;
                 ViewBag.RadPlot = ViewBagMatrix.Instance.RadPlot;

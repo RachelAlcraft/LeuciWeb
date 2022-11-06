@@ -19,6 +19,7 @@
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
         dots = @ViewBag.YellowDots,
+        gdots = @ViewBag.GreenDots,
     },htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Settings",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t2=1,
@@ -33,6 +34,7 @@
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
         dots = @ViewBag.YellowDots,
+        gdots = @ViewBag.GreenDots,
     },htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Navigation",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t3=1,
@@ -46,7 +48,8 @@
         pa = @ViewBag.pAtom,
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
-        dots = @ViewBag.YellowDots,},htmlAttributes: new { @class = "tab-header" })
+        dots = @ViewBag.YellowDots,
+        gdots = @ViewBag.GreenDots,},htmlAttributes: new { @class = "tab-header" })
     @Html.ActionLink(linkText: "Admin",actionName: "Slice",controllerName: "Matrix",routeValues: new {
         t4=1,
         pdbcode = @ViewBag.PdbCode,
@@ -60,6 +63,7 @@
         fos = @ViewBag.Fos,
         fcs = @ViewBag.Fcs,
         dots = @ViewBag.YellowDots,
+        gdots = @ViewBag.GreenDots,
     },htmlAttributes: new { @class = "tab-header" })
     </span>
     <!--<button class="tablinks" onclick="openTab(event, 'Atoms')">Atoms</button>
@@ -141,7 +145,7 @@
                 actionName: "Slice",
                 controllerName: "Matrix",
                 routeValues: new {
-                interp = "0",
+                interp = "NEAREST",
                 pdbcode = @ViewBag.PdbCode,
                 c_xyz = @ViewBag.cXYZ,
                 l_xyz = @ViewBag.lXYZ,
@@ -152,6 +156,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -161,7 +166,7 @@
                 actionName: "Slice",
                 controllerName: "Matrix",
                 routeValues: new {
-                interp = "1",
+                interp = "LINEAR",
                 pdbcode = @ViewBag.PdbCode,
                 c_xyz = @ViewBag.cXYZ,
                 l_xyz = @ViewBag.lXYZ,
@@ -172,6 +177,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 ),
@@ -180,7 +186,7 @@
                 actionName: "Slice",
                 controllerName: "Matrix",
                 routeValues: new {
-                interp = "s3",
+                interp = "BSPLINE3",
                 pdbcode = @ViewBag.PdbCode,
                 c_xyz = @ViewBag.cXYZ,
                 l_xyz = @ViewBag.lXYZ,
@@ -191,6 +197,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -256,6 +263,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -276,6 +284,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -310,6 +319,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },htmlAttributes: null
                 )]
                 </td>
@@ -321,7 +331,7 @@
                     <table class="inner-tbl">                    
                     <tr>
                     <td>
-                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="dots" name="dots" value=@ViewBag.YellowDots />
+                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="dots" name="dots" value=@ViewBag.YellowDots />                        
                         <input type="radio" id="on" name="yell_dots" value="Y" onclick="myPositionDots()"/>
                     </td>
                     <td>
@@ -329,6 +339,27 @@
                     </td>
                     <td>
                         <input type="radio" id="off" name="yell_dots" value="N" onclick="myPositionDots()" />
+                    </td>
+                    <td>
+                        <label for="on">N</label>                        
+                    </td>                                        
+                    </tr>   
+                    </table>
+                    
+                </td>
+                <td>
+                    
+                    <table class="inner-tbl">                    
+                    <tr>
+                    <td>
+                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="gdots" name="gdots" value=@ViewBag.GreenDots />
+                        <input type="radio" id="on" name="green_dots" value="Y" onclick="myAtomDots()"/>
+                    </td>
+                    <td>
+                        <label for="on">Y</label>                    
+                    </td>
+                    <td>
+                        <input type="radio" id="off" name="green_dots" value="N" onclick="myAtomDots()" />
                     </td>
                     <td>
                         <label for="on">N</label>                        
@@ -367,6 +398,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }</td>
             <td></td>
             <td>
@@ -385,6 +417,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
             </td>            
             <td></td>
@@ -403,6 +436,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }</td>
         </tr>
         <tr>
@@ -425,6 +459,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
             </td>            
             <td></td>
@@ -446,6 +481,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }</td>
             <td>
                 @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
@@ -464,6 +500,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
             </td>
             <td>
@@ -484,6 +521,7 @@
                             <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                             <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                             <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                            <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                         }
                      
                     @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
@@ -502,6 +540,7 @@
                         <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                         <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                         <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                        <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                     }
                       
             </td>            
@@ -522,6 +561,7 @@
                                 <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                                 <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                                 <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                                <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                             }
             </td>
             <td>
@@ -540,6 +580,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }            
             </td>
         </tr>        
@@ -563,6 +604,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
             </td>
             <td></td>
@@ -587,6 +629,7 @@
                     <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
                     <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
                     <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 }
             </td>            
             <td></td>
@@ -614,7 +657,7 @@
                         actionName: "Slice",
                         controllerName: "Matrix",
                         routeValues: new {
-                        interp = "0",
+                        interp = "NEAREST",
                         pdbcode = @ViewBag.PdbCode,
                         c_xyz = @ViewBag.cXYZ,
                         l_xyz = @ViewBag.lXYZ,
@@ -625,6 +668,7 @@
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
                         dots = @ViewBag.YellowDots,
+                        gdots = @ViewBag.GreenDots,
                         },
                         htmlAttributes: null
                         )
@@ -634,7 +678,7 @@
                         actionName: "Slice",
                         controllerName: "Matrix",
                         routeValues: new {
-                        interp = "1",
+                        interp = "LINEAR",
                         pdbcode = @ViewBag.PdbCode,
                         c_xyz = @ViewBag.cXYZ,
                         l_xyz = @ViewBag.lXYZ,
@@ -645,6 +689,7 @@
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
                         dots = @ViewBag.YellowDots,
+                        gdots = @ViewBag.GreenDots,
                         },
                         htmlAttributes: null
                         ),
@@ -653,7 +698,7 @@
                         actionName: "Slice",
                         controllerName: "Matrix",
                         routeValues: new {
-                        interp = "3",
+                        interp = "CUBIC",
                         pdbcode = @ViewBag.PdbCode,
                         c_xyz = @ViewBag.cXYZ,
                         l_xyz = @ViewBag.lXYZ,
@@ -664,6 +709,7 @@
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
                         dots = @ViewBag.YellowDots,
+                        gdots = @ViewBag.GreenDots,
                         },
                         htmlAttributes: null
                         ),
@@ -672,7 +718,7 @@
                         actionName: "Slice",
                         controllerName: "Matrix",
                         routeValues: new {
-                        interp = "s3",
+                        interp = "BSPLINE3",
                         pdbcode = @ViewBag.PdbCode,
                         c_xyz = @ViewBag.cXYZ,
                         l_xyz = @ViewBag.lXYZ,
@@ -683,6 +729,7 @@
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
                         dots = @ViewBag.YellowDots,
+                        gdots = @ViewBag.GreenDots,
                         },
                         htmlAttributes: null
                         ),
@@ -691,7 +738,7 @@
                         actionName: "Slice",
                         controllerName: "Matrix",
                         routeValues: new {
-                        interp = "s5",
+                        interp = "BSPLINEWHOLE",
                         pdbcode = @ViewBag.PdbCode,
                         c_xyz = @ViewBag.cXYZ,
                         l_xyz = @ViewBag.lXYZ,
@@ -702,6 +749,7 @@
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
                         dots = @ViewBag.YellowDots,
+                        gdots = @ViewBag.GreenDots,
                         },
                         htmlAttributes: null
                         )
@@ -737,6 +785,7 @@
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
                         dots = @ViewBag.YellowDots,
+                        gdots = @ViewBag.GreenDots,
                         },
                         htmlAttributes: null
                         ),@Html.ActionLink(
@@ -755,6 +804,7 @@
                         fos = @ViewBag.Fos,
                         fcs = @ViewBag.Fcs,
                         dots = @ViewBag.YellowDots,
+                        gdots = @ViewBag.GreenDots,
                         },
                         htmlAttributes: null
                         )]
@@ -797,6 +847,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -817,6 +868,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -837,6 +889,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -860,6 +913,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -880,6 +934,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -900,6 +955,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -923,6 +979,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -943,6 +1000,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -963,6 +1021,7 @@
                 fos = @ViewBag.Fos,
                 fcs = @ViewBag.Fcs,
                 dots = @ViewBag.YellowDots,
+                gdots = @ViewBag.GreenDots,
                 },
                 htmlAttributes: null
                 )
@@ -1023,12 +1082,14 @@
 
 <script>
 
-   function makePlots(sdfloor,sdcap,isDots) {
+   function makePlots(sdfloor,sdcap,isDots,isAtoms) {
         var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
         var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
         var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
         var jpX = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionX));    
         var jpY = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionY));    
+        var jaX = @Html.Raw(Json.Serialize(@ViewBag.SliceAtomsX));    
+        var jaY = @Html.Raw(Json.Serialize(@ViewBag.SliceAtomsY));    
         var jvr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
         var jvl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
         var minv = -2
@@ -1158,6 +1219,31 @@
 
         }
 
+        if (isAtoms){
+            var dataA = {        
+                x: [],
+                y: [],
+                mode: 'markers',
+                type: "scatter",
+                colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
+                showscale: false,     
+                name:"atom data",
+                marker: {
+                    color: 'green',
+                    size: 5,            
+                },
+            }
+        }
+        else{
+            var dataA = {
+                x: [],
+                y: [],
+                mode: 'markers',
+                type: "scatter",                
+            }
+
+        }
+
         if (denplot == "heatmap"){
             var dataV = {
                 z: jv,
@@ -1201,7 +1287,7 @@
             };
         }
 
-        data = [dataV,dataP]
+        data = [dataV,dataP,dataA]
    
         var dataR = [{
             z: jvr,
@@ -1217,7 +1303,7 @@
             },        
             showscale: rbar,
             colorbar: col_bar,            
-        }, dataP];
+        }, dataP,dataA];
 
         if (lapplot == "heatmap") {
             var dataL = [{
@@ -1235,7 +1321,7 @@
                 },
                 showscale: lbar,
                 colorbar: col_bar,            
-            }, dataP];
+            }, dataP,dataA];
         }
         else{
             var dataL = [{
@@ -1257,7 +1343,7 @@
                     end: maxl,
                     size: sizel
                 },
-        }, dataP];
+        }, dataP,dataA];
         }
         
        
@@ -1277,12 +1363,22 @@
                 zeroline: false,
                 visible: false,
             },
+            xaxis3: {
+                showgrid: false,
+                zeroline: false,
+                visible: false,
+            },
             yaxis: {
                 scaleanchor: 'x',
                 scaleratio: 1,
                 visible: false,
             },
             yaxis2: {
+                scaleanchor: 'x',
+                scaleratio: 1,
+                visible: false,
+            },
+            yaxis3: {
                 scaleanchor: 'x',
                 scaleratio: 1,
                 visible: false,
@@ -1317,7 +1413,8 @@
     var numsd = @Html.Raw(Json.Serialize(@ViewBag.SdCap));
     var numsdfloor = @Html.Raw(Json.Serialize(@ViewBag.SdFloor));        
     var ydots = document.getElementById("dots").value.trim();
-    makePlots(numsdfloor, numsd, ydots=="Y");
+    var gdots = document.getElementById("gdots").value.trim();
+    makePlots(numsdfloor, numsd, ydots=="Y",gdots=="Y");
 </script>
 
 <script>
@@ -1331,13 +1428,15 @@
         outputMin.value = this.value;
         var outputMax = document.getElementById("sdcap");        
         var ydots = document.getElementById("dots").value.trim();
-        makePlots(outputMin.value, outputMax.value, ydots == "Y");
+        var gdots = document.getElementById("gdots").value.trim();
+        makePlots(outputMin.value, outputMax.value, ydots == "Y",gdots=="Y");
     }
     sliderMax.oninput = function () {    
         outputMax.value = this.value;
         var outputMin = document.getElementById("sdfloor");          
         var ydots = document.getElementById("dots").value.trim();
-        makePlots(outputMin.value, outputMax.value,ydots=="Y");  
+        var gdots = document.getElementById("gdots").value.trim();
+        makePlots(outputMin.value, outputMax.value,ydots=="Y",gdots=="Y");
     }
     function myPositionDots(){             
         var outputMin = document.getElementById("sdfloor");        
@@ -1352,7 +1451,24 @@
             document.getElementById("dots").value = "N";
         }
         var ydots = document.getElementById("dots").value.trim();
-        makePlots(outputMin.value,outputMax.value,ydots=="Y");  
+        var gdots = document.getElementById("gdots").value.trim();
+        makePlots(outputMin.value,outputMax.value,ydots=="Y",gdots=="Y");
+    }
+    function myAtomDots(){             
+        var outputMin = document.getElementById("sdfloor");        
+        var outputMax = document.getElementById("sdcap");                
+        var optOn = document.getElementById("on");
+        var optOff = document.getElementById("off");
+    
+        if (optOn.checked == true){
+            document.getElementById("gdots").value = "Y";
+        }
+        if (optOff.checked == true){
+            document.getElementById("gdots").value = "N";
+        }
+        var ydots = document.getElementById("dots").value.trim();
+        var gdots = document.getElementById("gdots").value.trim();
+        makePlots(outputMin.value,outputMax.value,ydots=="Y",gdots=="Y");
     }
 </script>
 
