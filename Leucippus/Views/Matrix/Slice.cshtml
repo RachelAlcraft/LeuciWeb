@@ -393,8 +393,21 @@
                 <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>
                 <th style="background-color:aliceblue;color:crimson;border:hidden;">
                     <input type="submit" value="Update" />
-                    <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
-                    <input style="visibility:hidden;display:none" type="text" id="inter" name="inter" value=@ViewBag.Interp>                    
+                    <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>                    
+                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
+                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
+                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
+                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
+                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
+                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
+                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
+                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
+                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
+                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
+                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
+                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
+                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
+                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
                 </th>
         </tr>
     </table>
