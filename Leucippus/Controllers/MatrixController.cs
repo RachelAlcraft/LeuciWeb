@@ -144,7 +144,7 @@ namespace Leucippus.Controllers
             {
                 ViewBag.Error = "";
                 
-                if (ViewBagMatrix.Instance.Refresh)
+                if (ViewBagMatrix.Instance.Refresh && c_xyz == "" && l_xyz == "" && p_xyz == "")
                 {
                     ViewBagMatrix.Instance.SetCentral("", "", DensitySingleton.Instance.PA, true);
                     ViewBagMatrix.Instance.SetLinear("", "", DensitySingleton.Instance.PA, true);
