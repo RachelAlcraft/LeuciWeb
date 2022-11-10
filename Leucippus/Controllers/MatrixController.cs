@@ -112,7 +112,7 @@ namespace Leucippus.Controllers
             string valsd = "",double sdcap = -100, double sdfloor = -100,
             int Fos=2, int Fcs=-1,string dots="Y", string gdots="Y",
             int t1=0,int t2=0,int t3=0,int t4=0,
-            string nav = "",double nav_mag=0.1)
+            string nav = "",double nav_mag=0.5)
         {
             if (t1 + t2 + t3 + t4 > 0)//then this is a view only change
             {
@@ -164,9 +164,9 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.LapBar = lapbar;
                 ViewBagMatrix.Instance.Width = width;
                 ViewBagMatrix.Instance.Gap = gap;
-                ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.PA);
-                ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.PA);
-                ViewBagMatrix.Instance.SetPlanar(p_xyz, pa, DensitySingleton.Instance.PA);
+                ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.PA,c_xyz+ca == "");
+                ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.PA,l_xyz+la == "");
+                ViewBagMatrix.Instance.SetPlanar(p_xyz, pa, DensitySingleton.Instance.PA,p_xyz+pa == "");
                 ViewBagMatrix.Instance.ValSd = valsd;
                 ViewBagMatrix.Instance.SdCap = sdcap;
                 ViewBagMatrix.Instance.SdCap = Math.Round(ViewBagMatrix.Instance.SdCap, 2);
