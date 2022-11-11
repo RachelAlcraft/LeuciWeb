@@ -112,7 +112,7 @@ namespace Leucippus.Controllers
             string valsd = "",double sdcap = -100, double sdfloor = -100,
             int Fos=2, int Fcs=-1,string dots="Y", string gdots="Y",
             int t1=0,int t2=0,int t3=0,int t4=0,
-            string nav = "",double nav_mag=0.5)
+            string nav = "",double nav_mag=0.1)
         {
             if (t1 + t2 + t3 + t4 > 0)//then this is a view only change
             {
@@ -187,7 +187,8 @@ namespace Leucippus.Controllers
                 dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, 
                     ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, 
                     ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar,
-                    ViewBagMatrix.Instance.CAtom, ViewBagMatrix.Instance.LAtom, ViewBagMatrix.Instance.PAtom);
+                    ViewBagMatrix.Instance.CAtom, ViewBagMatrix.Instance.LAtom, ViewBagMatrix.Instance.PAtom, DensitySingleton.Instance.PA
+                    );
 
                 if (recalc)
                 {
@@ -199,6 +200,7 @@ namespace Leucippus.Controllers
                 ViewBag.SliceDensity = dm.SliceDensity;
                 ViewBag.SlicePositionX = dm.SlicePositionX;
                 ViewBag.SlicePositionY = dm.SlicePositionY;
+                ViewBag.Annotations = dm.Annotations;
                 ViewBag.SliceProjAtomsX = dm.SliceProjAtomsX;
                 ViewBag.SliceProjAtomsY = dm.SliceProjAtomsY;
                 ViewBag.SlicePlaneAtomsX = dm.SlicePlaneAtomsX;

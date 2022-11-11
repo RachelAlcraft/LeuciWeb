@@ -1177,6 +1177,7 @@
         var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
         var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
         var jv = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
+        var anno = @Html.Raw(Json.Serialize(@ViewBag.Annotations));    
         var jpX = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionX));    
         var jpY = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionY));    
         var jaX = @Html.Raw(Json.Serialize(@ViewBag.SliceProjAtomsX));    
@@ -1291,6 +1292,7 @@
             var dataP = {        
                 x: jpX,
                 y: jpY,
+                hoverinfo:'none',
                 mode: 'markers',
                 type: "scatter",
                 colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
@@ -1316,6 +1318,7 @@
             var dataA = {        
                 x: jaX,
                 y: jaY,
+                hoverinfo:'none',
                 mode: 'markers',
                 type: "scatter",
                 colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
@@ -1329,6 +1332,7 @@
             var dataAP = {        
                 x: japX,
                 y: japY,
+                hoverinfo:'none',
                 mode: 'markers',
                 type: "scatter",
                 colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
@@ -1355,12 +1359,14 @@
             }
 
         }
-
+        
         if (denplot == "heatmap"){
             var dataV = {
                 z: jv,
                 x: jx,
-                y: jy,
+                y: jy,        
+                text:anno,                                
+                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
                 zmin: minc,
                 zmax:maxc,
                 type: denplot,
@@ -1372,7 +1378,7 @@
                 },            
                 showscale: dbar,
                 colorbar: col_bar,            
-                name:"val data",
+                name:"Density",
             };
         }
         else{
@@ -1380,6 +1386,9 @@
                 z: jv,
                 x: jx,
                 y: jy,
+                text:anno,                                
+                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',                
+                hoverlabel:{bgcolor:'rgba(1,1,1,0.05)',align:'left'},
                 type: denplot,
                 colorscale: cs,
                 reversescale: false,
@@ -1395,7 +1404,7 @@
                 },
                 showscale:dbar,
                 colorbar: col_bar,            
-                name: "val data",
+                name: "Density",
             };
         }
 
@@ -1405,6 +1414,8 @@
             z: jvr,
             x: jx,
             y: jy,
+            text:anno,                                
+            hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
             type: radplot,
             colorscale: cs_rad,
             reversescale: false,
@@ -1414,7 +1425,8 @@
                 color: 'DimGray'
             },        
             showscale: rbar,
-            colorbar: col_bar,            
+            colorbar: col_bar,    
+            name: "Radient",
         }, dataP,dataA,dataAP];
 
         if (lapplot == "heatmap") {
@@ -1422,6 +1434,8 @@
                 z: jvl,
                 x: jx,
                 y: jy,
+                text:anno,                                
+                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
                 zmin: minl,
                 zmax: maxl,
                 type: lapplot,
@@ -1432,14 +1446,17 @@
                     color: 'DimGray'
                 },
                 showscale: lbar,
-                colorbar: col_bar,            
+                colorbar: col_bar,  
+                name: "Laplacian",
             }, dataP,dataA,dataAP];
         }
         else{
             var dataL = [{
             z: jvl,
             x: jx,
-            y: jy,            
+            y: jy,    
+            text:anno,                                
+            hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
             type: lapplot,
             colorscale: cs_lap,
             reversescale: true,
@@ -1450,6 +1467,7 @@
             },        
             showscale: lbar,
             colorbar: col_bar,            
+            name: "Laplacian",
             contours: {
                     start: minl,
                     end: maxl,
@@ -1464,7 +1482,7 @@
             grid: { rows: 1, columns: 1, pattern: 'independent' },
             autosize: true,
             title: '',
-            showlegend: false,        
+            showlegend: false,                   
             xaxis: {
                 showgrid: false,
                 zeroline: false,

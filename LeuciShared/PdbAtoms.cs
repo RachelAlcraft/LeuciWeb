@@ -104,5 +104,24 @@ namespace LeuciShared
             }            
             return v3;
         }
+
+        public List<string> getNearAtoms(VectorThree near, double within)
+        {
+            List<String> ats = new List<string>();
+            List<double> diss = new List<double>();
+            foreach (var atm in _atoms)
+            {
+                double distance = near.distance(atm.Value);
+                if (Math.Abs(distance) <= within)
+                {
+                    var index = diss.BinarySearch(distance);
+                    if (index < 0) index = ~index;
+                    diss.Insert(index, distance);
+                    ats.Insert(index, atm.Key + ":" + Convert.ToString(Math.Round(distance, 4)));                    
+                }
+            }
+            return ats;
+
+        }
     }
 }
