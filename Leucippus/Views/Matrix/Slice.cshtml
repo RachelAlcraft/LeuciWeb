@@ -1180,8 +1180,10 @@
         var anno = @Html.Raw(Json.Serialize(@ViewBag.Annotations));    
         var jpX = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionX));    
         var jpY = @Html.Raw(Json.Serialize(@ViewBag.SlicePositionY));    
-        var jaX = @Html.Raw(Json.Serialize(@ViewBag.SliceProjAtomsX));    
-        var jaY = @Html.Raw(Json.Serialize(@ViewBag.SliceProjAtomsY));    
+        var jaXg = @Html.Raw(Json.Serialize(@ViewBag.SliceProjGreenAtomsX));    
+        var jaYg = @Html.Raw(Json.Serialize(@ViewBag.SliceProjGreenAtomsY));    
+        var jaXb = @Html.Raw(Json.Serialize(@ViewBag.SliceProjBlueAtomsX));    
+        var jaYb = @Html.Raw(Json.Serialize(@ViewBag.SliceProjBlueAtomsY));    
         var japX = @Html.Raw(Json.Serialize(@ViewBag.SlicePlaneAtomsX));    
         var japY = @Html.Raw(Json.Serialize(@ViewBag.SlicePlaneAtomsY));    
         var jvr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
@@ -1316,8 +1318,8 @@
 
         if (isAtoms){
             var dataA = {        
-                x: jaX,
-                y: jaY,
+                x: jaXg,
+                y: jaYg,
                 hoverinfo:'none',
                 mode: 'markers',
                 type: "scatter",
@@ -1326,6 +1328,20 @@
                 name:"atom data",
                 marker: {
                     color: 'limegreen',
+                    size: 4,            
+                },
+            }
+            var dataB = {        
+                x: jaXb,
+                y: jaYb,
+                hoverinfo:'none',
+                mode: 'markers',
+                type: "scatter",
+                colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0, 100, 0,1)']],
+                showscale: false,     
+                name:"atom data",
+                marker: {
+                    color: 'cyan',
                     size: 4,            
                 },
             }
@@ -1346,6 +1362,12 @@
         }
         else{
             var dataA = {
+                x: [],
+                y: [],
+                mode: 'markers',
+                type: "scatter",                
+            }
+            var dataB = {
                 x: [],
                 y: [],
                 mode: 'markers',
@@ -1408,7 +1430,7 @@
             };
         }
 
-        data = [dataV,dataP,dataA,dataAP]
+        data = [dataV,dataP,dataA,dataB,dataAP]
    
         var dataR = [{
             z: jvr,
@@ -1427,7 +1449,7 @@
             showscale: rbar,
             colorbar: col_bar,    
             name: "Radient",
-        }, dataP,dataA,dataAP];
+        }, dataP,dataA,dataB,dataAP];
 
         if (lapplot == "heatmap") {
             var dataL = [{
@@ -1448,7 +1470,7 @@
                 showscale: lbar,
                 colorbar: col_bar,  
                 name: "Laplacian",
-            }, dataP,dataA,dataAP];
+            }, dataP,dataA,dataB,dataAP];
         }
         else{
             var dataL = [{
@@ -1473,7 +1495,7 @@
                     end: maxl,
                     size: sizel
                 },
-        }, dataP,dataA,dataAP];
+        }, dataP,dataA,dataB,dataAP];
         }
         
        
@@ -1503,6 +1525,11 @@
                 zeroline: false,
                 visible: false,
             },
+            xaxis5: {
+                showgrid: false,
+                zeroline: false,
+                visible: false,
+            },
             yaxis: {
                 scaleanchor: 'x',
                 scaleratio: 1,
@@ -1519,6 +1546,11 @@
                 visible: false,
             },
             yaxis4: {
+                scaleanchor: 'x',
+                scaleratio: 1,
+                visible: false,
+            },
+            yaxis5: {
                 scaleanchor: 'x',
                 scaleratio: 1,
                 visible: false,

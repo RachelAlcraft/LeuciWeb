@@ -201,8 +201,10 @@ namespace Leucippus.Controllers
                 ViewBag.SlicePositionX = dm.SlicePositionX;
                 ViewBag.SlicePositionY = dm.SlicePositionY;
                 ViewBag.Annotations = dm.Annotations;
-                ViewBag.SliceProjAtomsX = dm.SliceProjAtomsX;
-                ViewBag.SliceProjAtomsY = dm.SliceProjAtomsY;
+                ViewBag.SliceProjGreenAtomsX = dm.SliceProjGreenAtomsX;
+                ViewBag.SliceProjGreenAtomsY = dm.SliceProjGreenAtomsY;
+                ViewBag.SliceProjBlueAtomsX = dm.SliceProjBlueAtomsX;
+                ViewBag.SliceProjBlueAtomsY = dm.SliceProjBlueAtomsY;
                 ViewBag.SlicePlaneAtomsX = dm.SlicePlaneAtomsX;
                 ViewBag.SlicePlaneAtomsY = dm.SlicePlaneAtomsY;
                 ViewBag.SliceRadient = dm.SliceRadient;

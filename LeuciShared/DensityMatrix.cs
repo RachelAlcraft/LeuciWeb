@@ -49,8 +49,10 @@ namespace LeuciShared
         public double[][]? SliceLaplacian;
         public double[]? SlicePositionX;
         public double[]? SlicePositionY;
-        public double[]? SliceProjAtomsX;
-        public double[]? SliceProjAtomsY;
+        public double[]? SliceProjGreenAtomsX;
+        public double[]? SliceProjGreenAtomsY;
+        public double[]? SliceProjBlueAtomsX;
+        public double[]? SliceProjBlueAtomsY;
         public double[]? SlicePlaneAtomsX;
         public double[]? SlicePlaneAtomsY;
         public double[]? SliceAxis;       
@@ -233,7 +235,8 @@ namespace LeuciShared
             VectorThree aposPp = aposP.getPointPosition(gap, width);
 
             List<VectorThree> lSlicePosition = new List<VectorThree>(); // central linear and planar            
-            List<VectorThree> lSlicePositionA = new List<VectorThree>(); // for off plane
+            List<VectorThree> lSlicePositionAG = new List<VectorThree>(); // for off plane - behind (green)
+            List<VectorThree> lSlicePositionAB = new List<VectorThree>(); // for off plane - in front (blue)
             List<VectorThree> lSlicePositionP = new List<VectorThree>(); // for on plane
 
             if (posCp.A < nums && posCp.B < nums)            
@@ -248,22 +251,28 @@ namespace LeuciShared
             {
                 if (Math.Abs(aposCp.C) < 0.01)
                     lSlicePositionP.Add(aposCp);
+                else if (aposCp.C > 0)
+                    lSlicePositionAG.Add(aposCp);
                 else
-                    lSlicePositionA.Add(aposCp);
+                    lSlicePositionAB.Add(aposCp);
             }
             if (aposLp.A < nums && aposLp.B < nums)
             {
                 if (Math.Abs(aposLp.C) < 0.01)
                     lSlicePositionP.Add(aposLp);
+                else if (aposLp.C > 0)
+                    lSlicePositionAG.Add(aposLp);
                 else
-                    lSlicePositionA.Add(aposLp);
+                    lSlicePositionAB.Add(aposLp);
             }
             if (aposPp.A < nums && aposPp.B < nums)
             {
                 if (Math.Abs(aposPp.C) < 0.01)
                     lSlicePositionP.Add(aposPp);
+                else if (aposPp.C > 0)
+                    lSlicePositionAG.Add(aposPp);
                 else
-                    lSlicePositionA.Add(aposPp);
+                    lSlicePositionAB.Add(aposPp);
             }
 
             SlicePositionX = new double[lSlicePosition.Count];
@@ -274,12 +283,19 @@ namespace LeuciShared
                 SlicePositionY[i] = lSlicePosition[i].B;
             }
 
-            SliceProjAtomsX = new double[lSlicePositionA.Count];
-            SliceProjAtomsY = new double[lSlicePositionA.Count];
-            for (int i = 0; i < lSlicePositionA.Count; i++)
+            SliceProjGreenAtomsX = new double[lSlicePositionAG.Count];
+            SliceProjGreenAtomsY = new double[lSlicePositionAG.Count];
+            for (int i = 0; i < lSlicePositionAG.Count; i++)
             {
-                SliceProjAtomsX[i] = lSlicePositionA[i].A;
-                SliceProjAtomsY[i] = lSlicePositionA[i].B;
+                SliceProjGreenAtomsX[i] = lSlicePositionAG[i].A;
+                SliceProjGreenAtomsY[i] = lSlicePositionAG[i].B;
+            }
+            SliceProjBlueAtomsX = new double[lSlicePositionAB.Count];
+            SliceProjBlueAtomsY = new double[lSlicePositionAB.Count];
+            for (int i = 0; i < lSlicePositionAB.Count; i++)
+            {
+                SliceProjBlueAtomsX[i] = lSlicePositionAB[i].A;
+                SliceProjBlueAtomsY[i] = lSlicePositionAB[i].B;
             }
             SlicePlaneAtomsX = new double[lSlicePositionP.Count];
             SlicePlaneAtomsY = new double[lSlicePositionP.Count];
