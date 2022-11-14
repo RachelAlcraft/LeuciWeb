@@ -57,6 +57,17 @@ th input {
     text-align: center;
 }
 
+th input:hover {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 95%;
+    border: 0.5px outset;
+    margin: 0.5px;
+    background-color: lightblue;
+    color: black;
+    text-align: center;
+}
+
 .inner-tbl td {
     border: 0.5px none;
 }
@@ -210,6 +221,7 @@ td.browse {
 /* Style the buttons inside the tab */
 .tab button {
     background-color: inherit;
+    transition-duration: 0.4s;
     float: left;
     border: none;
     outline: none;
@@ -218,10 +230,31 @@ td.browse {
     transition: 0.3s;
     font-size: 17px;
 }
-
-/* Change background color of buttons on hover */
 .tab button:hover {
-    background-color: #ddd;
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+.tab submit {
+    background-color: inherit;
+    transition-duration: 0.4s;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+.tab submit:hover {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+    color: white;
 }
 
 /* Create an active/current tablink class */

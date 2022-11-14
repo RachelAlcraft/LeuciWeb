@@ -42,14 +42,17 @@ namespace LeuciShared
 
         public double DenMin = 0;
         public double DenMax = 0;
-        
+
+        public string[][]? Annotations;
         public double[][]? SliceDensity;
         public double[][]? SliceRadient;
         public double[][]? SliceLaplacian;
         public double[]? SlicePositionX;
         public double[]? SlicePositionY;
-        public double[]? SliceProjAtomsX;
-        public double[]? SliceProjAtomsY;
+        public double[]? SliceProjGreenAtomsX;
+        public double[]? SliceProjGreenAtomsY;
+        public double[]? SliceProjBlueAtomsX;
+        public double[]? SliceProjBlueAtomsY;
         public double[]? SlicePlaneAtomsX;
         public double[]? SlicePlaneAtomsY;
         public double[]? SliceAxis;       
@@ -166,7 +169,8 @@ namespace LeuciShared
         }        
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
                                 VectorThree central, VectorThree linear, VectorThree planar,
-                                VectorThree acentral, VectorThree alinear, VectorThree aplanar)
+                                VectorThree acentral, VectorThree alinear, VectorThree aplanar,
+                                PdbAtoms PA, double hover_min, double hover_max)
         {
             ////////////// general settings for the view /////////////////////
             // we want general info of the max and min given the sd setting
@@ -231,7 +235,8 @@ namespace LeuciShared
             VectorThree aposPp = aposP.getPointPosition(gap, width);
 
             List<VectorThree> lSlicePosition = new List<VectorThree>(); // central linear and planar            
-            List<VectorThree> lSlicePositionA = new List<VectorThree>(); // for off plane
+            List<VectorThree> lSlicePositionAG = new List<VectorThree>(); // for off plane - behind (green)
+            List<VectorThree> lSlicePositionAB = new List<VectorThree>(); // for off plane - in front (blue)
             List<VectorThree> lSlicePositionP = new List<VectorThree>(); // for on plane
 
             if (posCp.A < nums && posCp.B < nums)            
@@ -246,22 +251,28 @@ namespace LeuciShared
             {
                 if (Math.Abs(aposCp.C) < 0.01)
                     lSlicePositionP.Add(aposCp);
+                else if (aposCp.C > 0)
+                    lSlicePositionAG.Add(aposCp);
                 else
-                    lSlicePositionA.Add(aposCp);
+                    lSlicePositionAB.Add(aposCp);
             }
             if (aposLp.A < nums && aposLp.B < nums)
             {
                 if (Math.Abs(aposLp.C) < 0.01)
                     lSlicePositionP.Add(aposLp);
+                else if (aposLp.C > 0)
+                    lSlicePositionAG.Add(aposLp);
                 else
-                    lSlicePositionA.Add(aposLp);
+                    lSlicePositionAB.Add(aposLp);
             }
             if (aposPp.A < nums && aposPp.B < nums)
             {
                 if (Math.Abs(aposPp.C) < 0.01)
                     lSlicePositionP.Add(aposPp);
+                else if (aposPp.C > 0)
+                    lSlicePositionAG.Add(aposPp);
                 else
-                    lSlicePositionA.Add(aposPp);
+                    lSlicePositionAB.Add(aposPp);
             }
 
             SlicePositionX = new double[lSlicePosition.Count];
@@ -272,12 +283,19 @@ namespace LeuciShared
                 SlicePositionY[i] = lSlicePosition[i].B;
             }
 
-            SliceProjAtomsX = new double[lSlicePositionA.Count];
-            SliceProjAtomsY = new double[lSlicePositionA.Count];
-            for (int i = 0; i < lSlicePositionA.Count; i++)
+            SliceProjGreenAtomsX = new double[lSlicePositionAG.Count];
+            SliceProjGreenAtomsY = new double[lSlicePositionAG.Count];
+            for (int i = 0; i < lSlicePositionAG.Count; i++)
             {
-                SliceProjAtomsX[i] = lSlicePositionA[i].A;
-                SliceProjAtomsY[i] = lSlicePositionA[i].B;
+                SliceProjGreenAtomsX[i] = lSlicePositionAG[i].A;
+                SliceProjGreenAtomsY[i] = lSlicePositionAG[i].B;
+            }
+            SliceProjBlueAtomsX = new double[lSlicePositionAB.Count];
+            SliceProjBlueAtomsY = new double[lSlicePositionAB.Count];
+            for (int i = 0; i < lSlicePositionAB.Count; i++)
+            {
+                SliceProjBlueAtomsX[i] = lSlicePositionAB[i].A;
+                SliceProjBlueAtomsY[i] = lSlicePositionAB[i].B;
             }
             SlicePlaneAtomsX = new double[lSlicePositionP.Count];
             SlicePlaneAtomsY = new double[lSlicePositionP.Count];
@@ -289,7 +307,8 @@ namespace LeuciShared
 
             SliceDensity = new double[nums][];
             SliceRadient = new double[nums][];
-            SliceLaplacian = new double[nums][];            
+            SliceLaplacian = new double[nums][];
+            Annotations = new string[nums][];
             SliceAxis = new double[nums];
             if (_interp == "NEAREST")
             {
@@ -300,9 +319,7 @@ namespace LeuciShared
             {
                 SliceLaplacian = new double[0][];
             }
-
-
-
+            
             for (int m = 0; m < nums; ++m)
             {
                 int i = m - halfLength;
@@ -313,28 +330,37 @@ namespace LeuciShared
 
                 if (_interp == "NEAREST")
                 {
-                    SliceDensity[m] = new double[nums];                    
+                    SliceDensity[m] = new double[nums];
+                    Annotations[m] = new string[nums];
                 }
                 else if (_interp == "LINEAR")
                 {
                     SliceDensity[m] = new double[nums];                    
                     SliceRadient[m] = new double[nums];
+                    Annotations[m] = new string[nums];
                 }
                 else
                 {
                     SliceDensity[m] = new double[nums];                    
                     SliceRadient[m] = new double[nums];
                     SliceLaplacian[m] = new double[nums];
+                    Annotations[m] = new string[nums];
                 }
 
                 for (int n = 0; n < nums; ++n)
-                {
+                {                    
                     int j = n - halfLength;
                     double x0 = (i * gap);
                     double y0 = (j * gap);
                     double z0 = 0;
                     VectorThree transformed = Space.applyTransformation(new VectorThree(x0, y0, z0));
                     VectorThree crs = _densityBinary.getCRSFromXYZ(transformed);
+                    List<string> atom_names = PA.getNearAtoms(transformed, hover_min, hover_max);
+                    Annotations[m][n] = "";
+                    foreach (string an in atom_names)                    
+                        Annotations[m][n] += "<br>" + an;
+                    
+
                     if (_densityBinary.AllValid(crs))
                     {
                         double density = _interpMap.getValue(crs.A, crs.B, crs.C);
@@ -358,7 +384,7 @@ namespace LeuciShared
                             LMin = Math.Min(LMin, laplacian);
                             LMax = Math.Max(LMax, laplacian);
                         }
-
+                        
                     }
                     else
                     {
