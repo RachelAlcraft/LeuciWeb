@@ -82,11 +82,15 @@ namespace Leucippus.Models
             get { return _interp; }
             set
             {
-                if (value != "")
+                if (value == _interp)
+                {
+                    //do nothing
+                }
+                else if (value != "")
                 {
                     ++_refresh;
                     _interp = value;                    
-                }
+                }                
             }
         }
 
@@ -104,6 +108,39 @@ namespace Leucippus.Models
 
         public string YellowDots { get; set; } = "checked";
         public string GreenDots { get; set; } = "checked";
+
+        private double _hover_min = 0;
+        public double HoverMin
+        { 
+            get
+            {
+                return _hover_min;
+            }
+            set
+            {
+                if (value != _hover_min)
+                {
+                    _hover_min = value;
+                    ++_refresh;
+                }
+            }
+        }
+        private double _hover_max = 0;
+        public double HoverMax
+        {
+            get
+            {
+                return _hover_max;
+            }
+            set
+            {
+                if (value != _hover_max)
+                {
+                    _hover_max = value;
+                    ++_refresh;
+                }
+            }
+        }
         public string EmCode
         {
             get;set;
@@ -328,7 +365,12 @@ namespace Leucippus.Models
                     else
                         _denbar = "N";
                 }
+                else
+                {
+                    _denbar = value;
+                }
             }
+            
         }
         public bool IsDenBar
         {
@@ -349,6 +391,10 @@ namespace Leucippus.Models
                         _radbar = "Y";
                     else
                         _radbar = "N";
+                }
+                else
+                {
+                    _radbar = value;
                 }
             }
         }
@@ -372,6 +418,12 @@ namespace Leucippus.Models
                     else
                         _lapbar = "N";
                 }
+                else
+                {
+                    _lapbar = value;
+                }
+
+
             }
         }
         public bool IsLapBar
@@ -524,6 +576,7 @@ namespace Leucippus.Models
                 //CentralAtom = "";
                 CDistance = Math.Round(CAtom.distance(new VectorThree(x, y, z)),3);
                 Central = new VectorThree(x, y, z);
+                _cxyz = cxyz;
                 ++_refresh;
             }            
             else
@@ -571,6 +624,7 @@ namespace Leucippus.Models
                 LDistance = Math.Round(LAtom.distance(new VectorThree(x, y, z)),3);
                 //LinearAtom = "";
                 Linear = new VectorThree(x, y, z);
+                _lxyz = lxyz;
                 ++_refresh;
             }
             
@@ -616,6 +670,7 @@ namespace Leucippus.Models
                 PDistance = Math.Round(PAtom.distance(new VectorThree(x, y, z)),3);
                 //PlanarAtom = "";
                 Planar = new VectorThree(x, y, z);
+                _pxyz = pxyz;
                 ++_refresh;
             }            
         }

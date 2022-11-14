@@ -102,7 +102,9 @@ namespace Leucippus.Controllers
             }
 
         }
-        public async Task<IActionResult> Slice(string pdbcode = "",
+        public async Task<IActionResult> Slice(
+            string refresh_mode = "R", //V= viewbag only
+            string pdbcode = "",
             string c_xyz = "", string l_xyz = "", string p_xyz = "",
             string ca = "", string la = "", string pa = "",
             string denplot = "", string radplot = "", string lapplot = "",
@@ -110,11 +112,21 @@ namespace Leucippus.Controllers
             string denbar = "", string radbar = "", string lapbar = "",
             double width = -1, double gap = -1, string interp = "", 
             string valsd = "",double sdcap = -100, double sdfloor = -100,
-            int Fos=2, int Fcs=-1,string dots="Y", string gdots="Y",
+            int Fos=2, int Fcs=-1,string ydots="N", string gdots="N",
             int t1=0,int t2=0,int t3=0,int t4=0,
-            string nav = "",double nav_mag=0.1)
+            string nav = "",double nav_mag=0.1,
+            double hover_min=0,double hover_max=0)
         {
+            bool view_only = false;
+            bool do_update = false;
+            bool update_view = true;
+
             if (t1 + t2 + t3 + t4 > 0)//then this is a view only change
+                view_only = true;            
+            if (refresh_mode == "R")
+                do_update = true;
+
+            if (view_only)//then this is a view only change
             {
 
                 ViewBagMatrix.Instance.T1Display = "none";
@@ -128,31 +140,16 @@ namespace Leucippus.Controllers
                 if (t3 == 1)
                     ViewBagMatrix.Instance.T3Display = "block";
                 if (t4 == 1)
-                    ViewBagMatrix.Instance.T4Display = "block";
-
-                
-
+                    ViewBagMatrix.Instance.T4Display = "block";                
 
             }
-            else
-            {
-                ViewBagMatrix.Instance.PdbCode = pdbcode;
-                ViewBagMatrix.Instance.Interp = interp;
-                ViewBagMatrix.Instance.setFoFc(Fos, Fcs);
-            }
+            
             try
             {
                 ViewBag.Error = "";
-                
-                if (ViewBagMatrix.Instance.Refresh && c_xyz == "" && l_xyz == "" && p_xyz == "")
-                {
-                    ViewBagMatrix.Instance.SetCentral("", "", DensitySingleton.Instance.PA, true);
-                    ViewBagMatrix.Instance.SetLinear("", "", DensitySingleton.Instance.PA, true);
-                    ViewBagMatrix.Instance.SetPlanar("", "", DensitySingleton.Instance.PA, true);
-                }
-
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp,ViewBagMatrix.Instance.Fos,ViewBagMatrix.Instance.Fcs);
-
+                ViewBagMatrix.Instance.PdbCode = pdbcode;
+                ViewBagMatrix.Instance.Interp = interp;
+                ViewBagMatrix.Instance.setFoFc(Fos, Fcs);
                 ViewBagMatrix.Instance.DenPlot = denplot;
                 ViewBagMatrix.Instance.RadPlot = radplot;
                 ViewBagMatrix.Instance.LapPlot = lapplot;
@@ -164,17 +161,29 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.LapBar = lapbar;
                 ViewBagMatrix.Instance.Width = width;
                 ViewBagMatrix.Instance.Gap = gap;
-                ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.PA,c_xyz+ca == "");
-                ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.PA,l_xyz+la == "");
-                ViewBagMatrix.Instance.SetPlanar(p_xyz, pa, DensitySingleton.Instance.PA,p_xyz+pa == "");
                 ViewBagMatrix.Instance.ValSd = valsd;
                 ViewBagMatrix.Instance.SdCap = sdcap;
                 ViewBagMatrix.Instance.SdCap = Math.Round(ViewBagMatrix.Instance.SdCap, 2);
                 ViewBagMatrix.Instance.SdFloor = sdfloor;
                 ViewBagMatrix.Instance.SdFloor = Math.Round(ViewBagMatrix.Instance.SdFloor, 2);
-                ViewBagMatrix.Instance.YellowDots = dots;
+                ViewBagMatrix.Instance.YellowDots = ydots;
                 ViewBagMatrix.Instance.GreenDots = gdots;
+                ViewBagMatrix.Instance.HoverMin = hover_min;
+                ViewBagMatrix.Instance.HoverMax = hover_max;
 
+                if (ViewBagMatrix.Instance.Refresh && c_xyz == "" && l_xyz == "" && p_xyz == "")
+                {
+                    ViewBagMatrix.Instance.SetCentral("", "", DensitySingleton.Instance.PA, true);
+                    ViewBagMatrix.Instance.SetLinear("", "", DensitySingleton.Instance.PA, true);
+                    ViewBagMatrix.Instance.SetPlanar("", "", DensitySingleton.Instance.PA, true);
+                }
+
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp,ViewBagMatrix.Instance.Fos,ViewBagMatrix.Instance.Fcs);
+                
+                ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.PA,c_xyz+ca == "");
+                ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.PA,l_xyz+la == "");
+                ViewBagMatrix.Instance.SetPlanar(p_xyz, pa, DensitySingleton.Instance.PA,p_xyz+pa == "");
+                
                 if (nav != "")
                 {
                     dm.Space = new SpaceTransformation(ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
@@ -184,14 +193,14 @@ namespace Leucippus.Controllers
                 }
 
                 bool recalc = ViewBagMatrix.Instance.Refresh;
-                dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, 
-                    ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, 
-                    ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar,
-                    ViewBagMatrix.Instance.CAtom, ViewBagMatrix.Instance.LAtom, ViewBagMatrix.Instance.PAtom, DensitySingleton.Instance.PA
-                    );
-
                 if (recalc)
                 {
+                    dm.create_scratch_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, 
+                    ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor, 
+                    ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar,
+                    ViewBagMatrix.Instance.CAtom, ViewBagMatrix.Instance.LAtom, ViewBagMatrix.Instance.PAtom, DensitySingleton.Instance.PA,
+                    hover_min,hover_max
+                    );                
                     //dm.create_slice(ViewBagMatrix.Instance.Width, ViewBagMatrix.Instance.Gap, ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap,ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear,ViewBagMatrix.Instance.Planar);
                 }
                 ViewBagMatrix.Instance.EmCode = DensitySingleton.Instance.FD.EmCode;
@@ -227,6 +236,8 @@ namespace Leucippus.Controllers
                 ViewBag.Fcs = ViewBagMatrix.Instance.Fcs;
                 ViewBag.YellowDots = ViewBagMatrix.Instance.YellowDots;
                 ViewBag.GreenDots = ViewBagMatrix.Instance.GreenDots;
+                ViewBag.HoverMin = hover_min;
+                ViewBag.HoverMax = hover_max;
 
                 ViewBag.DenPlot = ViewBagMatrix.Instance.DenPlot;
                 ViewBag.RadPlot = ViewBagMatrix.Instance.RadPlot;
@@ -248,9 +259,9 @@ namespace Leucippus.Controllers
                 ViewBag.DenHue = ViewBagMatrix.Instance.DenHue;
                 ViewBag.RadHue = ViewBagMatrix.Instance.RadHue;
                 ViewBag.LapHue = ViewBagMatrix.Instance.LapHue;
-                ViewBag.DenBar = ViewBagMatrix.Instance.IsDenBar;
-                ViewBag.RadBar = ViewBagMatrix.Instance.IsRadBar;
-                ViewBag.LapBar = ViewBagMatrix.Instance.IsLapBar;
+                ViewBag.DenBar = ViewBagMatrix.Instance.IsDenBar ? "Y" : "N";
+                ViewBag.RadBar = ViewBagMatrix.Instance.IsRadBar ? "Y" : "N";
+                ViewBag.LapBar = ViewBagMatrix.Instance.IsLapBar ? "Y" : "N";
                 ViewBag.CColor = "black";
                 ViewBag.LColor = "black";
                 ViewBag.PColor = "black";
@@ -330,6 +341,6 @@ namespace Leucippus.Controllers
                 return View();
             }
         }
-       
+        
     }
 }

@@ -4,221 +4,106 @@
 }
 <h3>Slice though Density Matrix - @ViewBag.PdbCode</h3>
 <hr />
-<div class="tab">
-    <span>        
-    @Html.ActionLink(linkText: "Atoms",actionName: "Slice",controllerName: "Matrix",routeValues: new {
-        t1=1,
-        pdbcode = @ViewBag.PdbCode,
-        interp = @ViewBag.Interp,
-        c_xyz = @ViewBag.cXYZ,
-        l_xyz = @ViewBag.lXYZ,
-        p_xyz = @ViewBag.pXYZ,
-        ca = @ViewBag.cAtom,
-        la = @ViewBag.lAtom,
-        pa = @ViewBag.pAtom,
-        fos = @ViewBag.Fos,
-        fcs = @ViewBag.Fcs,
-        width = @ViewBag.Width,
-        gap = @ViewBag.Gap,
-        dots = @ViewBag.YellowDots,
-        gdots = @ViewBag.GreenDots,        
-    },htmlAttributes: new { @class = "tab-header" })
-    @Html.ActionLink(linkText: "Settings",actionName: "Slice",controllerName: "Matrix",routeValues: new {
-        t2=1,
-        pdbcode = @ViewBag.PdbCode,
-        interp = @ViewBag.Interp,
-        c_xyz = @ViewBag.cXYZ,
-        l_xyz = @ViewBag.lXYZ,
-        p_xyz = @ViewBag.pXYZ,
-        ca = @ViewBag.cAtom,
-        la = @ViewBag.lAtom,
-        pa = @ViewBag.pAtom,
-        fos = @ViewBag.Fos,
-        fcs = @ViewBag.Fcs,
-        width = @ViewBag.Width,
-        gap = @ViewBag.Gap,
-        dots = @ViewBag.YellowDots,
-        gdots = @ViewBag.GreenDots,
-        
-    },htmlAttributes: new { @class = "tab-header" })
-    @Html.ActionLink(linkText: "Navigation",actionName: "Slice",controllerName: "Matrix",routeValues: new {
-        t3=1,
-        pdbcode = @ViewBag.PdbCode,
-        interp = @ViewBag.Interp,
-        c_xyz = @ViewBag.cXYZ,
-        l_xyz = @ViewBag.lXYZ,
-        p_xyz = @ViewBag.pXYZ,
-        ca = @ViewBag.cAtom,
-        la = @ViewBag.lAtom,
-        pa = @ViewBag.pAtom,
-        fos = @ViewBag.Fos,
-        fcs = @ViewBag.Fcs,
-        width = @ViewBag.Width,
-        gap = @ViewBag.Gap,
-        dots = @ViewBag.YellowDots,
-        gdots = @ViewBag.GreenDots,
-        },htmlAttributes: new { @class = "tab-header" })
-    @Html.ActionLink(linkText: "Admin",actionName: "Slice",controllerName: "Matrix",routeValues: new {
-        t4=1,
-        pdbcode = @ViewBag.PdbCode,
-        interp = @ViewBag.Interp,
-        c_xyz = @ViewBag.cXYZ,
-        l_xyz = @ViewBag.lXYZ,
-        p_xyz = @ViewBag.pXYZ,
-        ca = @ViewBag.cAtom,
-        la = @ViewBag.lAtom,
-        pa = @ViewBag.pAtom,
-        fos = @ViewBag.Fos,
-        fcs = @ViewBag.Fcs,
-        width = @ViewBag.Width,
-        gap = @ViewBag.Gap,
-        dots = @ViewBag.YellowDots,
-        gdots = @ViewBag.GreenDots,
-    },htmlAttributes: new { @class = "tab-header" })
-    </span>
-    <!--<button class="tablinks" onclick="openTab(event, 'Atoms')">Atoms</button>
-    <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
-    <button class="tablinks" onclick="openTab(event, 'Navigation')">Navigation</button>
-    <button class="tablinks" onclick="openTab(event, 'Admin')">Admin</button>-->
+@using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
+{
+<!--A hidden area to house all the view bag values in this where the entire body is a form-->
+<!-- Once they are used elsewhere they are removed - there MUST BE ONLY ONE FIELD for each of these in this form -->
+<div style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none">
+<!--<div>-->
+    <input id="t1"  value="0"  name="t1"/>
+    <input id="t2"  value="0"  name="t2"/>
+    <input id="t3"  value="0"  name="t3"/>
+    <input id="t4"  value="0"  name="t4"/>
+    <input id="nav"  value=""  name="nav"/>    
+    denplot<input id="denplot"  value=@ViewBag.DenPlot  name="denplot"/>
+    radplot<input id="radplot"  value=@ViewBag.RadPlot  name="radplot"/>
+    lapplot<input id="lapplot"  value=@ViewBag.LapPlot  name="lapplot"/>
+    denhue<input id="denhue"  value=@ViewBag.DenHue  name="denhue"/>
+    radhue<input id="radhue"  value=@ViewBag.RadHue  name="radhue"/>
+    laphue<input id="laphue"  value=@ViewBag.LapHue  name="laphue"/>
+    denbar<input id="denbar"  value=@ViewBag.DenBar  name="denbar"/>
+    radbar<input id="radbar"  value=@ViewBag.RadBar  name="radbar"/>
+    lapbar<input id="lapbar"  value=@ViewBag.LapBar  name="lapbar"/>
+    valsd<input id="valsd"  value=@ViewBag.ValSd  name="valsd"/>
+    pdbcode<input id="pdbcode"  value=@ViewBag.PdbCode  name="pdbcode"/>
+    interp<input id="interp"    value=@ViewBag.Interp   name="interp"/>
+    c_xyz=@ViewBag.cXYZ     <!--<input id="c_xyz"  value=@ViewBag.cXYZ     name="c_xyz"/>-->
+    l_xyz=@ViewBag.lXYZ     <!--<input id="l_xyz"  value=@ViewBag.lXYZ     name="l_xyz"/>-->
+    p_xyz=@ViewBag.pXYZ     <!--<input id="p_xyz"  value=@ViewBag.pXYZ     name="p_xyz"/>-->
+    ca=@ViewBag.cAtom        <!--<input id="ca"    value=@ViewBag.cAtom    name="ca"/>-->
+    la=@ViewBag.lAtom        <!--<input id="la"    value=@ViewBag.lAtom    name="la"/>-->
+    pa=@ViewBag.pAtom        <!--<input id="pa"    value=@ViewBag.pAtom    name="pa"/>-->
+    fos=@ViewBag.Fos       <!--<input id="fos"     value=@ViewBag.Fos      name="fos"/>-->
+    fcs=@ViewBag.Fcs       <!--<input id="fcs"     value=@ViewBag.Fcs      name="fcs"/>-->
+    width=@ViewBag.Width<!--<input id="width"      value=@ViewBag.Width    name="width"/>-->
+    gap=@ViewBag.Gap<!--<input id="gap"            value=@ViewBag.Gap      name="gap"/>-->
+    ydots<input id="ydots"      value=@ViewBag.YellowDots name="ydots"/>
+    gdots<input id="gdots"      value=@ViewBag.GreenDots name="gdots"/>
+    sdcap=@ViewBag.SdCap<!--<input id="sdcap"      value=@ViewBag.SdCap    name="width"/>-->
+    sdfloor=@ViewBag.SdFloor<!--<input id="sdfloor" value=@ViewBag.SdFloor    name="width"/>-->
 </div>
-<script>
-    function openTab(evt, tabName) {
-    @ViewBag.T1Display = 'block'
-    @ViewBag.T2Display = 'block'
-    @ViewBag.T3Display = 'block'
-    @ViewBag.T4Display = 'block'
 
-    }
-</script>
+<div class="tab">
+<span>
+    <input type="submit" value="Atoms" id="Atoms" onclick="ChangeTab('t1')" style="border:none;"/>
+    <input type="submit" value="Settings" id="Settings" onclick="ChangeTab('t2')" style="border:none;"/>
+    <input type="submit" value="Navigation" id="Navigation" onclick="ChangeTab('t3')" style="border:none;"/>
+    <input type="submit" value="Advanced" id="Advanced" onclick="ChangeTab('t4')" style="border:none;" />    
+</span>
+</div>
+<!--##################################### TAB DISPLAY SECTION - ATOMS ############################################# -->
 <div id="Atoms" class="tabcontent" style="display:@ViewBag.T1Display">
     <h3>Atoms</h3>
     <div>
-        @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-        {            
+        <table>
+        <tr>
+            <td>
             <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
             <tr>
-                <th style="width:6%;" colspan="1" align="center">                                    
-                        <input type="submit" value="Submit" />
-                  <!--everythng we want to submit hidden from the viewbag goes here-->
-                  <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>
-                  <input style="visibility:hidden;display:none" type="text" id="inter" name="inter" value=@ViewBag.Interp>                                    
-                  <input style="visibility:hidden;display:none" type="text" id="fos" name="fos" value=@ViewBag.Fos>                  
-                  <input style="visibility:hidden;display:none" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs>                                                                                  
-                </th>
-                <th style="width:8%;" colspan="1" align="center">Atom</th>
-                <th style="width:15%;" colspan="1" align="center">(x,y,z)</th>
-                <th style="width:6%;" colspan="1" align="center">distance</th>                
+            <th style="width:6%;" colspan="1" align="center">                                    
+            <input type="submit" value="Submit" /></th>
+            <th style="width:8%;" colspan="1" align="center">Atom</th>
+            <th style="width:15%;" colspan="1" align="center">(x,y,z)</th>
+            <th style="width:6%;" colspan="1" align="center">distance</th>                
             </tr>                        
-            <tr>
-                <td>central</td>
-                <td><input style="color:@ViewBag.CColor" type="text" id="ca" name="ca" value=@ViewBag.cAtom></td>
-                <td><input type="text" id="c_xyz" name="c_xyz" value=@ViewBag.cXYZ></td>
-                <td><div id="cdistance">@ViewBag.CDistance</div></td>                
-            </tr>
-            <tr>
-                <td>linear</td>
-                <td><input style="color:@ViewBag.LColor" type="text" id="la" name="la" value=@ViewBag.lAtom></td>
-                <td><input type="text" id="l_xyz" name="l_xyz" value=@ViewBag.lXYZ></td>
-                <td><div id="ldistance">@ViewBag.LDistance</div></td>                
-            </tr>
-            <tr>
-                <td>planar</td>
-                <td><input style="color:@ViewBag.PColor" type="text" id="pa" name="pa" value=@ViewBag.pAtom></td>
-                <td><input type="text" id="p_xyz" name="p_xyz" value=@ViewBag.pXYZ></td>
-                <td><div id="pdistance">@ViewBag.PDistance</div></td>                
-            </tr>
-         </table>
-         }
+        <tr>
+            <td>central</td>
+            <td><input style="color:@ViewBag.CColor" type="text" id="ca" name="ca" value=@ViewBag.cAtom></td>
+            <td><input type="text" id="c_xyz" name="c_xyz" value=@ViewBag.cXYZ></td>
+            <td><div id="cdistance">@ViewBag.CDistance</div></td>                
+        </tr>
+        <tr>
+            <td>linear</td>
+            <td><input style="color:@ViewBag.LColor" type="text" id="la" name="la" value=@ViewBag.lAtom></td>
+            <td><input type="text" id="l_xyz" name="l_xyz" value=@ViewBag.lXYZ></td>
+            <td><div id="ldistance">@ViewBag.LDistance</div></td>                
+        </tr>
+        <tr>
+            <td>planar</td>
+            <td><input style="color:@ViewBag.PColor" type="text" id="pa" name="pa" value=@ViewBag.pAtom></td>
+            <td><input type="text" id="p_xyz" name="p_xyz" value=@ViewBag.pXYZ></td>
+            <td><div id="pdistance">@ViewBag.PDistance</div></td>                
+        </tr>
+        </table>         
+        </td>        
+        </tr>
+        </table>
         <hr />
         <a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
     </div>
 </div>
+<!-- #################################### TAB DISPLAY SECTION SETTINGS ######################################-->
 <div id="Settings" class="tabcontent" style="display:@ViewBag.T2Display">
     <h3>Settings</h3>
-          
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-@using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-{
+    <div>
         <table>
-            <tr>
+            <tr>                
                 <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Interpolation method</td>
-                <td>
-                    Interp=
-                </td>
-                <td>
-                    @ViewBag.Interp
-                </td>
-                <td>
-                    [
-                    @Html.ActionLink(
-                linkText: "nearest",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                interp = "NEAREST",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                    ,
-                    @Html.ActionLink(
-                linkText: "linear",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                interp = "LINEAR",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                ),
-                    @Html.ActionLink(
-                linkText: "bspline",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                interp = "BSPLINE3",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                    ]
-                </td>
+                <td>Interp=</td>
+                <td>@ViewBag.Interp</td>
+                <th>  <input type="submit" value="nearest" id="nearest" onclick="SubmitInterp('NEAREST')" /></th>
+                <th>  <input type="submit" value="linear" id="linear" onclick="SubmitInterp('LINEAR')" /></th>
+                <th>  <input type="submit" value="bspline" id="bspline" onclick="SubmitInterp('BSPLINE3')" /></th>                                
                 <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>
                 <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Fo's and Fc's</td>
                 <td>Fos=</td>
@@ -229,917 +114,213 @@
         </table>    
     <table>
         <tr>
-                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Density Range (standard deviations)</td>
-            <td>                
-                Min=@ViewBag.DenMin
-            </td>
-            <td>
-                Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span>                    
-            </td>
-            <td>
-                <input type="range" min=@ViewBag.DenMin max=0 value=@ViewBag.SdFloor step="0.1" style="direction:ltr" id="rangeValueMin">
-            </td>
-            <td>
-                <input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax">
-            </td>
-            <td>
-                Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span>                
-            </td>
-            <td>
-                Max=@ViewBag.DenMax
-            </td>
+            <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Density Range (standard deviations)</td>
+            <td>Min=@ViewBag.DenMin</td>
+            <td>Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span></td>
+            <td><input type="range" min=@ViewBag.DenMin max=0 value=@ViewBag.SdFloor step="0.1" style="direction:ltr" id="rangeValueMin"></td>
+            <td><input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax"></td>
+            <td>Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
+            <td>Max=@ViewBag.DenMax</td>
         </tr>        
-    </table>    
-     <table>
-            <tr>
-               
-            </tr>
-     </table>
+    </table>         
      <table>
         <tr>
-                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Width(Å)=</td>
-            <td>
-                <input style="width:80px;" type="text" id="width" name="width" value=@ViewBag.Width>
-            </td>
-            <td>
-                [
-                @Html.ActionLink(
-                linkText: "+0.5",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                width = "-2",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,                
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ,
-                @Html.ActionLink(
-                linkText: "-0.5",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                width = "-3",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,                                
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ]
-            </td>
-                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Sample spacing(Å)=</td>
-                <td>
-                    <input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap>
-                </td>
-                <td>
-                    [@Html.ActionLink(
-                linkText: "+0.01",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                gap = "-2",
-                pdbcode = @ViewBag.PdbCode,
-                },htmlAttributes: null
-                ),@Html.ActionLink(
-                linkText: "-0.01",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                gap = "-3",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,                
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,                               
-                },htmlAttributes: null
-                )]
-                </td>
-                <td style="width:35px;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue">
-                </td>
-                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Atom dots=</td>
-                <td>
-                    
-                    <table class="inner-tbl">                    
-                    <tr>
-                    <td>
-                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="gdots" name="gdots" value=@ViewBag.GreenDots />
-                        <input type="radio" id="gon" name="green_dots" value="Y" onclick="myAtomDots()"/>
-                    </td>
-                    <td>
-                        <label for="gon">Y</label>                    
-                    </td>
-                    <td>
-                        <input type="radio" id="goff" name="green_dots" value="N" onclick="myAtomDots()" />
-                    </td>
-                    <td>
-                        <label for="gon">N</label>                        
-                    </td>                                        
-                    </tr>   
-                    </table>
-                    
-                </td>
-                <td style="width:35px;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue">
-                </td>
-                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Position dots=</td>
-                <td>
-                    
-                    <table class="inner-tbl">                    
-                    <tr>
-                    <td>
-                        <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="dots" name="dots" value=@ViewBag.YellowDots />                        
-                        <input type="radio" id="on" name="yell_dots" value="Y" onclick="myPositionDots()"/>
-                    </td>
-                    <td>
-                        <label for="on">Y</label>                    
-                    </td>
-                    <td>
-                        <input type="radio" id="off" name="yell_dots" value="N" onclick="myPositionDots()" />
-                    </td>
-                    <td>
-                        <label for="on">N</label>                        
-                    </td>                                        
-                    </tr>   
-                    </table>
-                    
-                </td>                
-                <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>
-                <th style="background-color:aliceblue;color:crimson;border:hidden;">
-                    <input type="submit" value="Update" />
-                    <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="text" id="pdbcode" name="pdbcode" value=@ViewBag.PdbCode>                    
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                </th>
+            <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Width(Å)=</td>
+            <th><input type="submit" value="-0.5" id="minus" onclick="ChangeWidth('-0.5')" /></th> 
+            <td><input style="width:80px;" type="text" id="width" name="width" value=@ViewBag.Width></td>
+            <th><input type="submit" value="+0.5" id="plus" onclick="ChangeWidth('0.5')" /></th>                       
+            <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Sample spacing(Å)=</td>
+            <th><input type="submit" value="-0.01" id="minus" onclick="ChangeSpace('-0.01')" /></th>                               
+            <td><input style="width:80px;" type="text" id="gap" name="gap" value=@ViewBag.Gap></td>
+            <th><input type="submit" value="+0.01" id="plus" onclick="ChangeSpace('0.01')" /></th>
+            <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>
+            <th style="background-color:aliceblue;color:crimson;border:double;"><input type="submit" value="Update" /></th>
         </tr>
     </table>
-}
+    </div>
 </div>
-
+<!-- ############################# TAB NAVIGATION ########################################## -->
 <div id="Navigation" class="tabcontent" style="display:@ViewBag.T3Display">
     <h3>Navigation</h3>
     <table class="nav-tbl" style="margin-left:auto;margin-right:auto;">        
-        <tr>
-            <td>@using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <input type="image" src="~/images/pnlAnti.png" style="vertical-align:text-bottom" />
-                    <input id="nav" value="anti" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }</td>
-            <td></td>
-            <td>
-                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <input type="image" src="~/images/pnlTiltOver.png" style="vertical-align:text-bottom" />
-                    <input id="nav" value="tilt_up" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }
-            </td>            
-            <td></td>
-            <td>@using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <input type="image" src="~/images/pnlClock.png" style="vertical-align:text-bottom" />
-                    <input id="nav" value="clock" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }</td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td>
-                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <!--<input type="image" src="~/images/pnlUp.png" style="width:60px;height:30px;vertical-align:text-bottom" />-->
-                <input type="submit" value="Up" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" />                
-                    <input id="nav" value="up" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }
-            </td>            
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td> @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <input type="image" src="~/images/pnlTiltLeft.png" style="vertical-align:text-bottom" />
-                    <input id="nav" value="tilt_left" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }</td>
-            <td>
-                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <!--<input type="image" src="~/images/pnlLeft.png" style="width:60px;height:30px;vertical-align:text-bottom" />-->
-                <input type="submit" value="Left" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" />                
-                    <input id="nav" value="left" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }
-            </td>
-            <td>
-                
-                    @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                    {                    
-                        <!--<input type="image" src="~/images/pnlFwd2.png" style="width:60px;height:15px;vertical-align:text-bottom" />-->
-                        <input type="submit" value="Fwd" style="background-color:dodgerblue;color:black;vertical-align:text-bottom" />                
-                            <input id="nav" value="fwd" name="nav" type="text" style="visibility:hidden;display:none" />
-                            <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                            <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                            <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                            <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                            <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                            <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                            <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                            <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                            <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                            <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                            <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                            <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                            <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                            <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                        }
-                     
-                    @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                    {                    
-                    <!--<input type="image" src="~/images/pnlBack.png" style="width:60px;height:15px;vertical-align:text-bottom" />-->
-                    <input type="submit" value="Back" style="background-color:deepskyblue;color:black;vertical-align:text-bottom" />                
-                        <input id="nav" value="back" name="nav" type="text" style="visibility:hidden;display:none" />
-                        <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                        <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                        <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                        <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                        <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                        <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                        <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                        <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                        <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                        <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                        <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                        <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                        <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                        <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                    }
-                      
-            </td>            
-            <td>
-                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                            {                    
-                            <!--<input type="image" src="~/images/pnlRight.png" style="width:60px;height:30px;vertical-align:text-bottom" />-->
-                            <input type="submit" value="Right" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" />                
-                                <input id="nav" value="right" name="nav" type="text" style="visibility:hidden;display:none" />
-                                <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                                <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                                <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                                <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                                <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                                <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                                <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                                <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                                <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                                <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                                <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                                <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                                <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                                <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                            }
-            </td>
-            <td>
-                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <input type="image" src="~/images/pnlTiltRight.png" style="vertical-align:text-bottom" />
-                    <input id="nav" value="tilt_right" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }            
-            </td>
-        </tr>        
-        <tr>
-            <td></td>
-            <td></td>
-            <td>
-               @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <!--<input type="image" src="~/images/pnlDown.png" style="width:60px;height:30px;vertical-align:text-bottom" />-->
-                <input type="submit" value="Down" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" />                
-                    <input id="nav" value="down" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td>
-                @using (Html.BeginForm("Slice", "Matrix", FormMethod.Post))
-                {                    
-                <input type="image" src="~/images/pnlTiltUnder.png" style="vertical-align:text-bottom" />
-                    <input id="nav" value="tilt_down" name="nav" type="text" style="visibility:hidden;display:none" />
-                    <input id="interp" value=@ViewBag.Interp name="interp" style="visibility:hidden;display:none" />
-                    <input id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" style="visibility:hidden;display:none" />
-                    <input id="c_xyz" value=@ViewBag.cXYZ name="c_xyz" style="visibility:hidden;display:none" />
-                    <input id="l_xyz" value=@ViewBag.lXYZ name="l_xyz" style="visibility:hidden;display:none" />
-                    <input id="p_xyz" value=@ViewBag.pXYZ name="p_xyz" style="visibility:hidden;display:none" />
-                    <input id="ca" value=@ViewBag.cAtom name="ca" style="visibility:hidden;display:none" />
-                    <input id="la" value=@ViewBag.lAtom name="la" style="visibility:hidden;display:none" />
-                    <input id="pa" value=@ViewBag.pAtom name="pa" style="visibility:hidden;display:none" />
-                    <input id="fos" value=@ViewBag.Fos name="fos" style="visibility:hidden;display:none" />
-                    <input id="fcs" value=@ViewBag.Fcs name="fcs" style="visibility:hidden;display:none" />
-                    <input id="width" value=@ViewBag.Width name="width" style="visibility:hidden;display:none" />
-                    <input id="gap" value=@ViewBag.Gap name="gap" style="visibility:hidden;display:none" />
-                    <input id="dots" value=@ViewBag.YellowDots name="dots" style="visibility:hidden;display:none" />
-                    <input id="gdots" value=@ViewBag.GreenDots name="dots" style="visibility:hidden;display:none" />
-                }
-            </td>            
-            <td></td>
-            <td></td>
-        </tr>
+    <tr>
+    <td><input type="image" src="~/images/pnlAnti.png" style="vertical-align:text-bottom" onclick="NavPressed('anti')"/></td>
+    <td></td>
+    <td><input type="image" src="~/images/pnlTiltOver.png" style="vertical-align:text-bottom"  onclick="NavPressed('tilt_up')"/></td>            
+    <td></td>
+    <td><input type="image" src="~/images/pnlClock.png" style="vertical-align:text-bottom"  onclick="NavPressed('clock')"/></td>
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td><input type="submit" value="Up" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom"  onclick="NavPressed('up')"/></td>            
+    <td></td>
+    <td></td>
+    </tr>
+    <tr>
+    <td><input type="image" src="~/images/pnlTiltLeft.png" style="vertical-align:text-bottom"  onclick="NavPressed('tilt_left')"/></td>
+    <td><input type="submit" value="Left" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom"  onclick="NavPressed('left')"/></td>
+    <td>
+        <input type="submit" value="Fwd" style="background-color:dodgerblue;color:black;vertical-align:text-bottom"  onclick="NavPressed('fwd')"/>
+        <input type="submit" value="Back" style="background-color:deepskyblue;color:black;vertical-align:text-bottom"  onclick="NavPressed('back')"/>
+    </td>
+    <td><input type="submit" value="Right" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom" onclick="NavPressed('right')" /></td>
+    <td><input type="image" src="~/images/pnlTiltRight.png" style="vertical-align:text-bottom"  onclick="NavPressed('tilt_right')"/></td>
+    </tr>        
+    <tr>
+    <td></td>
+    <td></td>
+    <td><input type="submit" value="Down" style="background-color:crimson;color:aliceblue;vertical-align:text-bottom"  onclick="NavPressed('down')"/></td>
+    <td></td>
+    <td></td>
+    </tr>
+    <tr>
+    <td></td>
+    <td></td>
+    <td><input type="image" src="~/images/pnlTiltUnder.png" style="vertical-align:text-bottom"  onclick="NavPressed('tilt_down')"/></td>            
+    <td></td>
+    <td></td>
+    </tr>
     </table>
 </div>
+<!-- ############################# TAB ADVANCED ########################################## -->
 <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display">
-    <h3>Admin</h3>
-    <div>        
-        <div>
-            <p>Extra interpolations</p>
-            <table>
-                <tr>
-                    <td width="20%">
-                        Interp=
-                    </td>
-                    <td width="25%">
-                        @ViewBag.Interp
-                    </td>
-                    <td width="55%">
-                        [
-                        @Html.ActionLink(
-                        linkText: "nearest",
-                        actionName: "Slice",
-                        controllerName: "Matrix",
-                        routeValues: new {
-                        interp = "NEAREST",
-                        pdbcode = @ViewBag.PdbCode,
-                        c_xyz = @ViewBag.cXYZ,
-                        l_xyz = @ViewBag.lXYZ,
-                        p_xyz = @ViewBag.pXYZ,
-                        ca = @ViewBag.cAtom,
-                        la = @ViewBag.lAtom,
-                        pa = @ViewBag.pAtom,
-                        fos = @ViewBag.Fos,
-                        fcs = @ViewBag.Fcs,
-                        width = @ViewBag.Width,
-                        gap = @ViewBag.Gap,
-                        dots = @ViewBag.YellowDots,
-                        gdots = @ViewBag.GreenDots,
-                        },
-                        htmlAttributes: null
-                        )
-                        ,
-                        @Html.ActionLink(
-                        linkText: "linear",
-                        actionName: "Slice",
-                        controllerName: "Matrix",
-                        routeValues: new {
-                        interp = "LINEAR",
-                        pdbcode = @ViewBag.PdbCode,
-                        c_xyz = @ViewBag.cXYZ,
-                        l_xyz = @ViewBag.lXYZ,
-                        p_xyz = @ViewBag.pXYZ,
-                        ca = @ViewBag.cAtom,
-                        la = @ViewBag.lAtom,
-                        pa = @ViewBag.pAtom,
-                        fos = @ViewBag.Fos,
-                        fcs = @ViewBag.Fcs,
-                        width = @ViewBag.Width,
-                        gap = @ViewBag.Gap,
-                        dots = @ViewBag.YellowDots,
-                        gdots = @ViewBag.GreenDots,
-                        },
-                        htmlAttributes: null
-                        ),
-                        @Html.ActionLink(
-                        linkText: "cubic",
-                        actionName: "Slice",
-                        controllerName: "Matrix",
-                        routeValues: new {
-                        interp = "CUBIC",
-                        pdbcode = @ViewBag.PdbCode,
-                        c_xyz = @ViewBag.cXYZ,
-                        l_xyz = @ViewBag.lXYZ,
-                        p_xyz = @ViewBag.pXYZ,
-                        ca = @ViewBag.cAtom,
-                        la = @ViewBag.lAtom,
-                        pa = @ViewBag.pAtom,
-                        fos = @ViewBag.Fos,
-                        fcs = @ViewBag.Fcs,
-                        width = @ViewBag.Width,
-                        gap = @ViewBag.Gap,
-                        dots = @ViewBag.YellowDots,
-                        gdots = @ViewBag.GreenDots,
-                        },
-                        htmlAttributes: null
-                        ),
-                        @Html.ActionLink(
-                        linkText: "bspline",
-                        actionName: "Slice",
-                        controllerName: "Matrix",
-                        routeValues: new {
-                        interp = "BSPLINE3",
-                        pdbcode = @ViewBag.PdbCode,
-                        c_xyz = @ViewBag.cXYZ,
-                        l_xyz = @ViewBag.lXYZ,
-                        p_xyz = @ViewBag.pXYZ,
-                        ca = @ViewBag.cAtom,
-                        la = @ViewBag.lAtom,
-                        pa = @ViewBag.pAtom,
-                        fos = @ViewBag.Fos,
-                        fcs = @ViewBag.Fcs,
-                        width = @ViewBag.Width,
-                        gap = @ViewBag.Gap,
-                        dots = @ViewBag.YellowDots,
-                        gdots = @ViewBag.GreenDots,
-                        },
-                        htmlAttributes: null
-                        ),
-                        @Html.ActionLink(
-                        linkText: "bs-whole",
-                        actionName: "Slice",
-                        controllerName: "Matrix",
-                        routeValues: new {
-                        interp = "BSPLINEWHOLE",
-                        pdbcode = @ViewBag.PdbCode,
-                        c_xyz = @ViewBag.cXYZ,
-                        l_xyz = @ViewBag.lXYZ,
-                        p_xyz = @ViewBag.pXYZ,
-                        ca = @ViewBag.cAtom,
-                        la = @ViewBag.lAtom,
-                        pa = @ViewBag.pAtom,
-                        fos = @ViewBag.Fos,
-                        fcs = @ViewBag.Fcs,
-                        width = @ViewBag.Width,
-                        gap = @ViewBag.Gap,
-                        dots = @ViewBag.YellowDots,
-                        gdots = @ViewBag.GreenDots,
-                        },
-                        htmlAttributes: null
-                        )
-                        ]
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div>
-            <p>Toggle between values and standard deviation</p>
-            <table>
-                <tr>
-                    <td>
-                        Density=
-                    </td>
-                    <td>
-                        @ViewBag.ValSd
-                    </td>
-                    <td>
-                        [@Html.ActionLink(
-                        linkText: "st.devs",
-                        actionName: "Slice",
-                        controllerName: "Matrix",
-                        routeValues: new {
-                        valsd = "s.d.",
-                        pdbcode = @ViewBag.PdbCode,
-                        c_xyz = @ViewBag.cXYZ,
-                        l_xyz = @ViewBag.lXYZ,
-                        p_xyz = @ViewBag.pXYZ,
-                        ca = @ViewBag.cAtom,
-                        la = @ViewBag.lAtom,
-                        pa = @ViewBag.pAtom,
-                        fos = @ViewBag.Fos,
-                        fcs = @ViewBag.Fcs,
-                        width = @ViewBag.Width,
-                        gap = @ViewBag.Gap,
-                        dots = @ViewBag.YellowDots,
-                        gdots = @ViewBag.GreenDots,
-                        },
-                        htmlAttributes: null
-                        ),@Html.ActionLink(
-                        linkText: "values",
-                        actionName: "Slice",
-                        controllerName: "Matrix",
-                        routeValues: new {
-                        valsd = "electrons",
-                        pdbcode = @ViewBag.PdbCode,
-                        c_xyz = @ViewBag.cXYZ,
-                        l_xyz = @ViewBag.lXYZ,
-                        p_xyz = @ViewBag.pXYZ,
-                        ca = @ViewBag.cAtom,
-                        la = @ViewBag.lAtom,
-                        pa = @ViewBag.pAtom,
-                        fos = @ViewBag.Fos,
-                        fcs = @ViewBag.Fcs,
-                        width = @ViewBag.Width,
-                        gap = @ViewBag.Gap,
-                        dots = @ViewBag.YellowDots,
-                        gdots = @ViewBag.GreenDots,
-                        },
-                        htmlAttributes: null
-                        )]
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
-</div>
-<hr />
-<div class="inner-tbl">
+    <h3>Advanced</h3>            
     <table>
+    <tr>
+        <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Extra Interpolation methods</td>
+        <td>Interp=</td>
+        <td>@ViewBag.Interp</td>
+        <th>  <input type="submit" value="nearest" id="nearest" onclick="SubmitInterp('NEAREST')" /></th>
+        <th>  <input type="submit" value="linear" id="linear" onclick="SubmitInterp('LINEAR')" /></th>
+        <th>  <input type="submit" value="cubic" id="bspline" onclick="SubmitInterp('CUBIC')" /></th>                                        
+        <th>  <input type="submit" value="bspline" id="bspline" onclick="SubmitInterp('BSPLINE3')" /></th>                                        
+        <th>  <input type="submit" value="bsplinewhole" id="bspline" onclick="SubmitInterp('BSPLINEWHOLE')" /></th>                                                
+    </tr>    
+    </table>            
+    <table>
+    <tr>
+        <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Toggle between values and standard deviation</td>
+        <td>Density=</td>
+        <td>@ViewBag.ValSd</td>
+        <th><input type="submit" value="st.devs" id="st.devs" onclick="SubmitValSd('s.d.')" /></th>
+        <th><input type="submit" value="electrons" id="electrons" onclick="SubmitValSd('electrons')" /></th>        
+    </tr>
+    </table>        
+    <table>
+    <tr>
+        <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Choose range for nearest atoms: (-1,-1)= none, (0,0)=nearest, otherwise specify a range</td>
+        <td>Min Nearest</td>
+        <td><input id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
+        <td>Max Nearest</td>
+        <td><input id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
+    </tr>
+    </table>    
+    <p>Turn dots on and off for atom positions and placements</p>
+    <table class="inner-tbl">
+    <tr>    
+    <td>Atom dots=</td>
+    <td><input type="radio" id="gon" name="green_dots" value="Y" onclick="myAtomDots()" /></td>
+    <td><label for="gon">Y</label></td>
+    <td><input type="radio" id="goff" name="green_dots" value="N" onclick="myAtomDots()" /></td>
+    <td><label for="gon">N</label></td>
+    </tr>
+    <tr>    
+    <td>Position dots=</td>
+    <td><input type="radio" id="on" name="yell_dots" value="Y" onclick="myPositionDots()" /></td>
+    <td><label for="on">Y</label></td>
+    <td><input type="radio" id="off" name="yell_dots" value="N" onclick="myPositionDots()" /></td>
+    <td><label for="on">N</label></td>
+    </tr>
+            <hr />
+    </table>      
+    @Html.ActionLink(
+    linkText: "Get link",
+    actionName: "Slice",
+    controllerName: "Matrix",
+    routeValues: new {
+    denbar = ViewBag.DenBar,
+    radbar = ViewBag.RadBar,
+    lapbar = ViewBag.LapBar,
+    denhue = ViewBag.DenHue,
+    radhue = ViewBag.RadHue,
+    laphue = ViewBag.LapHue,
+    denplot = ViewBag.DenPlot,
+    radplot = ViewBag.RadPlot,
+    lapplot = ViewBag.LapPlot,
+    pdbcode = @ViewBag.PdbCode,
+    c_xyz = @ViewBag.cXYZ,
+    l_xyz = @ViewBag.lXYZ,
+    p_xyz = @ViewBag.pXYZ,
+    ca = @ViewBag.cAtom,
+    la = @ViewBag.lAtom,
+    pa = @ViewBag.pAtom,
+    fos = @ViewBag.Fos,
+    fcs = @ViewBag.Fcs,
+    width = @ViewBag.Width,
+    gap = @ViewBag.Gap,
+    ydots = @ViewBag.YellowDots,
+    gdots = @ViewBag.GreenDots,
+    sdcap = @ViewBag.SdCap,
+    sdfloor = @ViewBag.SdFloor,
+    },
+    htmlAttributes: null
+    )
+    
+    <input type="submit" value="Update" />
+</div>
+<!-- ########################################### The actual plots################################### -->
+<hr />
+<div class="tab">
+    <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
         <tr>
-            <td>
-                Density - @ViewBag.DenPlot
-            </td>
-            <td>
-                Radient - @ViewBag.RadPlot
-            </td>
-            <td>
-                Laplacian - @ViewBag.LapPlot
-            </td>
+            <th style="width:33%">Density - @ViewBag.DenPlot</th>
+            <th style="width:33%">Radient - @ViewBag.RadPlot</th>
+            <th style="width:33%">Laplacian - @ViewBag.LapPlot</th>
         </tr>            
+        <tr>            
+            <td><table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border:none;"><tr>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Plot" id="tp" onclick="TogglePlot('density')" style="border:none;background-color:snow;"/></th>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Hue" id="th" onclick="ToggleHue('density')" style="border:none;background-color:snow;"/></th>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Bar" id="tb" onclick="ToggleBar('density')" style="border:none;background-color:snow;"/></th>
+            </tr></table></td>
+            <td><table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border:none;"><tr>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Plot" id="tp" onclick="TogglePlot('radient')" style="border:none;background-color:snow;"/></th>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Hue" id="th" onclick="ToggleHue('radient')" style="border:none;background-color:snow;"/></th>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Bar" id="tb" onclick="ToggleBar('radient')" style="border:none;background-color:snow;"/></th>
+            </tr></table></td>
+            <td><table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border:none;"><tr>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Plot" id="tp" onclick="TogglePlot('laplacian')" style="border:none;background-color:snow;"/></th>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Hue" id="th" onclick="ToggleHue('laplacian')" style="border:none;background-color:snow;"/></th>
+                <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Bar" id="tb" onclick="ToggleBar('laplacian')" style="border:none;background-color:snow;"/></th>
+            </tr></table></td>
+        </tr>
         <tr>
-            <td style="width: 450px;">                            
-                [
-                @Html.ActionLink(
-                linkText: "Toggle Plot",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                denplot = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ] [                
-                @Html.ActionLink(
-                linkText: "Toggle Hue",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                denhue = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ] [
-                @Html.ActionLink(
-                linkText: "Toggle Bar",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                denbar = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ]
-            </td>            
-            <td style="width: 450px;">                                
-                [
-                @Html.ActionLink(
-                linkText: "Toggle Plot",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                radplot = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ] [
-                @Html.ActionLink(
-                linkText: "Toggle Hue",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                radhue = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ] [
-                @Html.ActionLink(
-                linkText: "Toggle Bar",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                radbar = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ]
-            </td>
-            <td style="width: 450px;">                                                
-                [
-                @Html.ActionLink(
-                linkText: "Toggle Plot",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                lapplot = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width = @ViewBag.Width,
-                gap = @ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ] [
-                @Html.ActionLink(
-                linkText: "Toggle Hue",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                laphue = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width=@ViewBag.Width,
-                gap=@ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ] [
-                @Html.ActionLink(
-                linkText: "Toggle Bar",
-                actionName: "Slice",
-                controllerName: "Matrix",
-                routeValues: new {
-                lapbar = "+1",
-                pdbcode = @ViewBag.PdbCode,
-                c_xyz = @ViewBag.cXYZ,
-                l_xyz = @ViewBag.lXYZ,
-                p_xyz = @ViewBag.pXYZ,
-                ca = @ViewBag.cAtom,
-                la = @ViewBag.lAtom,
-                pa = @ViewBag.pAtom,
-                fos = @ViewBag.Fos,
-                fcs = @ViewBag.Fcs,
-                width=@ViewBag.Width,
-                gap=@ViewBag.Gap,
-                dots = @ViewBag.YellowDots,
-                gdots = @ViewBag.GreenDots,
-                },
-                htmlAttributes: null
-                )
-                ]
-                </td>        
-            </tr>
-            <tr>
-                <td>
-                    <div id="myCountour"></div>
-                </td>
-                <td>
-                    <div id="myCountourRad"></div>
-                </td>
-                <td>
-                    <div id="myCountourLap"></div>
-                </td>
-            </tr>
+            <td><div id="myCountour"></div></td>
+            <td><div id="myCountourRad"></div></td>
+            <td><div id="myCountourLap"></div></td>
+        </tr>
     </table>
 </div>
 <hr />
+<!-- ################################ The java script ############################### -->
 
 
 
+}
 <div>
     </p>@ViewBag.Error<p>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function openTab(evt, tabName) {
+    @ViewBag.T1Display = 'block'
+    @ViewBag.T2Display = 'block'
+    @ViewBag.T3Display = 'block'
+    @ViewBag.T4Display = 'block'
 
+    }
+</script>
 <script>
     function openCity(evt, cityName) {
         var i, tabcontent, tablinks;
@@ -1163,16 +344,8 @@
     @ViewBag.T4Display = 'block'
         
     }
-    
 </script>
-
-
-
-
-
-
 <script>
-
    function makePlots(sdfloor,sdcap,isDots,isAtoms) {
         var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
         var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
@@ -1213,9 +386,9 @@
         var rhue = @Html.Raw(Json.Serialize(@ViewBag.RadHue));
         var lhue = @Html.Raw(Json.Serialize(@ViewBag.LapHue));
 
-        var dbar = @Html.Raw(Json.Serialize(@ViewBag.DenBar));
-        var rbar = @Html.Raw(Json.Serialize(@ViewBag.RadBar));
-        var lbar = @Html.Raw(Json.Serialize(@ViewBag.LapBar));
+        var dbar = @Html.Raw(Json.Serialize(@ViewBag.DenBar))=="Y";
+        var rbar = @Html.Raw(Json.Serialize(@ViewBag.RadBar))=="Y";
+        var lbar = @Html.Raw(Json.Serialize(@ViewBag.LapBar))=="Y";
 
         var minc = Math.round(numsdfloor * 100) / 100
         var maxc = Math.round(numsd*100)/100
@@ -1584,7 +757,7 @@
     }
     var numsd = @Html.Raw(Json.Serialize(@ViewBag.SdCap));
     var numsdfloor = @Html.Raw(Json.Serialize(@ViewBag.SdFloor));        
-    var ydots = document.getElementById("dots").value.trim();
+    var ydots = document.getElementById("ydots").value.trim();
     var gdots = document.getElementById("gdots").value.trim();
     makePlots(numsdfloor, numsd, ydots=="Y",gdots=="Y");
 </script>
@@ -1594,53 +767,130 @@
     var outputMax = document.getElementById("sdcap");
 
     var sliderMin = document.getElementById("rangeValueMin");
-    var outputMin = document.getElementById("sdfloor");    
-    
-    sliderMin.oninput = function () {    
+    var outputMin = document.getElementById("sdfloor");
+
+    sliderMin.oninput = function () {
         outputMin.value = this.value;
-        var outputMax = document.getElementById("sdcap");        
-        var ydots = document.getElementById("dots").value.trim();
+        var outputMax = document.getElementById("sdcap");
+        var ydots = document.getElementById("ydots").value.trim();
         var gdots = document.getElementById("gdots").value.trim();
-        makePlots(outputMin.value, outputMax.value, ydots == "Y",gdots=="Y");
+        makePlots(outputMin.value, outputMax.value, ydots == "Y", gdots == "Y");
     }
-    sliderMax.oninput = function () {    
+    sliderMax.oninput = function () {
         outputMax.value = this.value;
-        var outputMin = document.getElementById("sdfloor");          
-        var ydots = document.getElementById("dots").value.trim();
+        var outputMin = document.getElementById("sdfloor");
+        var ydots = document.getElementById("ydots").value.trim();
         var gdots = document.getElementById("gdots").value.trim();
-        makePlots(outputMin.value, outputMax.value,ydots=="Y",gdots=="Y");
+        makePlots(outputMin.value, outputMax.value, ydots == "Y", gdots == "Y");
     }
-    function myPositionDots(){             
-        var outputMin = document.getElementById("sdfloor");        
-        var outputMax = document.getElementById("sdcap");                
+    function myPositionDots() {
+        var outputMin = document.getElementById("sdfloor");
+        var outputMax = document.getElementById("sdcap");
         var optOn = document.getElementById("on");
         var optOff = document.getElementById("off");
-    
-        if (optOn.checked == true){
-            document.getElementById("dots").value = "Y";
+
+        if (optOn.checked == true) {
+            document.getElementById("ydots").value = "Y";
         }
-        if (optOff.checked == true){
-            document.getElementById("dots").value = "N";
+        if (optOff.checked == true) {
+            document.getElementById("ydots").value = "N";
         }
-        var ydots = document.getElementById("dots").value.trim();
+        var ydots = document.getElementById("ydots").value.trim();
         var gdots = document.getElementById("gdots").value.trim();
-        makePlots(outputMin.value,outputMax.value,ydots=="Y",gdots=="Y");
+        makePlots(outputMin.value, outputMax.value, ydots == "Y", gdots == "Y");
     }
-    function myAtomDots(){             
-        var outputMin = document.getElementById("sdfloor");        
-        var outputMax = document.getElementById("sdcap");                
+    function myAtomDots() {
+        var outputMin = document.getElementById("sdfloor");
+        var outputMax = document.getElementById("sdcap");
         var optgOn = document.getElementById("gon");
         var optgOff = document.getElementById("goff");
-    
-        if (optgOn.checked == true){
+
+        if (optgOn.checked == true) {
             document.getElementById("gdots").value = "Y";
         }
         if (optgOff.checked == true) {
             document.getElementById("gdots").value = "N";
         }
-        var ydots = document.getElementById("dots").value.trim();
+        var ydots = document.getElementById("ydots").value.trim();
         var gdots = document.getElementById("gdots").value.trim();
-        makePlots(outputMin.value,outputMax.value,ydots=="Y",gdots=="Y");
+        makePlots(outputMin.value, outputMax.value, ydots == "Y", gdots == "Y");
     }
 </script>
-
+<script>
+    function SubmitInterp(interp) {
+        document.getElementById("interp").value = interp;
+    }
+</script>
+<script>
+    function ChangeWidth(val) {
+        var new_wdth = parseFloat(document.getElementById("width").value) + parseFloat(val)
+        document.getElementById("width").value = new_wdth;
+    }
+</script>
+<script>
+    function ChangeSpace(val) {
+        var new_gap = parseFloat(document.getElementById("gap").value) + parseFloat(val)
+        document.getElementById("gap").value = new_gap;
+    }
+</script>
+<script>
+    function ChangeTab(tab) {
+        if (tab == 't1'){
+            document.getElementById("t1").value = 1;
+        }
+        else if (tab == 't2'){
+            document.getElementById("t2").value = 1;
+        }
+        else if (tab == 't3'){
+            document.getElementById("t3").value = 1;
+        }
+        else if (tab == 't4'){
+            document.getElementById("t4").value = 1;
+        }                
+    }
+</script>
+<script>
+    function SubmitValSd(val) {
+        document.getElementById("valsd").value  = val;  
+    }
+</script>
+<script>
+    function TogglePlot(plot){
+        if (plot == "density"){
+            document.getElementById("denplot").value  = "+1";
+        }
+        else if (plot == "radient"){
+            document.getElementById("radplot").value  = "+1";
+        }
+        else if (plot == "laplacian"){
+            document.getElementById("lapplot").value  = "+1";
+        }
+    }
+    function ToggleHue(plot){
+        if (plot == "density"){
+            document.getElementById("denhue").value  = "+1";
+        }
+        else if (plot == "radient"){
+            document.getElementById("radhue").value  = "+1";
+        }
+        else if (plot == "laplacian"){
+            document.getElementById("laphue").value  = "+1";
+        }
+    }
+    function ToggleBar(plot){
+        if (plot == "density"){
+            document.getElementById("denbar").value  = "+1";
+        }
+        else if (plot == "radient"){
+            document.getElementById("radbar").value  = "+1";
+        }
+        else if (plot == "laplacian"){
+            document.getElementById("lapbar").value  = "+1";
+        }
+    }
+</script>
+<script>
+    function NavPressed(nav){
+        document.getElementById("nav").value  = nav;
+    }
+</script>

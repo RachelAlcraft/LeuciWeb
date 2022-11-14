@@ -10,7 +10,8 @@ namespace LeuciShared
 {
     public class PdbAtoms
     {
-        private Dictionary<string, VectorThree> _atoms = new Dictionary<string, VectorThree>();        
+        private Dictionary<string, VectorThree> _atoms = new Dictionary<string, VectorThree>();
+        private Dictionary<string, string> _aas = new Dictionary<string, string>();
         public PdbAtoms(string[] lines) //constructor for pdb file
         {
             _atoms.Clear();
@@ -42,6 +43,7 @@ namespace LeuciShared
                         occupant = "A";
                     string chimera = Chain + ":" + ResidueNo + "@" + AtomType + "." + occupant;
                     _atoms.Add(chimera, new VectorThree(X,Y,Z));
+                    _aas.Add(chimera, AA);
                 }
 
             }
@@ -105,20 +107,52 @@ namespace LeuciShared
             return v3;
         }
 
-        public List<string> getNearAtoms(VectorThree near, double within)
+        public List<string> getNearAtoms(VectorThree near, double hover_min,double hover_max)
         {
+            // max -1 means none
+            // ax and min of 0 mins nearest only
+            // a range means just that, but ALSO the nearest.
+            
             List<String> ats = new List<string>();
             List<double> diss = new List<double>();
-            foreach (var atm in _atoms)
+            try
             {
-                double distance = near.distance(atm.Value);
-                if (Math.Abs(distance) <= within)
+                if (hover_max > -1) // none
                 {
-                    var index = diss.BinarySearch(distance);
-                    if (index < 0) index = ~index;
-                    diss.Insert(index, distance);
-                    ats.Insert(index, atm.Key + ":" + Convert.ToString(Math.Round(distance, 4)));                    
+                    foreach (var atm in _atoms)
+                    {
+                        double distance = near.distance(atm.Value);
+                        if (Math.Abs(distance) <= hover_max || hover_max == 0)
+                        {                                                        
+                            var index = diss.BinarySearch(distance);
+                            if (index < 0) index = ~index;
+                            diss.Insert(index, distance);
+                            string aa = _aas[atm.Key];
+                            ats.Insert(index, aa + " " + atm.Key + "=" + Convert.ToString(Math.Round(distance, 4)));                            
+                        }
+                    }
+                    if (hover_max == 0 && hover_min == 0)//nearest only
+                    {
+                        string na = ats[0];
+                        ats.Clear();
+                        ats.Add(na);
+                    }
+                    else if (hover_min > 0 && diss.Count > 1)
+                    {
+                        List<String> ats_v2 = new List<string>();
+                        ats_v2.Add(ats[0]);
+                        for(int i=1; i < diss.Count; ++i)
+                        {
+                            if (diss[i] > hover_min)
+                                ats_v2.Add(ats[i]);
+                        }
+                        ats = ats_v2;
+                    }
                 }
+            }
+            catch(Exception e)
+            {
+
             }
             return ats;
 

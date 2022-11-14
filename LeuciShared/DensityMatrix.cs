@@ -170,7 +170,7 @@ namespace LeuciShared
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
                                 VectorThree central, VectorThree linear, VectorThree planar,
                                 VectorThree acentral, VectorThree alinear, VectorThree aplanar,
-                                PdbAtoms PA)
+                                PdbAtoms PA, double hover_min, double hover_max)
         {
             ////////////// general settings for the view /////////////////////
             // we want general info of the max and min given the sd setting
@@ -355,7 +355,7 @@ namespace LeuciShared
                     double z0 = 0;
                     VectorThree transformed = Space.applyTransformation(new VectorThree(x0, y0, z0));
                     VectorThree crs = _densityBinary.getCRSFromXYZ(transformed);
-                    List<string> atom_names = PA.getNearAtoms(transformed, 3.5);
+                    List<string> atom_names = PA.getNearAtoms(transformed, hover_min, hover_max);
                     Annotations[m][n] = "";
                     foreach (string an in atom_names)                    
                         Annotations[m][n] += "<br>" + an;
