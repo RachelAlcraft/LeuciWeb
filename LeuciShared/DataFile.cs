@@ -9,6 +9,7 @@ namespace LeuciShared
     public class DataFiles
     {
         public List<DataFile> Files { get; set; } = new List<DataFile>();
+        public List<DataFile> BbkPdbs { get; set; } = new List<DataFile>();
         public List<DataFile> SmallPdbs { get; set; } = new List<DataFile>();
         public List<DataFile> HighPdbs { get; set; } = new List<DataFile>();
         public List<DataFile> SmallEmPdbs { get; set; } = new List<DataFile>();
@@ -24,6 +25,8 @@ namespace LeuciShared
                   
             }
             Files = Files.OrderBy(o => o.PdbCode).ToList();
+
+            BbkPdbs.Add(new DataFile("2bf9"));
 
             SmallPdbs.Add(new DataFile("6eex"));
             SmallPdbs.Add(new DataFile("6efg"));

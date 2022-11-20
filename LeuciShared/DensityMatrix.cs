@@ -76,7 +76,10 @@ namespace LeuciShared
             _fos = fos;
             _fcs = fcs;
             _densityBinary = new DensityBinary(edFile);
-            _densityDiffBinary = new DensityBinary(difFile);
+            if (difFile != "")
+                _densityDiffBinary = new DensityBinary(difFile);
+            else
+                _densityDiffBinary = null;
             _A = _densityBinary.Z3_cap;//Convert.ToInt32(_densityBinary.Words["03_NZ"]);
             _B = _densityBinary.Y2_cap;//Convert.ToInt32(_densityBinary.Words["02_NY"]);
             _C = _densityBinary.X1_cap;//Convert.ToInt32(_densityBinary.Words["01_NX"]);
@@ -99,9 +102,17 @@ namespace LeuciShared
             Single[] fofc = new Single[_densityBinary.Blength];            
             for (int i = 0; i < _densityBinary.Blength; ++i)
             {
-                Single valueM = BitConverter.ToSingle(_densityBinary.Bytes, _densityBinary.Bstart + i * 4);
-                Single valueD = BitConverter.ToSingle(_densityDiffBinary.Bytes, _densityBinary.Bstart + i * 4);                
-                fofc[i] = m * valueM + d * valueD;
+                if (_densityDiffBinary != null)
+                {
+                    Single valueM = BitConverter.ToSingle(_densityBinary.Bytes, _densityBinary.Bstart + i * 4);
+                    Single valueD = BitConverter.ToSingle(_densityDiffBinary.Bytes, _densityBinary.Bstart + i * 4);
+                    fofc[i] = m * valueM + d * valueD;
+                }
+                else
+                {
+                    Single valueM = BitConverter.ToSingle(_densityBinary.Bytes, _densityBinary.Bstart + i * 4);
+                    fofc[i] = valueM; // the fo and fc numebr are irrlevant for cryo-em
+                }
             }
 
             _interp = interp;

@@ -15,96 +15,159 @@ namespace LeuciShared
         public string PdbDownloadLink = "";
         private string PdbFilePath = "";
         public string EmCode = "";
+        public string EmNum = "";
         public string EmViewLink = "";
         public string EmDownloadLink = "";
         public string EmFilePath = "";
+        public string EmFilePathGz = "";
         public string DiffViewLink = "";
         public string DiffDownloadLink = "";
         public string DiffFilePath = "";
         public string[] PdbLines = new string[0];
         public string Resolution = "";
+        private string _downloadingPath = "";
+        public PdbAtoms PA;
 
-        
+
         public string DensityType = "none";
         // TODO and we would deal with mmCif format here
 
         public FileDownloads(string pdbcode)
-        {
+        {            
             PdbCode = pdbcode.ToLower();
             EmCode = pdbcode.ToLower();
-        }
-
-        public async Task<bool> downloadAll()
-        {
+            PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";
+            _downloadingPath = "wwwroot/App_Data/" + PdbCode + ".downloading";
             PdbDownloadLink = "https://files.rcsb.org/download/" + PdbCode + ".pdb";
             PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";
             EmFilePath = "wwwroot/App_Data/" + PdbCode + ".ccp4";
+            EmFilePathGz = "wwwroot/App_Data/" + PdbCode + ".ccp4.gz";
             DiffFilePath = "wwwroot/App_Data/" + PdbCode + "_diff.ccp4";
             PdbViewLink = "https://www.ebi.ac.uk/pdbe/entry-files/pdb" + PdbCode + ".ent";
-            bool ok = await downloadAsync(PdbFilePath, PdbDownloadLink);
-            if (ok)
-            {                
-                PdbLines = System.IO.File.ReadAllLines(PdbFilePath);
-                foreach (string line in PdbLines)
-                {//REMARK 900 RELATED ID: EMD-11668   RELATED DB: EMDB
-                    if (line.Contains("REMARK 900 RELATED ID:") && line.Contains("EMD-"))
-                    {
-                        string[] line_split = line.Split(" ");
-                        EmCode = line_split[4];
-                        DensityType = "cryo-em";
-                        break;
-                    }
-                    else if (line.Contains("2 RESOLUTION."))
-                    {//REMARK   2 RESOLUTION.    0.48 ANGSTROMS.    
-                        Resolution = line.Substring(26, 5).Trim();
-                    }
-                    if (line.Substring(0,4) == "ATOM")
-                        break;
-                }
-
-                if (DensityType == "cryo-em")
-                {
-                    string[] ems = EmCode.Split("-");
-                    EmFilePath = "wwwroot/App_Data/emd_" + ems[1] + ".ccp4";
-                    if (!System.IO.File.Exists(EmFilePath))
-                    {
-                        EmFilePath = "wwwroot/App_Data/emd_" + ems[1] + ".ccp4.gz";
-                        EmDownloadLink = "https://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-" + ems[1] + "/map/emd_" + ems[1] + ".map.gz";
-                        ok = await downloadAsync(EmFilePath, EmDownloadLink);
-                        // now the em data is going to be zipped so we neeed to unzip                    
-                        FileInfo fi = new FileInfo(EmFilePath);
-                        Decompress(fi, "wwwroot/App_Data/emd_" + ems[1] + ".ccp4");
-                        EmFilePath = "wwwroot/App_Data/emd_" + ems[1] + ".ccp4";
-                        if (System.IO.File.Exists(EmFilePath))
-                            if (System.IO.File.Exists("wwwroot/App_Data/emd_" + ems[1] + ".ccp4.gz"))
-                                System.IO.File.Delete("wwwroot/App_Data/emd_" + ems[1] + ".ccp4.gz");
-
-                        EmFilePath = "wwwroot/App_Data/emd_" + ems[1] + ".ccp4";
-                        DiffFilePath = ""; //there is no difference density for cryo-em
-                        // we can delete the zipped version now
-                        
-                    }
-                }
-                else
-                {
-                    EmDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + ".ccp4";
-                    ok = await downloadAsync(EmFilePath, EmDownloadLink);
-                    if (ok)
-                    {
-                        DiffDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + "_diff.ccp4";
-                        ok = await downloadAsync(DiffFilePath, DiffDownloadLink);                        
-                    }
-                    if (ok)
-                        DensityType = "x-ray";
-                }
-
-
-            }
-            return true;
-
         }
 
+        public async Task<string> existsPdbMatrixAsync()
+        {
+            bool ok = true;
+            if (!System.IO.File.Exists(PdbFilePath))            
+                ok = await downloadPdbFile();
+            if (ok)
+            {
+                processPdbFile();
+                return "Y";
+            }
+            else
+            {
+                return "Error";
+            }
+        }
+        public string existsCcp4Matrix()
+        {
+            string exists_matrix = "N";
+            if (System.IO.File.Exists(EmFilePath))
+                exists_matrix = "Y";
+            string downloading = "N";
+            if (System.IO.File.Exists(_downloadingPath))
+                downloading = "Y";
 
+            if (downloading == "Y")
+                return "still downloading";
+            else if (exists_matrix == "Y")
+            {
+                processCcp4File();
+                return "Y";
+            }
+            else
+            {
+                _ = downloadCcp4File();
+                return "starting download";
+            }
+        }
+        public async Task<bool> downloadPdbFile()
+        {            
+            bool ok = await downloadAsync(PdbFilePath, PdbDownloadLink);
+            return ok;
+        }
+        public void processPdbFile()
+        { 
+            PdbLines = System.IO.File.ReadAllLines(PdbFilePath);
+            DensityType = "x-ray";
+            foreach (string line in PdbLines)
+            {//REMARK 900 RELATED ID: EMD-11668   RELATED DB: EMDB
+                if (line.Contains("REMARK 900 RELATED ID:") && line.Contains("EMD-"))
+                {
+                    string[] line_split = line.Split(" ");
+                    EmCode = line_split[4];
+                    DensityType = "cryo-em";
+                    break;
+                }
+                else if (line.Contains("2 RESOLUTION."))
+                {//REMARK   2 RESOLUTION.    0.48 ANGSTROMS.    
+                    Resolution = line.Substring(26, 5).Trim();
+                }
+                if (line.Substring(0, 4) == "ATOM")
+                    break;
+            }
+
+            if (DensityType == "cryo-em")
+            {
+                string[] ems = EmCode.Split("-");
+                EmNum = ems[1];                                
+                EmFilePath = "wwwroot/App_Data/emd_" + EmNum + ".ccp4";
+                EmFilePathGz = "wwwroot/App_Data/emd_" + EmNum + ".ccp4.gz";
+                EmDownloadLink = "https://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-" + EmNum + "/map/emd_" + EmNum + ".map.gz";                                                            
+            }
+            else
+            {
+                EmDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + ".ccp4";                    
+                DensityType = "x-ray";
+                DiffDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + "_diff.ccp4";
+            }
+
+            PA = new PdbAtoms(PdbLines);
+        }
+
+        public async Task<bool> downloadCcp4File()
+        {
+            if (!System.IO.File.Exists(_downloadingPath))
+                using (StreamWriter sw = new StreamWriter(_downloadingPath))
+                    sw.WriteLine("");
+
+            bool ok = false;
+            if (DensityType == "cryo-em")
+            {
+                if (!System.IO.File.Exists(EmFilePath))
+                {
+                    ok = await downloadAsync(EmFilePathGz, EmDownloadLink);
+                    // now the em data is going to be zipped so we neeed to unzip                    
+                    FileInfo fi = new FileInfo(EmFilePathGz);
+                    Decompress(fi, EmFilePath);                    
+                    if (System.IO.File.Exists(EmFilePath))
+                        if (System.IO.File.Exists(EmFilePathGz))
+                            System.IO.File.Delete(EmFilePathGz);                    
+                    DiffFilePath = ""; //there is no difference density for cryo-em
+                                       // we can delete the zipped version now
+
+                }
+            }
+            else
+            {
+                ok = await downloadAsync(EmFilePath, EmDownloadLink);
+                if (ok)
+                    ok = await downloadAsync(DiffFilePath, DiffDownloadLink);
+                if (ok)
+                    DensityType = "x-ray";
+            }
+                        
+            if (System.IO.File.Exists(_downloadingPath))
+                System.IO.File.Delete(_downloadingPath);
+            return true;
+        }
+        public void processCcp4File()
+        {
+            if (DensityType == "cryo-em")
+                DiffFilePath = ""; //there is no difference density for cryo-em
+        }
 
         public async Task<bool> downloadAsync(string filepath, string url)
         {
