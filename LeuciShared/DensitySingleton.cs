@@ -31,8 +31,7 @@ namespace LeuciShared
         private string _pdbcode = "";
         private string _interp = "BSPLINE3";
         private DensityMatrix _dm;
-        public FileDownloads FD;
-        public PdbAtoms PA;
+        public FileDownloads FD;        
         public bool NewMatrix = false;
         private int _fos = 2;
         private int _fcs = -1;
@@ -57,21 +56,14 @@ namespace LeuciShared
                 if (_dm != null)
                     _dm.changeInterp(_interp);
             }
-
-            if (PA == null)
-                calc = true;
-
+            
             if (!calc)
             {
                 NewMatrix = false;
                 return _dm;
             }
             else
-            {
-                FD = new FileDownloads(pdbcode);
-                bool ok = await FD.downloadAll();
-                PA = new PdbAtoms(FD.PdbLines);
-                
+            {                                                
                 _pdbcode = pdbcode;
                 try
                 {

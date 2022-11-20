@@ -11,7 +11,7 @@
             <th class="browse">Select structure...</th>            
             <th class ="browse">Selected: @ViewBag.PdbCode</th>
         </tr>
-    <tr>
+        <tr>
             <td class="browse" width="20%">
                 <table cellpadding="50" cellspacing="50">
                     @using (Html.BeginForm("Browse", "Matrix", FormMethod.Post))
@@ -43,6 +43,31 @@
                 <table>
                     <tr>
                         <th>Examples...</th>
+                    </tr>
+                    <tr>
+                        <th>Birkbeck Structures</th>
+                    </tr>
+                    <tr>
+                        <td>
+                        @foreach (var item in ViewBag.BbkPdbs)
+                        {
+                            <span>
+                                @item.PdbCode
+
+                                @Html.ActionLink(
+                            linkText: "select",
+                            actionName: "Browse",
+                            controllerName: "Matrix",
+                            routeValues: new {
+                            pdbcode = @item.PdbCode,
+                            },
+                            htmlAttributes: null
+                            )
+                    
+                            </span>
+                            <br />
+                        }
+                        </td>
                     </tr>
                     <tr>
                         <th>Small structures</th>

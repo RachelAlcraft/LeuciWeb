@@ -277,33 +277,33 @@ namespace LeuciShared
             return pointPrime;
         }
 
-        public VectorThree extraNav(VectorThree point,string nav,double nav_mag)
+        public VectorThree extraNav(VectorThree point,string nav,double nav_distance)
         {            
             double angle = 2*Math.PI / 90;
             point = reverseTransformation(point);
             if (nav == "down")
             {                
-                point.A += nav_mag;                
+                point.A += nav_distance;                
             }
             else if (nav == "up")
             {                
-                point.A -= nav_mag;                
+                point.A -= nav_distance;                
             }
             else if (nav == "left")
             {                
-                point.B += nav_mag;             
+                point.B += nav_distance;             
             }
             else if (nav == "right")
             {                
-                point.B -= nav_mag;             
+                point.B -= nav_distance;             
             }
             else if (nav == "fwd")
             {                
-                point.C -= nav_mag;             
+                point.C -= nav_distance;             
             }
             else if (nav == "back")
             {                
-                point.C += nav_mag;                
+                point.C += nav_distance;                
             }
             else if (nav == "tilt_left")
             {                

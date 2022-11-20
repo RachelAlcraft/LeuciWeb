@@ -23,6 +23,11 @@ namespace Leucippus.Models
             //DensityType = fd.DensityType;
         }
 
+        private void incRefresh()
+        {
+            ++_refresh; 
+        }
+
         public static ViewBagMatrix Instance
         {
             get
@@ -59,8 +64,8 @@ namespace Leucippus.Models
                 if (value != "")
                 {
                     if (value != _pdbcode)
-                    {                        
-                        ++_refresh;
+                    {
+                        incRefresh();
                         _interp = "BSPLINE3";
                         //FileDownloads fd = new FileDownloads(value);
                         //fd.downloadAll();
@@ -72,7 +77,7 @@ namespace Leucippus.Models
                 else if(_pdbcode != "6eex")
                 {
                     _pdbcode = "6eex";
-                    ++_refresh;
+                    incRefresh();
                 }
             }
         }
@@ -86,11 +91,16 @@ namespace Leucippus.Models
                 {
                     //do nothing
                 }
+                else if (value == "" && DensityType == "cryo-em")
+                {
+                    _interp = "LINEAR";
+                    incRefresh();
+                }
                 else if (value != "")
                 {
-                    ++_refresh;
+                    incRefresh();
                     _interp = value;                    
-                }                
+                }           
             }
         }
 
@@ -99,10 +109,10 @@ namespace Leucippus.Models
         public void setFoFc(int fos, int fcs)
         {
             if (fos != Fos)
-                ++_refresh;
+                incRefresh();
             Fos = fos;
             if (fcs != Fcs)
-                ++_refresh;
+                incRefresh();
             Fcs = fcs;
         }
 
@@ -121,7 +131,7 @@ namespace Leucippus.Models
                 if (value != _hover_min)
                 {
                     _hover_min = value;
-                    ++_refresh;
+                    incRefresh();
                 }
             }
         }
@@ -137,7 +147,23 @@ namespace Leucippus.Models
                 if (value != _hover_max)
                 {
                     _hover_max = value;
-                    ++_refresh;
+                    incRefresh();
+                }
+            }
+        }
+        private double _nav_distance = 0.1;
+        public double NavDistance
+        {
+            get
+            {
+                return _nav_distance;
+            }
+            set
+            {
+                if (value != _nav_distance)
+                {
+                    _nav_distance = value;
+                    incRefresh();
                 }
             }
         }
@@ -175,7 +201,7 @@ namespace Leucippus.Models
                 if (value != "")
                 {
                     if (value != _plane)
-                        ++_refresh;
+                        incRefresh();
                     _plane = value;
                 }
             }
@@ -189,7 +215,7 @@ namespace Leucippus.Models
                 if (value != -1)
                 {
                     if (value != _layer)
-                        ++_refresh;
+                        incRefresh();
                     _layer = value;
                 }
             }
@@ -243,7 +269,7 @@ namespace Leucippus.Models
                     _denhue = value;
             }
         }
-        private string _radplot = "heatmap";
+        private string _radplot = "contour";
         public string RadPlot
         {
             get { return _radplot; }
@@ -454,7 +480,7 @@ namespace Leucippus.Models
             }
         }
 
-        private double _gap = 0.05;
+        private double _gap = 0.1;
         public double Gap
         {
             get { return _gap; }
@@ -463,29 +489,29 @@ namespace Leucippus.Models
                 //don't maintain ratio when increasing the gap                
                 if (value == -2) // this means increase by 0.05
                 {
-                    _gap += 0.01;                    
-                    ++_refresh;
+                    _gap += 0.01;
+                    incRefresh();
                 }
                 else if (value == -3)
                 {
                     _gap -= 0.01;
                     if (_gap <= 0.01)
-                        _gap = 0.01;                    
-                    ++_refresh;
+                        _gap = 0.01;
+                    incRefresh();
                 }
                 else if (value == -1) // this means go back to default
                 {
-                    _gap = 0.05;
+                    _gap = 0.1;
                 }
                 else if (Math.Round(value, 4) != Math.Round(_gap, 4))
                 {                    
                     _gap = value;
-                    ++_refresh;
+                    incRefresh();
                 }
                 if (_width / _gap > 110)
                 {
                     _gap = _width / 110;
-                    ++_refresh;
+                    incRefresh();
                 }
                 _width = Math.Round(_width, 4);
                 _gap = Math.Round(_gap, 4);
@@ -503,7 +529,7 @@ namespace Leucippus.Models
                 {
                     _width += 0.5;
                     _gap = nums / _width;
-                    ++_refresh;
+                    incRefresh();
                 }
                 else if (value == -3) //this means decrease by 0.5
                 {
@@ -511,7 +537,7 @@ namespace Leucippus.Models
                     if (_width <= 0.5)
                         _width = 0.5;
                     _gap = nums / _width;
-                    ++_refresh;
+                    incRefresh();
                 }
                 else if (value == -1) // this means go back to default
                 {
@@ -522,12 +548,12 @@ namespace Leucippus.Models
                     double aspectRatio = _width * _gap;
                     _width = value;
                     _gap = _width / aspectRatio;
-                    ++_refresh;
+                    incRefresh();
                 }
                 if (_width / _gap > 110)
                 {                    
                     _gap = _width / 110;
-                    ++_refresh;
+                    incRefresh();
                 }
                 _width = Math.Round(_width, 4);
                 _gap = Math.Round(_gap, 4);
@@ -541,6 +567,10 @@ namespace Leucippus.Models
         public double CDistance = 0;
         public void SetCentral(string cxyz, string ca,PdbAtoms pdba,bool refresh=true)
         {
+            if (cxyz == null)
+                cxyz = "";
+            if (ca == null)
+                ca = "";
             // TODO we need to figure out the distance between the atom and the points and decide if it is the same, return it if so or blank if not
             // TODO and we need to know which has changed and which has not
             if (refresh)
@@ -549,35 +579,42 @@ namespace Leucippus.Models
                 Central = pdba.getCoords(CentralAtom);                
                 CAtom = new VectorThree(Central.A, Central.B, Central.C);
                 CDistance = 0;
-                ++_refresh;
+                incRefresh();
             }
             else if (Central.A + Central.B + Central.C == -3)
             {
                 Central = pdba.getCoords(CentralAtom);
                 CAtom = new VectorThree(Central.A, Central.B, Central.C);
                 CDistance = 0;
-                ++_refresh;
+                incRefresh();
             }
-            if (ca != "" && ca != CentralAtom)
+            // if we pass only ca in then refresh
+            if (ca != "")
             {
-                CentralAtom = ca;
-                Central = pdba.getCoords(CentralAtom);
-                CAtom = new VectorThree(Central.A, Central.B, Central.C);
-                CDistance = 0;
-                ++_refresh;
+                if (ca!= CentralAtom || cxyz == "")
+                {
+                    CentralAtom = ca;
+                    Central = pdba.getCoords(CentralAtom);
+                    CAtom = new VectorThree(Central.A, Central.B, Central.C);
+                    CDistance = 0;
+                    incRefresh();
+                }
             }
-            else if (cxyz != "" && cxyz != _cxyz)
+            else if (cxyz != "" && cxyz != null)
             {
-                //unwrap
-                string[] xyzs = cxyz.Split(",");
-                double x = Convert.ToDouble(xyzs[0].Substring(1));
-                double y = Convert.ToDouble(xyzs[1]);
-                double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
-                //CentralAtom = "";
-                CDistance = Math.Round(CAtom.distance(new VectorThree(x, y, z)),3);
-                Central = new VectorThree(x, y, z);
-                _cxyz = cxyz;
-                ++_refresh;
+                if (cxyz != _cxyz)
+                {
+                    incRefresh();
+                    //unwrap
+                    string[] xyzs = cxyz.Split(",");
+                    double x = Convert.ToDouble(xyzs[0].Substring(1));
+                    double y = Convert.ToDouble(xyzs[1]);
+                    double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
+                    //CentralAtom = "";
+                    CDistance = Math.Round(CAtom.distance(new VectorThree(x, y, z)), 3);
+                    Central = new VectorThree(x, y, z);
+                    _cxyz = cxyz;                    
+                }
             }            
             else
             {
@@ -591,41 +628,51 @@ namespace Leucippus.Models
         public double LDistance = 0;
         public void SetLinear(string lxyz, string la, PdbAtoms pdba, bool refresh = true)
         {
+            if (lxyz == null)
+                lxyz = "";
+            if (la == null)
+                la = "";
             if (refresh)
             {
                 LinearAtom = pdba.getFirstThreeCoords()[1];
                 Linear = pdba.getCoords(LinearAtom);
                 LAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
                 LDistance = 0;
-                ++_refresh;
+                incRefresh();
             }
             else if (Linear.A + Linear.B + Linear.C == -3)
             {
                 Linear = pdba.getCoords(LinearAtom);
                 LAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
                 LDistance = 0;
-                ++_refresh;
+                incRefresh();
             }
-            if (la != "" && la != LinearAtom)
+            if (la != "")
             {
-                LinearAtom = la;
-                Linear = pdba.getCoords(LinearAtom);
-                LAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
-                LDistance = 0;
-                ++_refresh;
+                if (la != LinearAtom || lxyz == "")
+                {
+                    LinearAtom = la;
+                    Linear = pdba.getCoords(LinearAtom);
+                    LAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
+                    LDistance = 0;
+                    incRefresh();
+                }
             }
-            else if (lxyz != "" && lxyz != _lxyz)
+            else if (lxyz != "" && lxyz != null)
             {
-                //unwrap
-                string[] xyzs = lxyz.Split(",");
-                double x = Convert.ToDouble(xyzs[0].Substring(1));
-                double y = Convert.ToDouble(xyzs[1]);
-                double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
-                LDistance = Math.Round(LAtom.distance(new VectorThree(x, y, z)),3);
-                //LinearAtom = "";
-                Linear = new VectorThree(x, y, z);
-                _lxyz = lxyz;
-                ++_refresh;
+                if (lxyz != _lxyz)
+                {
+                    //unwrap
+                    string[] xyzs = lxyz.Split(",");
+                    double x = Convert.ToDouble(xyzs[0].Substring(1));
+                    double y = Convert.ToDouble(xyzs[1]);
+                    double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
+                    LDistance = Math.Round(LAtom.distance(new VectorThree(x, y, z)), 3);
+                    //LinearAtom = "";
+                    Linear = new VectorThree(x, y, z);
+                    _lxyz = lxyz;
+                    incRefresh();
+                }
             }
             
         }
@@ -637,41 +684,51 @@ namespace Leucippus.Models
         public double PDistance = 0;
         public void SetPlanar(string pxyz, string pa, PdbAtoms pdba,bool refresh=true)
         {
+            if (pxyz == null)
+                pxyz = "";
+            if (pa == null)
+                pa = "";
             if (refresh)
             {
                 PlanarAtom = pdba.getFirstThreeCoords()[2];
                 Planar = pdba.getCoords(PlanarAtom);
                 PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
                 PDistance = 0;
-                ++_refresh;
+                incRefresh();
             }
             else if (Planar.A + Planar.B + Planar.C == -3)
             {
                 Planar = pdba.getCoords(PlanarAtom);
                 PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
                 PDistance = 0;
-                ++_refresh;
+                incRefresh();
             }
-            if (pa != "" && pa != PlanarAtom)
+            if (pa != "")
             {
-                PlanarAtom = pa;
-                Planar = pdba.getCoords(PlanarAtom);
-                PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
-                PDistance = 0;
-                ++_refresh;
+                if (pa != PlanarAtom || pxyz == "")
+                {
+                    PlanarAtom = pa;
+                    Planar = pdba.getCoords(PlanarAtom);
+                    PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
+                    PDistance = 0;
+                    incRefresh();
+                }
             }
-            else if (pxyz != "" && pxyz != _pxyz)
+            else if (pxyz != "" && pxyz != null)
             {
-                //unwrap
-                string[] xyzs = pxyz.Split(",");
-                double x = Convert.ToDouble(xyzs[0].Substring(1));
-                double y = Convert.ToDouble(xyzs[1]);
-                double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
-                PDistance = Math.Round(PAtom.distance(new VectorThree(x, y, z)),3);
-                //PlanarAtom = "";
-                Planar = new VectorThree(x, y, z);
-                _pxyz = pxyz;
-                ++_refresh;
+                if (pxyz != _pxyz)
+                {
+                    //unwrap
+                    string[] xyzs = pxyz.Split(",");
+                    double x = Convert.ToDouble(xyzs[0].Substring(1));
+                    double y = Convert.ToDouble(xyzs[1]);
+                    double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
+                    PDistance = Math.Round(PAtom.distance(new VectorThree(x, y, z)), 3);
+                    //PlanarAtom = "";
+                    Planar = new VectorThree(x, y, z);
+                    _pxyz = pxyz;
+                    incRefresh();
+                }
             }            
         }
 

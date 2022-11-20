@@ -12,9 +12,11 @@ namespace LeuciShared
     {
         private Dictionary<string, VectorThree> _atoms = new Dictionary<string, VectorThree>();
         private Dictionary<string, string> _aas = new Dictionary<string, string>();
+        public bool Init = false;
         public PdbAtoms(string[] lines) //constructor for pdb file
         {
             _atoms.Clear();
+            Init = true;
             foreach (string line in lines)
             {
                 if (line.Substring(0, 4) == "ATOM" || line.Substring(0, 6) == "HETATM")
