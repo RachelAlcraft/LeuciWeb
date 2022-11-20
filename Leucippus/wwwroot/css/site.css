@@ -234,6 +234,10 @@ td.browse {
     background-color: #4CAF50; /* Green */
     color: white;
 }
+.tab input:hover {    
+    background-color: Silver;
+    color: black;    
+}
 .tab submit {
     background-color: inherit;
     transition-duration: 0.4s;
@@ -258,8 +262,8 @@ td.browse {
 }
 
 /* Create an active/current tablink class */
-.tab button.active {
-    background-color: #ccc;
+.tab submit.active {
+    background-color: green;
 }
 
 /* Style the tab content */

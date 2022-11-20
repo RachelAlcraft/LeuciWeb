@@ -189,6 +189,14 @@ namespace Leucippus.Controllers
                 double hov_min = ViewBagMatrix.Instance.HoverMin;
                 double hov_max = ViewBagMatrix.Instance.HoverMax;
 
+                if (interp == "" && ViewBagMatrix.Instance.DensityType == "cryo-em")
+                {
+                    nav_space = ViewBagMatrix.Instance.Width / 20; //we reduce for cryo-em defaults like nav mode
+                    hov_min = -1;
+                    hov_max = -1;
+                    ViewBagMatrix.Instance.Interp = "LINEAR";
+                }
+
                 if (nav != "" && nav != null)
                 {
                     dm.Space = new SpaceTransformation(ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);

@@ -24,8 +24,7 @@ namespace LeuciShared
         public string DiffDownloadLink = "";
         public string DiffFilePath = "";
         public string[] PdbLines = new string[0];
-        public string Resolution = "";
-        private string _downloadingPath = "";
+        public string Resolution = "";        
         public PdbAtoms PA;
 
 
@@ -36,8 +35,7 @@ namespace LeuciShared
         {            
             PdbCode = pdbcode.ToLower();
             EmCode = pdbcode.ToLower();
-            PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";
-            _downloadingPath = "wwwroot/App_Data/" + PdbCode + ".downloading";
+            PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";            
             PdbDownloadLink = "https://files.rcsb.org/download/" + PdbCode + ".pdb";
             PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";
             EmFilePath = "wwwroot/App_Data/" + PdbCode + ".ccp4";
@@ -66,8 +64,18 @@ namespace LeuciShared
             string exists_matrix = "N";
             if (System.IO.File.Exists(EmFilePath))
                 exists_matrix = "Y";
+            
+            if (DiffFilePath != "")
+            {
+                if (!System.IO.File.Exists(DiffFilePath))
+                    exists_matrix = "N";
+            }
+
             string downloading = "N";
-            if (System.IO.File.Exists(_downloadingPath))
+            if (System.IO.File.Exists(EmFilePath + ".downloading"))
+                downloading = "Y";
+
+            if (System.IO.File.Exists(DiffFilePath + ".downloading"))
                 downloading = "Y";
 
             if (downloading == "Y")
@@ -128,11 +136,7 @@ namespace LeuciShared
         }
 
         public async Task<bool> downloadCcp4File()
-        {
-            if (!System.IO.File.Exists(_downloadingPath))
-                using (StreamWriter sw = new StreamWriter(_downloadingPath))
-                    sw.WriteLine("");
-
+        {            
             bool ok = false;
             if (DensityType == "cryo-em")
             {
@@ -158,9 +162,7 @@ namespace LeuciShared
                 if (ok)
                     DensityType = "x-ray";
             }
-                        
-            if (System.IO.File.Exists(_downloadingPath))
-                System.IO.File.Delete(_downloadingPath);
+                                    
             return true;
         }
         public void processCcp4File()
@@ -178,14 +180,28 @@ namespace LeuciShared
                 {
                     try
                     {
-                        using (var s = await client.GetStreamAsync(url))
+                        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));                        
+                        if (response != null)
                         {
-                            using (var fs = new FileStream(filepath, FileMode.CreateNew))
+                            string ctn_len = Convert.ToString(response.Content.Headers.ContentLength);
+
+                            if (!System.IO.File.Exists(filepath + ".downloading"))
+                                using (StreamWriter sw = new StreamWriter(filepath + ".downloading"))
+                                    sw.WriteLine(ctn_len);
+
+                            using (var s = await client.GetStreamAsync(url))
                             {
-                                var tasks = s.CopyToAsync(fs);
-                                await Task.WhenAll(tasks);
-                                success = true;
+                                using (var fs = new FileStream(filepath, FileMode.CreateNew))
+                                {
+                                    var tasks = s.CopyToAsync(fs);
+                                    await Task.WhenAll(tasks);
+                                    success = true;
+                                }
                             }
+                            
+                            if (System.IO.File.Exists(filepath + ".downloading"))
+                                System.IO.File.Delete(filepath + ".downloading");
+
                         }
                     }
                     catch (Exception e)
