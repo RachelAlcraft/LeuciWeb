@@ -60,6 +60,10 @@ namespace LeuciShared
         private string _interp;
         private int _fos;
         private int _fcs;
+        private double _combMean;
+        private double _combSd;
+        private double _combMin;
+        private double _combMax;
 
         public static async Task<DensityMatrix> CreateAsync(string pdbcode,string empath,string diffpath,string interp, int fos, int fcs)
         {            
@@ -75,17 +79,26 @@ namespace LeuciShared
             //await DownloadAsync(edFile);
             _fos = fos;
             _fcs = fcs;
+            
             _densityBinary = new DensityBinary(edFile);
             if (difFile != "")
-                _densityDiffBinary = new DensityBinary(difFile);
+            {
+                // for non cryo-em, the max, min, mean and sd are dependent on the fo and fc values
+                _densityDiffBinary = new DensityBinary(difFile);                
+            }
             else
-                _densityDiffBinary = null;
+            {
+                _densityDiffBinary = null;                
+            }
             _A = _densityBinary.Z3_cap;//Convert.ToInt32(_densityBinary.Words["03_NZ"]);
             _B = _densityBinary.Y2_cap;//Convert.ToInt32(_densityBinary.Words["02_NY"]);
             _C = _densityBinary.X1_cap;//Convert.ToInt32(_densityBinary.Words["01_NX"]);
             Info = _densityBinary.Info;            
             _cublet = new Cubelet(_A, _B, _C);            
-            changeInterp(interp);            
+            changeInterp(interp);
+            
+
+
         }
 
         public void changeInterp(string interp)
@@ -99,7 +112,9 @@ namespace LeuciShared
             m += _fcs;
             d += -2 * _fcs;
 
-            Single[] fofc = new Single[_densityBinary.Blength];            
+            Single[] fofc = new Single[_densityBinary.Blength];
+            _combMax = -1000;
+            _combMin = 1000;
             for (int i = 0; i < _densityBinary.Blength; ++i)
             {
                 if (_densityDiffBinary != null)
@@ -107,13 +122,21 @@ namespace LeuciShared
                     Single valueM = BitConverter.ToSingle(_densityBinary.Bytes, _densityBinary.Bstart + i * 4);
                     Single valueD = BitConverter.ToSingle(_densityDiffBinary.Bytes, _densityBinary.Bstart + i * 4);
                     fofc[i] = m * valueM + d * valueD;
+                    _combMax = Math.Max(fofc[i], _combMax);
+                    _combMin = Math.Min(fofc[i], _combMin);
                 }
                 else
                 {
                     Single valueM = BitConverter.ToSingle(_densityBinary.Bytes, _densityBinary.Bstart + i * 4);
-                    fofc[i] = valueM; // the fo and fc numebr are irrlevant for cryo-em
+                    fofc[i] = valueM; // the fo and fc numebr are irrlevant for cryo-em                    
+                    _combMax = Math.Max(fofc[i], _combMax);
+                    _combMin = Math.Min(fofc[i], _combMin);
                 }
             }
+
+            _combMean = fofc.Average();
+            double sum = fofc.Sum(d => Math.Pow(d - _combMean, 2));
+            _combSd = Math.Sqrt((sum) / (fofc.Count() - 1));
 
             _interp = interp;
             if (_interp == "BSPLINEWHOLE")
@@ -126,7 +149,7 @@ namespace LeuciShared
                 _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64);
             else
                 _interpMap = new Nearest(fofc, 0, _densityBinary.Blength,_C, _B, _A);
-        }        
+        }                
         private void createData()
         {
             if (!_densityBinary.INIT)            
@@ -139,7 +162,7 @@ namespace LeuciShared
             //if (_interp == "BSPLINE")
             //    (_interpMap as BetaSpline).makeSubMatrix(0,0,0,0,0,0);
                         
-        }
+        }        
         public void calculatePlane(string plane, int layer)
         {
             createData();
@@ -185,18 +208,13 @@ namespace LeuciShared
         {
             ////////////// general settings for the view /////////////////////
             // we want general info of the max and min given the sd setting
-            DenMin = Convert.ToDouble(_densityBinary.Words["20_DMIN"]);
-            DenMax = Convert.ToDouble(_densityBinary.Words["21_DMAX"]);
-            //ThreeSd = _densityBinary.Mean + (sdcap * _densityBinary.Sd);
+            DenMin = _combMin;
+            DenMax = _combMax;            
             if (sd)
             {
-                DenMin = (Convert.ToDouble(_densityBinary.Words["20_DMIN"]) - _densityBinary.Mean) / _densityBinary.Sd;
-                DenMax = (Convert.ToDouble(_densityBinary.Words["21_DMAX"]) - _densityBinary.Mean) / _densityBinary.Sd;
-                //ThreeSd = sdcap;
-                //ThreeSdMin = sdfloor;
-            }
-            //ThreeSd = Math.Round(ThreeSd, 2);
-            //ThreeSdMin = Math.Round(ThreeSdMin, 2);
+                DenMin = (_combMin - _combMean) / _combSd;
+                DenMax = (_combMax - _combMean) / _combSd;                
+            }            
             ////////////////////////////////////////////////////////////////////
 
             // we want to first build a smaller cube around the centre
@@ -377,7 +395,7 @@ namespace LeuciShared
                         double density = _interpMap.getValue(crs.A, crs.B, crs.C);
                         if (sd)//convert to standard deviations
                         {
-                            density = (density - _densityBinary.Mean) / _densityBinary.Sd;
+                            density = (density - _combMean) / _combSd;
                         }
                         SliceDensity[m][n] = density;                        
                         

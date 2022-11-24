@@ -18,6 +18,7 @@
 <!-- Once they are used elsewhere they are removed - there MUST BE ONLY ONE FIELD for each of these in this form -->
 <div style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none">
 <!--<div>-->
+    tabview<input id="tabview"  value=@ViewBag.TabView  name="tabview"/>
     <input id="t1"  value="0"  name="t1"/>
     <input id="t2"  value="0"  name="t2"/>
     <input id="t3"  value="0"  name="t3"/>
@@ -52,15 +53,17 @@
     hover_min=@ViewBag.HoverMin<!--<input id="hover_min" value=@ViewBag.HoverMin    name="hover_min"/>-->
     hover_max=@ViewBag.HoverMax<!--<input id="hover_min" value=@ViewBag.HoverMax    name="hover_max"/>-->
     nav_distance=@ViewBag.NavDistance<!--<input id="hover_min" value=@ViewBag.NavDistance    name="nav_distance"/>-->
-    refresh_mode=<input id="refresh_mode" value=@ViewBag.RefreshMode    name="refresh_mode"/>
+    atom_offset=<input id="atom_offset" value=@ViewBag.AtomOffset name="atom_offset"/>
+    refresh_mode=<input id="refresh_mode" value=@ViewBag.RefreshMode name="refresh_mode"/>
 </div>
 
 <div class="tab">
 <span>
     <input type="submit" value="Atoms" id="Atoms" onclick="ChangeTab('t1')" style="border:none;"/>
-    <input type="submit" value="Settings" id="Settings" onclick="ChangeTab('t2')" style="border:none;"/>
     <input type="submit" value="Neighbours" id="Neighbours" onclick="ChangeTab('t3')" style="border:none;" />
+    <input type="submit" value="Settings" id="Settings" onclick="ChangeTab('t2')" style="border:none;"/>    
     <input type="submit" value="Advanced" id="Advanced" onclick="ChangeTab('t4')" style="border:none;" />    
+   
 </span>
 </div>
 <!--##################################### TAB DISPLAY SECTION - ATOMS ############################################# -->
@@ -70,36 +73,56 @@
         <table>
         <tr>
             <td style="width:85%;">
-            <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
+                <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
+                <tr>
+                        <th style="width:20%;background:lightblue">
+                            <a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
+                        </th>
+                        <th style="background:lightblue;" colspan="1" align="center">
+                            <table style="width:100%;border:none;margin:unset;padding:unset">
+                                <tr>
+                                    <td style="background:lightblue;"><input type="submit" value="<<"  onclick="ForceRefreshAtoms(-1)" /></td>
+                                    <td style="background:lightblue;"><input type="submit" value="Submit Atoms"  onclick="ForceRefreshAtoms(0)" /></td>
+                                    <td style="background:lightblue;"><input type="submit" value=">>"  onclick="ForceRefreshAtoms(1)" /></td>
+                                </tr>
+                            </table>                                                                                    
+                        </th>
+                        <th style="background:lightblue;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)"  onclick="ForceRefreshCoords()" /></th>                        
+                        <th style="background:lightblue;color:crimson" colspan="1" align="center">distance</th>                
+                    </tr>                        
+                <tr>
+                    <td>central</td>
+                    <td><input style="color:@ViewBag.CColor" type="text" id="ca" name="ca" value=@ViewBag.cAtom></td>
+                    <td><input type="text" id="c_xyz" name="c_xyz" value=@ViewBag.cXYZ></td>
+                    <td><div id="cdistance">@ViewBag.CDistance</div></td>                
+                </tr>
+                <tr>
+                    <td>linear</td>
+                    <td><input style="color:@ViewBag.LColor" type="text" id="la" name="la" value=@ViewBag.lAtom></td>
+                    <td><input type="text" id="l_xyz" name="l_xyz" value=@ViewBag.lXYZ></td>
+                    <td><div id="ldistance">@ViewBag.LDistance</div></td>                
+                </tr>
+                <tr>
+                    <td>planar</td>
+                    <td><input style="color:@ViewBag.PColor" type="text" id="pa" name="pa" value=@ViewBag.pAtom></td>
+                    <td><input type="text" id="p_xyz" name="p_xyz" value=@ViewBag.pXYZ></td>
+                    <td><div id="pdistance">@ViewBag.PDistance</div></td>                
+                </tr>
+
+                
             <tr>
-                <th style="width:20%;">
-                    <a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
-                </th>
-                <th style=";" colspan="1" align="center"><input type="submit" value="Submit Atoms"  onclick="ForceRefreshAtoms()" /></th>
-                <th style=";" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)"  onclick="ForceRefreshCoords()" /></th>                        
-                <th style=";" colspan="1" align="center">distance</th>                
-            </tr>                        
-        <tr>
-            <td>central</td>
-            <td><input style="color:@ViewBag.CColor" type="text" id="ca" name="ca" value=@ViewBag.cAtom></td>
-            <td><input type="text" id="c_xyz" name="c_xyz" value=@ViewBag.cXYZ></td>
-            <td><div id="cdistance">@ViewBag.CDistance</div></td>                
-        </tr>
-        <tr>
-            <td>linear</td>
-            <td><input style="color:@ViewBag.LColor" type="text" id="la" name="la" value=@ViewBag.lAtom></td>
-            <td><input type="text" id="l_xyz" name="l_xyz" value=@ViewBag.lXYZ></td>
-            <td><div id="ldistance">@ViewBag.LDistance</div></td>                
-        </tr>
-        <tr>
-            <td>planar</td>
-            <td><input style="color:@ViewBag.PColor" type="text" id="pa" name="pa" value=@ViewBag.pAtom></td>
-            <td><input type="text" id="p_xyz" name="p_xyz" value=@ViewBag.pXYZ></td>
-            <td><div id="pdistance">@ViewBag.PDistance</div></td>                
-        </tr>
-        </table>                        
-        </td>   
-        <td>
+                <td colspan="4" style="background:lightblue;color:crimson">Density Range (@ViewBag.ValSd)</td>
+            </tr>
+            <tr>                                  
+                <td style="background:LightCyan;"><span>Min=@ViewBag.DenMin</span>: Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span></td>
+                <td style="background:LightCyan;"><input type="range" min=@ViewBag.DenMin max=0 value=@ViewBag.SdFloor step="0.1" style="direction:ltr" id="rangeValueMin"></td>
+                <td style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax"></td>
+                <td style="background:LightCyan;"><span>Max=@ViewBag.DenMax</span>: Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
+            </tr>        
+    
+                </table>                        
+            </td>   
+            <td>
         <!-- https://stackoverflow.com/questions/34639583/how-can-i-create-responsive-joystick-layout-buttons-in-html   -->
         <p style="color:crimson;text-align:center">Navigation</p>
         <div id="joystick" style="width:100%;text-align:center;align-content:center">
@@ -191,7 +214,7 @@
                 <td><input style="width:35px;" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs></td>
             </tr>
         </table>    
-    <table>
+    <!--<table>
         <tr>
             <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Density Range (standard deviations)</td>
             <td>Min=@ViewBag.DenMin</td>
@@ -200,8 +223,8 @@
             <td><input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax"></td>
             <td>Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
             <td>Max=@ViewBag.DenMax</td>
-        </tr>        
-    </table>         
+        </tr>
+            </table>         -->
      <table>
         <tr>
             <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Width(Å)=</td>
@@ -218,12 +241,19 @@
     </table>
     </div>
 </div>
-<!-- ############################# TAB NAVIGATION ########################################## -->
+<!-- ############################# TAB NEIGHBOURS ########################################## -->
 <div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display">
     <h3>Neighbours</h3>
-    <table class="nav-tbl" style="margin-left:auto;margin-right:auto;">        
-    
+    <p>Choose range for nearest atoms: (-1,-1)= none, (0,0)=nearest, otherwise specify a range</p>
+    <table>                     
+    <tr>        
+        <td>Min Nearest</td>
+        <td><input id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
+        <td>Max Nearest</td>
+        <td><input id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
+    </tr>        
     </table>
+    <input type="submit" value="Update" onclick="ForceRefreshCoords()"/>
 </div>
 <!-- ############################# TAB ADVANCED ########################################## -->
 <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display">
@@ -248,21 +278,11 @@
         <th><input type="submit" value="st.devs" id="st.devs" onclick="SubmitValSd('s.d.')" /></th>
         <th><input type="submit" value="electrons" id="electrons" onclick="SubmitValSd('electrons')" /></th>        
     </tr>
-    </table>        
-    <table>
-    <tr>
-        <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Choose range for nearest atoms: (-1,-1)= none, (0,0)=nearest, otherwise specify a range</td>
-        <td>Min Nearest</td>
-        <td><input id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
-        <td>Max Nearest</td>
-        <td><input id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
-    </tr>
-    </table>    
+    </table>            
     <table>
     <tr>
         <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Navigation distance</td>        
-        <td><input id="nav_distance" value=@ViewBag.NavDistance name="nav_distance" /></td>
-        <td>Max Nearest</td>        
+        <td><input id="nav_distance" value=@ViewBag.NavDistance name="nav_distance" /></td>        
     </tr>
     </table>    
     <hr/>
@@ -273,19 +293,17 @@
     <td><input type="radio" id="gon" name="green_dots" value="Y" onclick="myAtomDots()" /></td>
     <td><label for="gon">Y</label></td>
     <td><input type="radio" id="goff" name="green_dots" value="N" onclick="myAtomDots()" /></td>
-    <td><label for="gon">N</label></td>
-    </tr>
-    <tr>    
+    <td><label for="gon">N</label></td>    
     <td>Position dots=</td>
     <td><input type="radio" id="on" name="yell_dots" value="Y" onclick="myPositionDots()" /></td>
     <td><label for="on">Y</label></td>
     <td><input type="radio" id="off" name="yell_dots" value="N" onclick="myPositionDots()" /></td>
     <td><label for="on">N</label></td>
     </tr>
-            <hr />
+    <hr />
     </table>      
     @Html.ActionLink(
-    linkText: "Get link",
+    linkText: "Get full link",
     actionName: "Slice",
     controllerName: "Matrix",
     routeValues: new {
@@ -313,6 +331,7 @@
     gdots = @ViewBag.GreenDots,
     sdcap = @ViewBag.SdCap,
     sdfloor = @ViewBag.SdFloor,
+    tabview = "A",
     },
     htmlAttributes: null
     )
@@ -320,13 +339,13 @@
     <input type="submit" value="Update" />
 </div>
 <!-- ########################################### The actual plots################################### -->
-<hr />
+   <hr/>
 <div class="tab">
-    <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
+    <table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;">
         <tr>
-            <th style="width:33%">Density - @ViewBag.DenPlot</th>
-            <th style="width:33%">Radient - @ViewBag.RadPlot</th>
-            <th style="width:33%">Laplacian - @ViewBag.LapPlot</th>
+            <th style="width:33%;min-width:500px">Density - @ViewBag.DenPlot</th>
+            <th style="width:33%;min-width:500px">Radient - @ViewBag.RadPlot</th>
+            <th style="width:33%;min-width:500px">Laplacian - @ViewBag.LapPlot</th>
         </tr>            
         <tr>            
             <td><table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border:none;"><tr>
@@ -442,6 +461,10 @@
 
         var minc = Math.round(numsdfloor * 100) / 100
         var maxc = Math.round(numsd*100)/100
+        if (maxc < 0.00001){
+            maxc = 0.001;
+        }
+
         var size = (maxc - minc) / 20
         var zero_frac = 0.001            
         zero_frac = (0 - minc) / (maxc - minc)
@@ -611,7 +634,7 @@
                 x: jx,
                 y: jy,        
                 text:anno,                                
-                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
+                hovertemplate:'Val:%{z:.4f}<br>%{text}',
                 zmin: minc,
                 zmax:maxc,
                 type: denplot,
@@ -632,7 +655,7 @@
                 x: jx,
                 y: jy,
                 text:anno,                                
-                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',                
+                hovertemplate:'Val:%{z:.4f}<br>%{text}',                
                 hoverlabel:{bgcolor:'rgba(1,1,1,0.05)',align:'left'},
                 type: denplot,
                 colorscale: cs,
@@ -660,7 +683,7 @@
             x: jx,
             y: jy,
             text:anno,                                
-            hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
+            hovertemplate:'Val:%{z:.4f}<br>%{text}',
             type: radplot,
             colorscale: cs_rad,
             reversescale: false,
@@ -680,7 +703,7 @@
                 x: jx,
                 y: jy,
                 text:anno,                                
-                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
+                hovertemplate:'Val:%{z:.4f}<br>%{text}',
                 zmin: minl,
                 zmax: maxl,
                 type: lapplot,
@@ -701,7 +724,7 @@
             x: jx,
             y: jy,    
             text:anno,                                
-            hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
+            hovertemplate:'Val:%{z:.4f}<br>%{text}',
             type: lapplot,
             colorscale: cs_lap,
             reversescale: true,
@@ -874,7 +897,8 @@
     }
 </script>
 <script>
-    function ForceRefreshAtoms() {
+    function ForceRefreshAtoms(offset) {
+        document.getElementById("atom_offset").value = offset;
         document.getElementById("c_xyz").value = "";
         document.getElementById("l_xyz").value = "";
         document.getElementById("p_xyz").value = "";
@@ -903,15 +927,19 @@
     function ChangeTab(tab) {
         if (tab == 't1'){
             document.getElementById("t1").value = 1;
+            document.getElementById("tabview").value = "A";
         }
         else if (tab == 't2'){
             document.getElementById("t2").value = 1;
+            document.getElementById("tabview").value = "S";
         }
         else if (tab == 't3'){
             document.getElementById("t3").value = 1;
+            document.getElementById("tabview").value = "N";            
         }
         else if (tab == 't4'){
             document.getElementById("t4").value = 1;
+            document.getElementById("tabview").value = "X";
         }                
     }
 </script>

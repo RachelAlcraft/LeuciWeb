@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
@@ -59,7 +60,7 @@ namespace LeuciShared
                 return "Error";
             }
         }
-        public string existsCcp4Matrix()
+        public async Task<string> existsCcp4Matrix()
         {
             string exists_matrix = "N";
             if (System.IO.File.Exists(EmFilePath))
@@ -72,7 +73,7 @@ namespace LeuciShared
             }
 
             string downloading = "N";
-            if (System.IO.File.Exists(EmFilePath + ".downloading"))
+            if (System.IO.File.Exists(EmFilePath + ".downloading") || System.IO.File.Exists(EmFilePathGz + ".downloading"))
                 downloading = "Y";
 
             if (System.IO.File.Exists(DiffFilePath + ".downloading"))
@@ -87,8 +88,15 @@ namespace LeuciShared
             }
             else
             {
-                _ = downloadCcp4File();
-                return "starting download";
+                if (await existsCcp4File())
+                {
+                    _ = downloadCcp4File();
+                    return "starting download";
+                }
+                else
+                {
+                    return "ccp4 matrix does not exist";
+                }                
             }
         }
         public async Task<bool> downloadPdbFile()
@@ -136,6 +144,19 @@ namespace LeuciShared
             PA = new PdbAtoms(PdbLines);
         }
 
+        public async Task<bool> existsCcp4File()
+        {            
+            if (!System.IO.File.Exists(EmFilePath))
+            {
+                bool ok = await existsFileOnline(EmFilePathGz, EmDownloadLink);
+                return ok;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         public async Task<bool> downloadCcp4File()
         {            
             bool ok = false;
@@ -159,9 +180,15 @@ namespace LeuciShared
             {
                 ok = await downloadAsync(EmFilePath, EmDownloadLink);
                 if (ok)
+                {
                     ok = await downloadAsync(DiffFilePath, DiffDownloadLink);
-                if (ok)
-                    DensityType = "x-ray";
+                    if (ok)
+                        DensityType = "x-ray";
+                }
+                else
+                {
+                    return false;
+                }
             }
                                     
             return true;
@@ -170,6 +197,38 @@ namespace LeuciShared
         {
             if (DensityType == "cryo-em")
                 DiffFilePath = ""; //there is no difference density for cryo-em
+        }
+
+        public async Task<bool> existsFileOnline(string filepath, string url)
+        {
+            bool success = false;
+            if (!System.IO.File.Exists(filepath))
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    try
+                    {
+                        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
+                        if (response != null)
+                        {
+                            if (response.StatusCode != HttpStatusCode.OK)
+                                return false;
+                            else
+                                return true;
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        success = false;
+                    }
+                }
+            }
+            else
+            {
+                success = true;
+            }
+            return success;
         }
 
         public async Task<bool> downloadAsync(string filepath, string url)
@@ -184,6 +243,10 @@ namespace LeuciShared
                         var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));                        
                         if (response != null)
                         {
+                            if (response.StatusCode != HttpStatusCode.OK)
+                            {
+                                return false;
+                            }
                             string ctn_len = Convert.ToString(response.Content.Headers.ContentLength);
 
                             if (!System.IO.File.Exists(filepath + ".downloading"))
