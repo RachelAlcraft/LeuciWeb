@@ -91,11 +91,11 @@ namespace Leucippus.Models
                 {
                     //do nothing
                 }
-                else if (value == "" && DensityType == "cryo-em")
-                {
-                    _interp = "LINEAR";
-                    incRefresh();
-                }
+                //else if (value == "" && DensityType == "cryo-em")
+                //{
+                //    _interp = "LINEAR";
+                //    incRefresh();
+                //}
                 else if (value != "")
                 {
                     incRefresh();

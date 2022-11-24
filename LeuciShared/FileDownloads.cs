@@ -123,7 +123,8 @@ namespace LeuciShared
                 EmNum = ems[1];                                
                 EmFilePath = "wwwroot/App_Data/emd_" + EmNum + ".ccp4";
                 EmFilePathGz = "wwwroot/App_Data/emd_" + EmNum + ".ccp4.gz";
-                EmDownloadLink = "https://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-" + EmNum + "/map/emd_" + EmNum + ".map.gz";                                                            
+                EmDownloadLink = "https://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-" + EmNum + "/map/emd_" + EmNum + ".map.gz";
+                DiffFilePath = ""; //there is no difference density for cryo-em
             }
             else
             {
