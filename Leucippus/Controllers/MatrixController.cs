@@ -115,7 +115,7 @@ namespace Leucippus.Controllers
             int Fos=2, int Fcs=-1,string ydots="N", string gdots="N",
             int t1=0,int t2=0,int t3=0,int t4=0,
             string nav = "",double nav_distance=0.1,
-            double hover_min=0,double hover_max=0)
+            double hover_min=-1,double hover_max=-1)
         {
             bool view_only = false;
             bool do_update = false;
@@ -189,24 +189,48 @@ namespace Leucippus.Controllers
                 double hov_min = ViewBagMatrix.Instance.HoverMin;
                 double hov_max = ViewBagMatrix.Instance.HoverMax;
 
+                if (interp == "" && ViewBagMatrix.Instance.DensityType == "cryo-em")
+                {
+                    nav_space = ViewBagMatrix.Instance.Width / 20; //we reduce for cryo-em defaults like nav mode
+                    hov_min = -1;
+                    hov_max = -1;
+                    ViewBagMatrix.Instance.Interp = "BSPLINE3";
+                }
+
                 if (nav != "" && nav != null)
                 {
-                    dm.Space = new SpaceTransformation(ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
-                    ViewBagMatrix.Instance.Central = dm.Space.extraNav(ViewBagMatrix.Instance.Central,nav,nav_distance);
-                    ViewBagMatrix.Instance.Linear = dm.Space.extraNav(ViewBagMatrix.Instance.Linear, nav, nav_distance);
-                    ViewBagMatrix.Instance.Planar = dm.Space.extraNav(ViewBagMatrix.Instance.Planar, nav, nav_distance);
+                    if (nav == "plus")
+                    {
+                        double ratio = ViewBagMatrix.Instance.Width / ViewBagMatrix.Instance.Gap;
+                        ViewBagMatrix.Instance.Width += 0.1;
+                        ViewBagMatrix.Instance.Gap = ViewBagMatrix.Instance.Width / ratio;
+                    }
+                    else if (nav == "minus")
+                    {
+                        double ratio = ViewBagMatrix.Instance.Width / ViewBagMatrix.Instance.Gap;
+                        ViewBagMatrix.Instance.Width -= 0.1;
+                        ViewBagMatrix.Instance.Gap = ViewBagMatrix.Instance.Width / ratio;
+                    }
+                    else
+                    {
+                        dm.Space = new SpaceTransformation(ViewBagMatrix.Instance.Central, ViewBagMatrix.Instance.Linear, ViewBagMatrix.Instance.Planar);
+                        ViewBagMatrix.Instance.Central = dm.Space.extraNav(ViewBagMatrix.Instance.Central, nav, nav_distance);
+                        ViewBagMatrix.Instance.Linear = dm.Space.extraNav(ViewBagMatrix.Instance.Linear, nav, nav_distance);
+                        ViewBagMatrix.Instance.Planar = dm.Space.extraNav(ViewBagMatrix.Instance.Planar, nav, nav_distance);
 
-                    string cXYZ2 = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.A, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.B, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.C, 4)) + ")";
-                    string lXYZ2 = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.A, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.B, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.C, 4)) + ")";
-                    string pXYZ2 = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.A, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.B, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.C, 4)) + ")";
+                        string cXYZ2 = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.A, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.B, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Central.C, 4)) + ")";
+                        string lXYZ2 = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.A, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.B, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Linear.C, 4)) + ")";
+                        string pXYZ2 = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.A, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.B, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.Planar.C, 4)) + ")";
 
-                    ViewBagMatrix.Instance.SetCentral(cXYZ2, ca, DensitySingleton.Instance.FD.PA, c_xyz + ca == "");
-                    ViewBagMatrix.Instance.SetLinear(lXYZ2, la, DensitySingleton.Instance.FD.PA, l_xyz + la == "");
-                    ViewBagMatrix.Instance.SetPlanar(pXYZ2, pa, DensitySingleton.Instance.FD.PA, p_xyz + pa == "");
+                        ViewBagMatrix.Instance.SetCentral(cXYZ2, ca, DensitySingleton.Instance.FD.PA, c_xyz + ca == "");
+                        ViewBagMatrix.Instance.SetLinear(lXYZ2, la, DensitySingleton.Instance.FD.PA, l_xyz + la == "");
+                        ViewBagMatrix.Instance.SetPlanar(pXYZ2, pa, DensitySingleton.Instance.FD.PA, p_xyz + pa == "");
+                    }
 
                     nav_space = ViewBagMatrix.Instance.Width / 20; //we dramatically reduce the pixels for navigation mode.
                     hov_min = -1;
                     hov_max = -1;
+                    
                 }
 
                 bool recalc = ViewBagMatrix.Instance.Refresh;
