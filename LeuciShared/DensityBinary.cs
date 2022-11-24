@@ -42,6 +42,8 @@ namespace LeuciShared
 
         public double Sd = 0;
         public double Mean = 0;
+        public double DMin = 0;
+        public double DMax = 0;
 
         const int TEMP_CAP = 1000;
         public bool INIT = false;
@@ -248,6 +250,8 @@ namespace LeuciShared
         {            
             Mean = Convert.ToDouble(Words["22_DMEAN"]);
             Sd = Convert.ToDouble(Words["RMS"]);
+            DMin = Convert.ToDouble(Words["20_DMIN"]);
+            DMax = Convert.ToDouble(Words["21_DMAX"]);            
             /*
             double sum = 0;
             int count = 0;
