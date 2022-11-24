@@ -517,7 +517,7 @@ namespace Leucippus.Models
                 _gap = Math.Round(_gap, 4);
             }
         }
-        private double _width = 5.0;
+        private double _width = 6.0;
         public double Width
         {
             get { return _width; }
@@ -541,7 +541,7 @@ namespace Leucippus.Models
                 }
                 else if (value == -1) // this means go back to default
                 {
-                    _width = 5.0;
+                    _width = 6.0;
                 }
                 else if (Math.Round(value,4) != Math.Round(_width,4)) 
                 {
@@ -565,7 +565,7 @@ namespace Leucippus.Models
         public VectorThree CAtom = new VectorThree(-1, -1, -1);
         public string CentralAtom = "A:1@C";
         public double CDistance = 0;
-        public void SetCentral(string cxyz, string ca,PdbAtoms pdba,bool refresh=true)
+        public void SetCentral(string cxyz, string ca,PdbAtoms pdba,int atom_offset,bool refresh=true)
         {
             if (cxyz == null)
                 cxyz = "";
@@ -591,9 +591,9 @@ namespace Leucippus.Models
             // if we pass only ca in then refresh
             if (ca != "")
             {
-                if (ca!= CentralAtom || cxyz == "")
+                if (ca!= CentralAtom || cxyz == "" || atom_offset != 0)
                 {
-                    CentralAtom = ca;
+                    CentralAtom = pdba.getIncAtom(ca,atom_offset);
                     Central = pdba.getCoords(CentralAtom);
                     CAtom = new VectorThree(Central.A, Central.B, Central.C);
                     CDistance = 0;
@@ -626,7 +626,7 @@ namespace Leucippus.Models
         public VectorThree LAtom = new VectorThree(-1, -1, -1);
         public string LinearAtom = "A:1@O";
         public double LDistance = 0;
-        public void SetLinear(string lxyz, string la, PdbAtoms pdba, bool refresh = true)
+        public void SetLinear(string lxyz, string la, PdbAtoms pdba, int atom_offset, bool refresh = true)
         {
             if (lxyz == null)
                 lxyz = "";
@@ -649,9 +649,9 @@ namespace Leucippus.Models
             }
             if (la != "")
             {
-                if (la != LinearAtom || lxyz == "")
+                if (la != LinearAtom || lxyz == "" || atom_offset!=0)
                 {
-                    LinearAtom = la;
+                    LinearAtom = pdba.getIncAtom(la, atom_offset);                    
                     Linear = pdba.getCoords(LinearAtom);
                     LAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
                     LDistance = 0;
@@ -682,7 +682,7 @@ namespace Leucippus.Models
         private string _pxyz = "(-1,-1,-1)";
         public string PlanarAtom = "A:2@N";
         public double PDistance = 0;
-        public void SetPlanar(string pxyz, string pa, PdbAtoms pdba,bool refresh=true)
+        public void SetPlanar(string pxyz, string pa, PdbAtoms pdba, int atom_offset, bool refresh=true)
         {
             if (pxyz == null)
                 pxyz = "";
@@ -690,7 +690,7 @@ namespace Leucippus.Models
                 pa = "";
             if (refresh)
             {
-                PlanarAtom = pdba.getFirstThreeCoords()[2];
+                PlanarAtom = pdba.getFirstThreeCoords()[2];                
                 Planar = pdba.getCoords(PlanarAtom);
                 PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
                 PDistance = 0;
@@ -705,9 +705,9 @@ namespace Leucippus.Models
             }
             if (pa != "")
             {
-                if (pa != PlanarAtom || pxyz == "")
+                if (pa != PlanarAtom || pxyz == "" || atom_offset != 0)
                 {
-                    PlanarAtom = pa;
+                    PlanarAtom = pdba.getIncAtom(pa, atom_offset);                    
                     Planar = pdba.getCoords(PlanarAtom);
                     PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
                     PDistance = 0;

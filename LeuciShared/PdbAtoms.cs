@@ -52,8 +52,23 @@ namespace LeuciShared
         }
         // TODO add constructor for mmcif file
 
-        public VectorThree getCoords(string atom)
+        public string getIncAtom(string atom, int offset)
         {
+            // atom is in the format A:710@C.A
+            string[] beg = atom.Split(":");
+            string[] pst = beg[1].Split("@");
+            int atm = Convert.ToInt32(pst[0]);
+            atm += offset;
+            string newatom = beg[0] + ":" + Convert.ToString(atm) + "@" + pst[1];
+            if (_atoms.ContainsKey(newatom))
+                return newatom;
+            if (_atoms.ContainsKey(newatom + ".A"))
+                return newatom;
+
+            return atom;
+        }
+        public VectorThree getCoords(string atom)
+        {                        
             if (_atoms.ContainsKey(atom))
                 return _atoms[atom];
             if (_atoms.ContainsKey(atom + ".A"))

@@ -53,7 +53,8 @@
     hover_min=@ViewBag.HoverMin<!--<input id="hover_min" value=@ViewBag.HoverMin    name="hover_min"/>-->
     hover_max=@ViewBag.HoverMax<!--<input id="hover_min" value=@ViewBag.HoverMax    name="hover_max"/>-->
     nav_distance=@ViewBag.NavDistance<!--<input id="hover_min" value=@ViewBag.NavDistance    name="nav_distance"/>-->
-    refresh_mode=<input id="refresh_mode" value=@ViewBag.RefreshMode    name="refresh_mode"/>
+    atom_offset=<input id="atom_offset" value=@ViewBag.AtomOffset name="atom_offset"/>
+    refresh_mode=<input id="refresh_mode" value=@ViewBag.RefreshMode name="refresh_mode"/>
 </div>
 
 <div class="tab">
@@ -74,20 +75,20 @@
             <td style="width:85%;">
                 <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
                 <tr>
-                        <th style="width:20%;background:silver">
+                        <th style="width:20%;background:lightblue">
                             <a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
                         </th>
-                        <th style="background:silver;" colspan="1" align="center">
+                        <th style="background:lightblue;" colspan="1" align="center">
                             <table style="width:100%;border:none;margin:unset;padding:unset">
                                 <tr>
-                                    <td style="background:silver;"><input type="submit" value="<<"  onclick="ForceRefreshAtoms()" /></td>
-                                    <td style="background:silver;"><input type="submit" value="Submit Atoms"  onclick="ForceRefreshAtoms()" /></td>
-                                    <td style="background:silver;"><input type="submit" value=">>"  onclick="ForceRefreshAtoms()" /></td>
+                                    <td style="background:lightblue;"><input type="submit" value="<<"  onclick="ForceRefreshAtoms(-1)" /></td>
+                                    <td style="background:lightblue;"><input type="submit" value="Submit Atoms"  onclick="ForceRefreshAtoms(0)" /></td>
+                                    <td style="background:lightblue;"><input type="submit" value=">>"  onclick="ForceRefreshAtoms(1)" /></td>
                                 </tr>
                             </table>                                                                                    
                         </th>
-                        <th style="background:silver;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)"  onclick="ForceRefreshCoords()" /></th>                        
-                        <th style="background:silver;color:crimson" colspan="1" align="center">distance</th>                
+                        <th style="background:lightblue;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)"  onclick="ForceRefreshCoords()" /></th>                        
+                        <th style="background:lightblue;color:crimson" colspan="1" align="center">distance</th>                
                     </tr>                        
                 <tr>
                     <td>central</td>
@@ -110,7 +111,7 @@
 
                 
             <tr>
-                <td colspan="4" style="background:silver;color:crimson">Density Range (@ViewBag.ValSd)</td>
+                <td colspan="4" style="background:lightblue;color:crimson">Density Range (@ViewBag.ValSd)</td>
             </tr>
             <tr>                                  
                 <td style="background:LightCyan;"><span>Min=@ViewBag.DenMin</span>: Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span></td>
@@ -281,8 +282,7 @@
     <table>
     <tr>
         <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Navigation distance</td>        
-        <td><input id="nav_distance" value=@ViewBag.NavDistance name="nav_distance" /></td>
-        <td>Max Nearest</td>        
+        <td><input id="nav_distance" value=@ViewBag.NavDistance name="nav_distance" /></td>        
     </tr>
     </table>    
     <hr/>
@@ -293,19 +293,17 @@
     <td><input type="radio" id="gon" name="green_dots" value="Y" onclick="myAtomDots()" /></td>
     <td><label for="gon">Y</label></td>
     <td><input type="radio" id="goff" name="green_dots" value="N" onclick="myAtomDots()" /></td>
-    <td><label for="gon">N</label></td>
-    </tr>
-    <tr>    
+    <td><label for="gon">N</label></td>    
     <td>Position dots=</td>
     <td><input type="radio" id="on" name="yell_dots" value="Y" onclick="myPositionDots()" /></td>
     <td><label for="on">Y</label></td>
     <td><input type="radio" id="off" name="yell_dots" value="N" onclick="myPositionDots()" /></td>
     <td><label for="on">N</label></td>
     </tr>
-            <hr />
+    <hr />
     </table>      
     @Html.ActionLink(
-    linkText: "Get link",
+    linkText: "Get full link",
     actionName: "Slice",
     controllerName: "Matrix",
     routeValues: new {
@@ -333,7 +331,7 @@
     gdots = @ViewBag.GreenDots,
     sdcap = @ViewBag.SdCap,
     sdfloor = @ViewBag.SdFloor,
-    tabview = @ViewBag.TabView,
+    tabview = "A",
     },
     htmlAttributes: null
     )
@@ -463,6 +461,10 @@
 
         var minc = Math.round(numsdfloor * 100) / 100
         var maxc = Math.round(numsd*100)/100
+        if (maxc < 0.00001){
+            maxc = 0.001;
+        }
+
         var size = (maxc - minc) / 20
         var zero_frac = 0.001            
         zero_frac = (0 - minc) / (maxc - minc)
@@ -632,7 +634,7 @@
                 x: jx,
                 y: jy,        
                 text:anno,                                
-                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
+                hovertemplate:'Val:%{z:.4f}<br>%{text}',
                 zmin: minc,
                 zmax:maxc,
                 type: denplot,
@@ -653,7 +655,7 @@
                 x: jx,
                 y: jy,
                 text:anno,                                
-                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',                
+                hovertemplate:'Val:%{z:.4f}<br>%{text}',                
                 hoverlabel:{bgcolor:'rgba(1,1,1,0.05)',align:'left'},
                 type: denplot,
                 colorscale: cs,
@@ -681,7 +683,7 @@
             x: jx,
             y: jy,
             text:anno,                                
-            hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
+            hovertemplate:'Val:%{z:.4f}<br>%{text}',
             type: radplot,
             colorscale: cs_rad,
             reversescale: false,
@@ -701,7 +703,7 @@
                 x: jx,
                 y: jy,
                 text:anno,                                
-                hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
+                hovertemplate:'Val:%{z:.4f}<br>%{text}',
                 zmin: minl,
                 zmax: maxl,
                 type: lapplot,
@@ -722,7 +724,7 @@
             x: jx,
             y: jy,    
             text:anno,                                
-            hovertemplate:'Val:%{z:.4f}<br>Atoms:%{text}',
+            hovertemplate:'Val:%{z:.4f}<br>%{text}',
             type: lapplot,
             colorscale: cs_lap,
             reversescale: true,
@@ -895,7 +897,8 @@
     }
 </script>
 <script>
-    function ForceRefreshAtoms() {
+    function ForceRefreshAtoms(offset) {
+        document.getElementById("atom_offset").value = offset;
         document.getElementById("c_xyz").value = "";
         document.getElementById("l_xyz").value = "";
         document.getElementById("p_xyz").value = "";
