@@ -36,6 +36,17 @@ namespace LeuciShared
         private int _fos = 2;
         private int _fcs = -1;
 
+        public bool needMatrix(string pdbcode)
+        {
+            bool calc = false;
+            NewMatrix = false;
+            if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
+            {
+                calc = true;
+            }
+            return calc;                                    
+        }
+    
         public async Task<DensityMatrix> getMatrix(string pdbcode, string interp,int fos,int fcs)
         {
             bool calc = false;

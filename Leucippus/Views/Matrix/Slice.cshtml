@@ -59,10 +59,11 @@
 
 <div class="tab">
 <span>
-    <input type="submit" value="Atoms" id="Atoms" onclick="ChangeTab('t1')" style="border:none;"/>
-    <input type="submit" value="Neighbours" id="Neighbours" onclick="ChangeTab('t3')" style="border:none;" />
-    <input type="submit" value="Settings" id="Settings" onclick="ChangeTab('t2')" style="border:none;"/>    
-    <input type="submit" value="Advanced" id="Advanced" onclick="ChangeTab('t4')" style="border:none;" />    
+    <span style="color:firebrick;width=50px;background-color:black">@ViewBag.TabName</span>
+    <input type="submit" value="Atoms" id="tabAtoms" onclick="ChangeTab('t1')" style="border:none;"/>
+    <input type="submit" value="Neighbours" id="tabNeighbours" onclick="ChangeTab('t3')" style="border:none;" />
+    <input type="submit" value="Settings" id="tabSettings" onclick="ChangeTab('t2')" style="border:none;"/>    
+    <input type="submit" value="Advanced" id="tabAdvanced" onclick="ChangeTab('t4')" style="border:none;" />    
    
 </span>
 </div>
@@ -75,20 +76,20 @@
             <td style="width:85%;">
                 <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
                 <tr>
-                        <th style="width:20%;background:lightblue">
+                        <th style="width:20%;background:Gainsboro">
                             <a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
                         </th>
-                        <th style="background:lightblue;" colspan="1" align="center">
+                        <th style="background:Gainsboro;" colspan="1" align="center">
                             <table style="width:100%;border:none;margin:unset;padding:unset">
                                 <tr>
-                                    <td style="background:lightblue;"><input type="submit" value="<<"  onclick="ForceRefreshAtoms(-1)" /></td>
-                                    <td style="background:lightblue;"><input type="submit" value="Submit Atoms"  onclick="ForceRefreshAtoms(0)" /></td>
-                                    <td style="background:lightblue;"><input type="submit" value=">>"  onclick="ForceRefreshAtoms(1)" /></td>
+                                    <td style="background:Gainsboro;"><input type="submit" value="<<"  onclick="ForceRefreshAtoms(-1)" /></td>
+                                    <td style="background:Gainsboro;"><input type="submit" value="Submit Atoms"  onclick="ForceRefreshAtoms(0)" /></td>
+                                    <td style="background:Gainsboro;"><input type="submit" value=">>"  onclick="ForceRefreshAtoms(1)" /></td>
                                 </tr>
                             </table>                                                                                    
                         </th>
-                        <th style="background:lightblue;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)"  onclick="ForceRefreshCoords()" /></th>                        
-                        <th style="background:lightblue;color:crimson" colspan="1" align="center">distance</th>                
+                        <th style="background:Gainsboro;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)"  onclick="ForceRefreshCoords()" /></th>                        
+                        <th style="background:Gainsboro;color:navy" colspan="1" align="center">distance</th>                
                     </tr>                        
                 <tr>
                     <td>central</td>
@@ -111,7 +112,7 @@
 
                 
             <tr>
-                <td colspan="4" style="background:lightblue;color:crimson">Density Range (@ViewBag.ValSd)</td>
+                <td colspan="4" style="background:Gainsboro;color:navy">Density Range (@ViewBag.ValSd)</td>
             </tr>
             <tr>                                  
                 <td style="background:LightCyan;"><span>Min=@ViewBag.DenMin</span>: Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span></td>
@@ -325,6 +326,7 @@
     pa = @ViewBag.pAtom,
     fos = @ViewBag.Fos,
     fcs = @ViewBag.Fcs,
+    interp = @ViewBag.Interp,
     width = @ViewBag.Width,
     gap = @ViewBag.Gap,
     ydots = @ViewBag.YellowDots,
@@ -925,22 +927,32 @@
 </script>
 <script>
     function ChangeTab(tab) {
+        
+        document.getElementById("tabAtoms").style.color = "Black";
+        document.getElementById("tabNeighbours").style.color = "Black";
+        document.getElementById("tabSettings").style.color = "Black";
+        document.getElementById("tabAdvanced").style.color = "Black";
+        
         if (tab == 't1'){
             document.getElementById("t1").value = 1;
             document.getElementById("tabview").value = "A";
+            document.getElementById("tabAtoms").style.color = "crimson";
         }
         else if (tab == 't2'){
             document.getElementById("t2").value = 1;
             document.getElementById("tabview").value = "S";
+            document.getElementById("tabSettings").style.color = "crimson";
         }
         else if (tab == 't3'){
             document.getElementById("t3").value = 1;
             document.getElementById("tabview").value = "N";            
+            document.getElementById("tabNeighbours").style.color = "crimson";
         }
         else if (tab == 't4'){
             document.getElementById("t4").value = 1;
             document.getElementById("tabview").value = "X";
-        }                
+            document.getElementById("tabAdvanced").style.color = "crimson";
+        }        
     }
 </script>
 <script>
