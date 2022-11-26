@@ -125,62 +125,77 @@ namespace Leucippus.Controllers
             {
                 view_change = true;
             }
+
+            // visual elements need to be set
+            ViewBagMatrix.Instance.T1Display = "none";
+            ViewBagMatrix.Instance.T2Display = "none";
+            ViewBagMatrix.Instance.T3Display = "none";
+            ViewBagMatrix.Instance.T4Display = "none";
             ViewBag.TabName = "Atoms";
+            ViewBag.TabAClick = "inherit";
+            ViewBag.TabSClick = "inherit";
+            ViewBag.TabNClick = "inherit";
+            ViewBag.TabXClick = "inherit";
+            ViewBag.TabAName = "none";
+            ViewBag.TabSName = "none";
+            ViewBag.TabNName = "none";
+            ViewBag.TabXName = "none";
 
             if (view_change)//then this is a view only change
-            {
-
-                ViewBagMatrix.Instance.T1Display = "none";
-                ViewBagMatrix.Instance.T2Display = "none";
-                ViewBagMatrix.Instance.T3Display = "none";
-                ViewBagMatrix.Instance.T4Display = "none";
+            {                                
                 if (t1 == 1) //atoms
-                {
-                    ViewBagMatrix.Instance.T1Display = "block";
+                {                    
                     ViewBag.TabView = "A";
                     ViewBag.TabName = "Atoms";
-                    refresh_mode = "F";
+                    refresh_mode = "F";                    
                 }
                 if (t2 == 1) //settings
-                {
-                    ViewBagMatrix.Instance.T2Display = "block";
+                {                    
                     ViewBag.TabView = "S";
                     ViewBag.TabName = "Settings";
                 }
                 if (t3 == 1) //neighbours
-                {
-                    ViewBagMatrix.Instance.T3Display = "block";
+                {                 
                     ViewBag.TabView = "N";
                     refresh_mode = "F";
                     ViewBag.TabName = "Neighbours";
                 }
                 if (t4 == 1)//advanced
-                {
-                    ViewBagMatrix.Instance.T4Display = "block";
+                {                    
                     ViewBag.TabView = "X";
                     ViewBag.TabName = "Advanced";
                 }
 
             }
-            else
+            
+            //we should make sure we have the correct block selected                            
+            ViewBag.TabView = tabview;
+            if (tabview == "A")
             {
-                //we should make sure we have the correct block selected
-                ViewBagMatrix.Instance.T1Display = "none";
-                ViewBagMatrix.Instance.T2Display = "none";
-                ViewBagMatrix.Instance.T3Display = "none";
-                ViewBagMatrix.Instance.T4Display = "none";
-                ViewBag.TabView = tabview;
-                if (tabview == "A")
-                    ViewBagMatrix.Instance.T1Display = "block";
-                else if (tabview == "N")
-                    ViewBagMatrix.Instance.T3Display = "block";
-                else if (tabview == "S")
-                    ViewBagMatrix.Instance.T2Display = "block";
-                else if (tabview == "X")
-                    ViewBagMatrix.Instance.T4Display = "block";
-
+                ViewBagMatrix.Instance.T1Display = "block";
+                ViewBag.TabAClick = "none";
+                ViewBag.TabAName = "contents";
+            }
+            else if (tabview == "N")
+            {
+                ViewBagMatrix.Instance.T3Display = "block";
+                ViewBag.TabNClick = "none";
+                ViewBag.TabNName = "contents";
+            }
+            else if (tabview == "S")
+            {
+                ViewBagMatrix.Instance.T2Display = "block";
+                ViewBag.TabSClick = "none";
+                ViewBag.TabSName = "contents";
+            }
+            else if (tabview == "X")
+            {
+                ViewBagMatrix.Instance.T4Display = "block";
+                ViewBag.TabXClick = "none";
+                ViewBag.TabXName = "contents";
             }
 
+            
             
             try
             {
@@ -448,18 +463,17 @@ namespace Leucippus.Controllers
                 ViewBag.SmallPdbs = dfs.SmallPdbs;
                 ViewBag.HighPdbs = dfs.HighPdbs;
                 ViewBag.SmallEmPdbs = dfs.SmallEmPdbs;
-                ViewBag.HighEmPdbs = dfs.HighEmPdbs;
+                ViewBag.HighEmPdbs = dfs.HighEmPdbs;                
+                //Load the density matrix
+
+                //if (DensitySingleton.Instance.needMatrix(ViewBagMatrix.Instance.PdbCode))
+                {
+                    bool ok = await loadFDFiles(ViewBagMatrix.Instance.PdbCode);                    
+                }
                 ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
                 ViewBag.EmCode = ViewBagMatrix.Instance.EmCode;
                 ViewBag.EbiLink = ViewBagMatrix.Instance.EbiLink;
 
-                //Load the density matrix
-
-                if (DensitySingleton.Instance.needMatrix(ViewBagMatrix.Instance.PdbCode))
-                {
-                    bool ok = await loadFDFiles(ViewBagMatrix.Instance.PdbCode);
-                }
-                                                    
                 return View();
             }
             catch (Exception e)

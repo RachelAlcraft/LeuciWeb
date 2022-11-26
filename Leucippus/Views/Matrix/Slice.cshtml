@@ -58,18 +58,20 @@
 </div>
 
 <div class="tab">
-<span>
-    <span style="color:firebrick;width=50px;background-color:black">@ViewBag.TabName</span>
-    <input type="submit" value="Atoms" id="tabAtoms" onclick="ChangeTab('t1')" style="border:none;"/>
-    <input type="submit" value="Neighbours" id="tabNeighbours" onclick="ChangeTab('t3')" style="border:none;" />
-    <input type="submit" value="Settings" id="tabSettings" onclick="ChangeTab('t2')" style="border:none;"/>    
-    <input type="submit" value="Advanced" id="tabAdvanced" onclick="ChangeTab('t4')" style="border:none;" />    
+<span>    
+    <input type="submit" value="Atoms" id="tabAtoms" onclick="ChangeTab('t1')" style="border:none;display:@ViewBag.TabAClick"/>
+    <span style="border:none;display:@ViewBag.TabAName;font-weight:bold">@ViewBag.TabName</span>    
+    <input type="submit" value="Neighbours" id="tabNeighbours" onclick="ChangeTab('t3')" style="border:none;display:@ViewBag.TabNClick"/>
+    <span style="border:none;display:@ViewBag.TabNName;font-weight:bold">@ViewBag.TabName</span>    
+    <input type="submit" value="Settings" id="tabSettings" onclick="ChangeTab('t2')" style="border:none;display:@ViewBag.TabSClick"/>
+    <span style="border:none;display:@ViewBag.TabSName;font-weight:bold">@ViewBag.TabName</span>    
+    <input type="submit" value="Advanced" id="tabAdvanced" onclick="ChangeTab('t4')" style="border:none;display:@ViewBag.TabXClick"/>
+    <span style="border:none;display:@ViewBag.TabXName;font-weight:bold">@ViewBag.TabName</span>    
    
 </span>
 </div>
 <!--##################################### TAB DISPLAY SECTION - ATOMS ############################################# -->
-<div id="Atoms" class="tabcontent" style="display:@ViewBag.T1Display">
-    <h3>Atoms</h3>
+    <div id="Atoms" class="tabcontent" style="display:@ViewBag.T1Display;background-color:Seashell">
     <div>
         <table>
         <tr>
@@ -130,7 +132,7 @@
             <span>            
             <a style="float:left" href="Slice?nav=minus&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
             <img src="~/images/plus.svg" alt="zoom in" style="width:35px;height:35px;"></a>
-            <a style="float:centre" href="Slice?refresh_mode=F&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+            <a style=";" href="Slice?refresh_mode=F&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
             <img src="~/images/refresh.svg" alt="zoom in" style="width:30px;height:30px;"></a>
             <a style="float:right" href="Slice?nav=plus&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
             <img src="~/images/minus.svg" alt="zoom in" style="width:35px;height:35px;"></a>
@@ -196,8 +198,7 @@
     </div>
 </div>
 <!-- #################################### TAB DISPLAY SECTION SETTINGS ######################################-->
-<div id="Settings" class="tabcontent" style="display:@ViewBag.T2Display">
-    <h3>Settings</h3>
+    <div id="Settings" class="tabcontent" style="display:@ViewBag.T2Display;background-color:Seashell">
     <div>
         <table>
             <tr>                
@@ -243,22 +244,31 @@
     </div>
 </div>
 <!-- ############################# TAB NEIGHBOURS ########################################## -->
-<div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display">
-    <h3>Neighbours</h3>
+<div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display;background-color:Seashell">    
     <p>Choose range for nearest atoms: (-1,-1)= none, (0,0)=nearest, otherwise specify a range</p>
-    <table>                     
-    <tr>        
-        <td>Min Nearest</td>
-        <td><input id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
-        <td>Max Nearest</td>
-        <td><input id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
-    </tr>        
+    <table>
+        <tr>
+            <td>
+                <table>                     
+                <tr>        
+                    <td>Min Nearest</td>
+                    <td><input id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
+                    <td>Max Nearest</td>
+                    <td><input id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
+                </tr>        
+                </table>
+                <input type="submit" value="Update" onclick="ForceRefreshCoords()"/>
+            </td>
+            <td>
+                <div id="hoverInfo"></div>                
+            </td>
+        </tr>
+
     </table>
-    <input type="submit" value="Update" onclick="ForceRefreshCoords()"/>
+    
 </div>
 <!-- ############################# TAB ADVANCED ########################################## -->
-<div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display">
-    <h3>Advanced</h3>            
+    <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display;background-color:Seashell">
     <table>
     <tr>
         <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Extra Interpolation methods</td>
@@ -1000,4 +1010,14 @@
         document.getElementById("nav").value  = nav;        
     }
 </script>
+<script>
+    var myPlot = document.getElementById('myCountour');
+    myPlot.on('plotly_click', function (data) {
+        var infotext = data.points.map(function(d){return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3)) + " " + d.text;});        
+        hoverInfo.innerHTML = infotext.join('<br/>');        
+        })
+    
 
+
+
+</script>
