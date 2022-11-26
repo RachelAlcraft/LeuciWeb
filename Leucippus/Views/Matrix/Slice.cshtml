@@ -245,27 +245,66 @@
 </div>
 <!-- ############################# TAB NEIGHBOURS ########################################## -->
 <div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display;background-color:Seashell">    
-    <p>Choose range for nearest atoms: (-1,-1)= none, (0,0)=nearest, otherwise specify a range</p>
+    <p>Choose range for nearest atoms:[0,0]=nearest, otherwise specify a range</p>
     <table>
         <tr>
             <td>
                 <table>                     
                 <tr>        
-                    <td>Min Nearest</td>
-                    <td><input id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
-                    <td>Max Nearest</td>
-                    <td><input id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
+                <td>Min Nearest</td>
+                <td><input style="width:50px" id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
+                <td>Max Nearest</td>
+                <td><input style="width:50px"  id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
                 </tr>        
-                </table>
-                <input type="submit" value="Update" onclick="ForceRefreshCoords()"/>
+                <tr>
+                <th colspan="4">
+                <input style="width:65px" type="submit" value="Update" onclick="ForceRefreshCoords()"/>                        
+                </th>            
+                </tr>
+                </table>                
             </td>
             <td>
-                <div id="hoverInfo"></div>                
+                <table>
+                    <tr>
+                    <td>
+                        <div id="hoverInfo3" />
+                    </td>
+                </tr>
+                </table>
+            </td>
+            <td>
+            <table>
+                <tr>
+                    <td colspan=3>
+                        <div id="hoverInfo" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="text" id="update_atom" name="update_atom" value=@ViewBag.cAtom>                        
+                    </td>
+                </tr>
+                <tr>
+                    <th><input type="submit" value="Central" onclick="makeAtom('C')"/></th>
+                    <th><input type="submit" value="Linear" onclick="makeAtom('L')"/></th>                  
+                    <th><input type="submit" value="Planar" onclick="makeAtom('P')"/></th>                                 
+                </tr>
+                <tr>
+                    <td>@ViewBag.cAtom</td>
+                    <td>@ViewBag.lAtom</td>
+                    <td>@ViewBag.pAtom</td>                   
+                </tr>
+                <tr>
+                    <td colspan=3>
+                        <div id="hoverInfo2" />
+                    </td>
+                </tr>
+            </table>
             </td>
         </tr>
-
     </table>
     
+        
 </div>
 <!-- ############################# TAB ADVANCED ########################################## -->
     <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display;background-color:Seashell">
@@ -498,7 +537,7 @@
             cs = [[0, 'Snow'], [1, 'Black']]
         }
         else if (dhue == "RedBlueZero") {
-            cs = [[0, 'CornflowerBlue'], [String(zero_frac), 'Snow'], [1, 'Crimson']]
+            cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
         }
         else {
             cs = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[0.99, 'Black']]
@@ -517,7 +556,7 @@
             cs_lap = [[0, 'Snow'], [1, 'Black']]
         }
         else if (lhue == "RedBlueZero") {
-            cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'],[String(lev1), 'Snow'], [1, 'Crimson']]
+            cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'AliceBlue'], [String(lev1), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
         }
         else {
             cs_lap = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
@@ -1012,12 +1051,70 @@
 </script>
 <script>
     var myPlot = document.getElementById('myCountour');
-    myPlot.on('plotly_click', function (data) {
-        var infotext = data.points.map(function(d){return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3)) + " " + d.text;});        
-        hoverInfo.innerHTML = infotext.join('<br/>');        
-        })
-    
-
-
-
+    myPlot.on('plotly_click', function (data) {        
+        //var infotext = data.points.map(function(d){return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3)) + " " + d.text;});        
+        var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });
+        //alert(infotext);
+        hoverInfo.innerHTML = infotext.join('<br/>');     
+        
+        var hovtext = infotext.join('');
+        hovtext = hovtext.replace("<br>", "=");  
+        hovtext = hovtext.replace("<br>", "=");  
+        var hovArray = hovtext.split(" ");
+        alert(hovArray);
+        
+        var abovetext = "<tr><td colspan='3'>";
+        var hovintext = "<tr><th>AA</th><th>Atom</th><th>Distance</th></tr><tr>";
+        
+        //hoverInfo2.innerHTML = "<table><tr><th>AA</th><th>Atom</th><th>Distance</th></tr><tr>";
+        var count = 0
+        for (let i = 0; i < hovArray.length; i++) {            
+            var itm = hovArray[i];                             
+            if (i < 2) {
+                abovetext = abovetext+itm;
+            }
+            else{
+                itm = itm.replace("<br>", "=");  
+                var itms = itm.split("=");
+                for (let j = 0; j < itms.length; j++) {                                
+                    var itm2 = itms[j];   
+                    if (itm2.length > 0){
+                        if (count % 3 == 0){
+                            hovintext += "</tr><tr>";
+                        }            
+                        hovintext += "<td>" + itm2  + "</td>";
+                        count = count + 1
+                    }
+                }
+            }
+        }
+        abovetext += "</td><tr>"
+        hovintext += "</tr>";
+        tabletext = "<table>" + abovetext + hovintext + "</table>"
+        alert(tabletext);
+        hoverInfo2.innerHTML = tabletext;
+        hoverInfo3.innerHTML = tabletext;
+    });    
 </script>
+<script>
+     function makeAtom(atom){
+        alert(atom);
+        atom_val = document.getElementById("update_atom").value;
+        alert(atom_val);
+        if (atom == "C"){
+            document.getElementById("ca").value = atom_val;
+        }
+        else if (atom == "L"){
+            document.getElementById("la").value = atom_val;
+        }
+        else if (atom == "P"){
+            document.getElementById("pa").value = atom_val;
+        }
+        document.getElementById("c_xyz").value = "";
+        document.getElementById("l_xyz").value = "";
+        document.getElementById("p_xyz").value = "";
+        document.getElementById("refresh_mode").value = "F";
+    }
+    
+</script>
+

@@ -175,24 +175,28 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.T1Display = "block";
                 ViewBag.TabAClick = "none";
                 ViewBag.TabAName = "contents";
+                ViewBag.TabName = "Atoms";
             }
             else if (tabview == "N")
             {
                 ViewBagMatrix.Instance.T3Display = "block";
                 ViewBag.TabNClick = "none";
                 ViewBag.TabNName = "contents";
+                ViewBag.TabName = "Neighbours";
             }
             else if (tabview == "S")
             {
                 ViewBagMatrix.Instance.T2Display = "block";
                 ViewBag.TabSClick = "none";
                 ViewBag.TabSName = "contents";
+                ViewBag.TabName = "Settings";
             }
             else if (tabview == "X")
             {
                 ViewBagMatrix.Instance.T4Display = "block";
                 ViewBag.TabXClick = "none";
                 ViewBag.TabXName = "contents";
+                ViewBag.TabName = "Advanced";
             }
 
             
