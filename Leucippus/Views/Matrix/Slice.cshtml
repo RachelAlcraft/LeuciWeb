@@ -245,40 +245,32 @@
 </div>
 <!-- ############################# TAB NEIGHBOURS ########################################## -->
 <div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display;background-color:Seashell">    
-    <p>Choose range for nearest atoms:[0,0]=nearest, otherwise specify a range</p>
+    <!--<p>Choose range for nearest atoms:[0,0]=nearest, otherwise specify a range</p>-->
     <table>
         <tr>
+            <th>Neighbours range (A)</th>
+            <th>Neighbours</th>
+            <th>Navigate to...</th>
+        </tr>
+        <tr>
             <td>
-                <table>                     
-                <tr>        
-                <td>Min Nearest</td>
-                <td><input style="width:50px" id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
-                <td>Max Nearest</td>
-                <td><input style="width:50px"  id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
-                </tr>        
-                <tr>
-                <th colspan="4">
-                <input style="width:65px" type="submit" value="Update" onclick="ForceRefreshCoords()"/>                        
-                </th>            
-                </tr>
-                </table>                
-            </td>
-            <td>
-                <table>
+                <table>                    
+                    <tr>        
+                    <td>Min Nearest</td>
+                    <td><input style="width:50px" id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
+                    <td>Max Nearest</td>
+                    <td><input style="width:50px"  id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
+                    </tr>        
                     <tr>
-                    <td>
-                        <div id="hoverInfo3" />
-                    </td>
-                </tr>
-                </table>
-            </td>
+                    <th colspan="4">
+                    <input style="width:65px" type="submit" value="Update" onclick="ForceRefreshCoords()"/>                        
+                    </th>            
+                    </tr>
+                </table>                
+
+            </td>            
             <td>
-            <table>
-                <tr>
-                    <td colspan=3>
-                        <div id="hoverInfo" />
-                    </td>
-                </tr>
+                <table>                
                 <tr>
                     <td colspan="3">
                         <input type="text" id="update_atom" name="update_atom" value=@ViewBag.cAtom>                        
@@ -288,19 +280,18 @@
                     <th><input type="submit" value="Central" onclick="makeAtom('C')"/></th>
                     <th><input type="submit" value="Linear" onclick="makeAtom('L')"/></th>                  
                     <th><input type="submit" value="Planar" onclick="makeAtom('P')"/></th>                                 
-                </tr>
-                <tr>
-                    <td>@ViewBag.cAtom</td>
-                    <td>@ViewBag.lAtom</td>
-                    <td>@ViewBag.pAtom</td>                   
-                </tr>
-                <tr>
-                    <td colspan=3>
-                        <div id="hoverInfo2" />
-                    </td>
-                </tr>
+                </tr>                                
             </table>
             </td>
+                <td>
+                    <table>                    
+                    <tr>
+                    <td>
+                        <div id="hoverInfo3" />
+                    </td>
+                </tr>
+                </table>
+                </td>                                                           
         </tr>
     </table>
     
@@ -1055,18 +1046,17 @@
         //var infotext = data.points.map(function(d){return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3)) + " " + d.text;});        
         var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });
         //alert(infotext);
-        hoverInfo.innerHTML = infotext.join('<br/>');     
+        //hoverInfo.innerHTML = infotext.join('<br/>');     
         
         var hovtext = infotext.join('');
         hovtext = hovtext.replace("<br>", "=");  
         hovtext = hovtext.replace("<br>", "=");  
         var hovArray = hovtext.split(" ");
-        alert(hovArray);
+        //alert(hovArray);
         
         var abovetext = "<tr><td colspan='3'>";
         var hovintext = "<tr><th>AA</th><th>Atom</th><th>Distance</th></tr><tr>";
-        
-        //hoverInfo2.innerHTML = "<table><tr><th>AA</th><th>Atom</th><th>Distance</th></tr><tr>";
+                
         var count = 0
         for (let i = 0; i < hovArray.length; i++) {            
             var itm = hovArray[i];                             
@@ -1091,16 +1081,16 @@
         abovetext += "</td><tr>"
         hovintext += "</tr>";
         tabletext = "<table>" + abovetext + hovintext + "</table>"
-        alert(tabletext);
-        hoverInfo2.innerHTML = tabletext;
+        //alert(tabletext);
+        //hoverInfo2.innerHTML = tabletext;
         hoverInfo3.innerHTML = tabletext;
     });    
 </script>
 <script>
      function makeAtom(atom){
-        alert(atom);
+        //alert(atom);
         atom_val = document.getElementById("update_atom").value;
-        alert(atom_val);
+        //alert(atom_val);
         if (atom == "C"){
             document.getElementById("ca").value = atom_val;
         }
