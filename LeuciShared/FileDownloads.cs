@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
+﻿using System.IO.Compression;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace LeuciShared
 {
     public class FileDownloads
     {
-        public string PdbCode = "";        
+        public string PdbCode = "";
         public string PdbViewLink = "";
         public string PdbDownloadLink = "";
         private string PdbFilePath = "";
@@ -25,7 +19,7 @@ namespace LeuciShared
         public string DiffDownloadLink = "";
         public string DiffFilePath = "";
         public string[] PdbLines = new string[0];
-        public string Resolution = "";        
+        public string Resolution = "";
         public PdbAtoms PA;
 
 
@@ -33,10 +27,10 @@ namespace LeuciShared
         // TODO and we would deal with mmCif format here
 
         public FileDownloads(string pdbcode)
-        {            
+        {
             PdbCode = pdbcode.ToLower();
             EmCode = pdbcode.ToLower();
-            PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";            
+            PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";
             PdbDownloadLink = "https://files.rcsb.org/download/" + PdbCode + ".pdb";
             PdbFilePath = "wwwroot/App_Data/" + PdbCode + ".pdb";
             EmFilePath = "wwwroot/App_Data/" + PdbCode + ".ccp4";
@@ -48,7 +42,7 @@ namespace LeuciShared
         public async Task<string> existsPdbMatrixAsync()
         {
             bool ok = true;
-            if (!System.IO.File.Exists(PdbFilePath))            
+            if (!System.IO.File.Exists(PdbFilePath))
                 ok = await downloadPdbFile();
             if (ok)
             {
@@ -65,7 +59,7 @@ namespace LeuciShared
             string exists_matrix = "N";
             if (System.IO.File.Exists(EmFilePath))
                 exists_matrix = "Y";
-            
+
             if (DiffFilePath != "")
             {
                 if (!System.IO.File.Exists(DiffFilePath))
@@ -96,16 +90,16 @@ namespace LeuciShared
                 else
                 {
                     return "ccp4 matrix does not exist";
-                }                
+                }
             }
         }
         public async Task<bool> downloadPdbFile()
-        {            
+        {
             bool ok = await downloadAsync(PdbFilePath, PdbDownloadLink);
             return ok;
         }
         public void processPdbFile()
-        { 
+        {
             PdbLines = System.IO.File.ReadAllLines(PdbFilePath);
             DensityType = "x-ray";
             foreach (string line in PdbLines)
@@ -128,7 +122,7 @@ namespace LeuciShared
             if (DensityType == "cryo-em")
             {
                 string[] ems = EmCode.Split("-");
-                EmNum = ems[1];                                
+                EmNum = ems[1];
                 EmFilePath = "wwwroot/App_Data/emd_" + EmNum + ".ccp4";
                 EmFilePathGz = "wwwroot/App_Data/emd_" + EmNum + ".ccp4.gz";
                 EmDownloadLink = "https://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-" + EmNum + "/map/emd_" + EmNum + ".map.gz";
@@ -136,7 +130,7 @@ namespace LeuciShared
             }
             else
             {
-                EmDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + ".ccp4";                    
+                EmDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + ".ccp4";
                 DensityType = "x-ray";
                 DiffDownloadLink = "https://www.ebi.ac.uk/pdbe/entry-files/" + EmCode + "_diff.ccp4";
             }
@@ -145,7 +139,7 @@ namespace LeuciShared
         }
 
         public async Task<bool> existsCcp4File()
-        {            
+        {
             if (!System.IO.File.Exists(EmFilePath))
             {
                 bool ok = await existsFileOnline(EmFilePathGz, EmDownloadLink);
@@ -158,7 +152,7 @@ namespace LeuciShared
         }
 
         public async Task<bool> downloadCcp4File()
-        {            
+        {
             bool ok = false;
             if (DensityType == "cryo-em")
             {
@@ -167,10 +161,10 @@ namespace LeuciShared
                     ok = await downloadAsync(EmFilePathGz, EmDownloadLink);
                     // now the em data is going to be zipped so we neeed to unzip                    
                     FileInfo fi = new FileInfo(EmFilePathGz);
-                    Decompress(fi, EmFilePath);                    
+                    Decompress(fi, EmFilePath);
                     if (System.IO.File.Exists(EmFilePath))
                         if (System.IO.File.Exists(EmFilePathGz))
-                            System.IO.File.Delete(EmFilePathGz);                    
+                            System.IO.File.Delete(EmFilePathGz);
                     DiffFilePath = ""; //there is no difference density for cryo-em
                                        // we can delete the zipped version now
 
@@ -190,7 +184,7 @@ namespace LeuciShared
                     return false;
                 }
             }
-                                    
+
             return true;
         }
         public void processCcp4File()
@@ -235,12 +229,12 @@ namespace LeuciShared
         {
             bool success = false;
             if (!System.IO.File.Exists(filepath))
-            {                
+            {
                 using (HttpClient client = new HttpClient())
                 {
                     try
                     {
-                        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));                        
+                        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
                         if (response != null)
                         {
                             if (response.StatusCode != HttpStatusCode.OK)
@@ -262,7 +256,7 @@ namespace LeuciShared
                                     success = true;
                                 }
                             }
-                            
+
                             if (System.IO.File.Exists(filepath + ".downloading"))
                                 System.IO.File.Delete(filepath + ".downloading");
 
@@ -281,10 +275,10 @@ namespace LeuciShared
             return success;
         }
 
-        public static void Decompress(FileInfo fileToDecompress,string filetarget)
+        public static void Decompress(FileInfo fileToDecompress, string filetarget)
         {
             if (!System.IO.File.Exists(filetarget))
-            { 
+            {
                 using (FileStream originalFileStream = fileToDecompress.OpenRead())
                 {
                     string currentFileName = fileToDecompress.FullName;

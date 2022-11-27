@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.ExceptionServices;
-using System.Runtime.Intrinsics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Markup;
-
-namespace LeuciShared
+﻿namespace LeuciShared
 {
     // ****** ABSTRACT CLASS ****************************************
     public abstract class Interpolator
-    {        
+    {
         //protected byte[] _binary;
         protected Single[] _singles;
         protected int _bStart;
@@ -22,7 +10,7 @@ namespace LeuciShared
         protected int XLen;
         protected int YLen;
         protected int ZLen;
-        protected double h;        
+        protected double h;
 
         // ABSTRACT INTERFACE ------------------------------------------------
         public abstract double getValue(double x, double y, double z);
@@ -41,7 +29,7 @@ namespace LeuciShared
             //_binary = binary;
             _bStart = bstart;
             _bLength = blength;
-        }        
+        }
         public int getExactPos(int x, int y, int z)
         {
             int sliceSize = XLen * YLen;
@@ -51,7 +39,7 @@ namespace LeuciShared
             return pos;
         }
         public int getPosition(int x, int y, int z)
-        {                                    
+        {
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
             pos += XLen * y;
@@ -61,7 +49,7 @@ namespace LeuciShared
             //    return pos;
             //else
             //    return 0;//what should this return? -1, throw an error? TODO
-        }        
+        }
         public Single getExactValueBinary(int x, int y, int z)
         {
             int sliceSize = XLen * YLen;
@@ -78,11 +66,11 @@ namespace LeuciShared
                 Single value = _singles[pos];
                 return value;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return 0;
-            }            
-        }        
+            }
+        }
         public double getRadient(double x, double y, double z)
         {
             double val = getValue(x, y, z);
@@ -122,24 +110,24 @@ namespace LeuciShared
             return dd;
         }
 
-        protected Single[] getSmallerCubeMultivariate(double x, double y, double z,int width)
+        protected Single[] getSmallerCubeMultivariate(double x, double y, double z, int width)
         {
             // 1. Build the points around the centre as a cube - 8 points
-            Single[] vals = new Single[width*width*width];
-            
+            Single[] vals = new Single[width * width * width];
+
             int count = 0;
             int xp = 0;
             int yp = 0;
             int zp = 0;
             for (int i = (-1 * width / 2) + 1; i < (width / 2) + 1; ++i)
             {
-                xp = Convert.ToInt32(Math.Floor(x + i));                
+                xp = Convert.ToInt32(Math.Floor(x + i));
                 for (int j = (-1 * width / 2) + 1; j < (width / 2) + 1; ++j)
                 {
                     yp = Convert.ToInt32(Math.Floor(y + j));
                     for (int k = (-1 * width / 2) + 1; k < (width / 2) + 1; ++k)
                     {
-                        zp = Convert.ToInt32(Math.Floor(z + k));                                                
+                        zp = Convert.ToInt32(Math.Floor(z + k));
                         double p = -1;
                         if (xp >= 0 && yp >= 0 && zp >= 0 && xp < XLen && yp < YLen && zp < ZLen)
                             p = getExactValueBinary(xp, yp, zp);
@@ -156,13 +144,13 @@ namespace LeuciShared
             // 1. Build the points around the centre as a cube - 8 points
             Single[] vals = new Single[width * width * width];
 
-            int count = 0;            
-            for (int i = z; i < z+width; ++i)
-            {                                
+            int count = 0;
+            for (int i = z; i < z + width; ++i)
+            {
                 for (int j = y; j < y + width; ++j)
-                {                    
+                {
                     for (int k = x; k < x + width; ++k)
-                    {                        
+                    {
                         Single p = getExactValueBinary(k, j, i);
                         vals[count] = p;
                         ++count;
@@ -174,16 +162,16 @@ namespace LeuciShared
         protected Single[] getCubeWhole()
         {
             // 1. Build the points around the centre as a cube - 8 points
-            Single[] vals = new Single[XLen*YLen*ZLen];
+            Single[] vals = new Single[XLen * YLen * ZLen];
 
             int count = 0;
             for (int i = 0; i < ZLen; ++i)
-            {                
+            {
                 for (int j = 0; j < YLen; ++j)
-                {                    
+                {
                     for (int k = 0; k < XLen; ++k)
                     {
-                        Single p = getExactValueBinary(k,j,i);                        
+                        Single p = getExactValueBinary(k, j, i);
                         vals[count] = p;
                         ++count;
                     }
@@ -214,17 +202,17 @@ namespace LeuciShared
         }
     }
 
-   
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public class Nearest: Interpolator
+    public class Nearest : Interpolator
     {
         // ****** Nearest Neighbour Implementation ****************************************
-        public Nearest(Single[] bytes,int start,int length,int x, int y, int z) : base(bytes,start,length,x, y, z)
+        public Nearest(Single[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
         {
 
-        }        
+        }
         public override double getValue(double x, double y, double z)
         {
             if (!isValid(x, y, z))
@@ -236,7 +224,7 @@ namespace LeuciShared
                 return getExactValueBinary(i, j, k);
             else
                 return 0;
-        }        
+        }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,13 +240,13 @@ namespace LeuciShared
         protected int _zFloor = 0;
         protected double[,,] _polyCoeffs = new double[0, 0, 0];
         // ****** Linear Implementation ****************************************
-        public Multivariate(Single[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
+        public Multivariate(Single[] bytes, int start, int length, int x, int y, int z, int degree) : base(bytes, start, length, x, y, z)
         {
             // the degree must be an odd number
-            _degree = degree;            
+            _degree = degree;
             _points = _degree + 1;
             _dimsize = (int)Math.Pow(_points, 3);
-            
+
         }
         public override double getValue(double x, double y, double z)
         {
@@ -268,7 +256,7 @@ namespace LeuciShared
 
             if (!isValid(x, y, z))
                 return 0;
-            
+
             bool recalc = _neednewVals;
 
             // we can reuse our last matrix if the points are within the same unit cube
@@ -310,7 +298,7 @@ namespace LeuciShared
             }
 
             //4. Adjust the values to be within this cube
-            int pstart = (-1 * _points / 2) + 1; 
+            int pstart = (-1 * _points / 2) + 1;
             double xn = x - Math.Floor(x) - pstart;
             double yn = y - Math.Floor(y) - pstart;
             double zn = z - Math.Floor(z) - pstart;
@@ -355,13 +343,13 @@ namespace LeuciShared
             return results;
         }
         private double[,] getInverse()
-        {            
+        {
             if (_degree == 5)
-                return InvariantVandermonde.Instance.inverse5;            
+                return InvariantVandermonde.Instance.inverse5;
             else if (_degree == 3)
                 return InvariantVandermonde.Instance.inverse3;
             else
-                return InvariantVandermonde.Instance.inverse1;                        
+                return InvariantVandermonde.Instance.inverse1;
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,7 +379,7 @@ namespace LeuciShared
                 _points = ZLen;
 
             _dimsize = (int)Math.Pow(_points, 3);
-            _bsp = null;            
+            _bsp = null;
         }
         public override double getValue(double x, double y, double z)
         {
@@ -413,7 +401,7 @@ namespace LeuciShared
             int myzFloor = (int)Math.Floor(z + (-1 * _points / 2) + 1);
 
             //if (myyFloor - _yFloor > _points / 4)
-            double pointsBound = _points/2;
+            double pointsBound = _points / 2;
             if (!(Math.Abs(myxFloor - _xFloor) < pointsBound))
                 needNewMatrix = true;
             if (!(Math.Abs(myyFloor - _yFloor) < pointsBound))
@@ -443,10 +431,10 @@ namespace LeuciShared
                     _zFloor = ZLen - _points;
 
                 // 1. Build the points around the centre as a cube - x*x*x points                
-                
+
                 Single[] vals = getSmallerCubeThevenaz(_xFloor, _yFloor, _zFloor, _points);
                 //3. Kind of recursive, make a smaller BSlipe interpolator out of this.                             
-                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree,true); 
+                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree, true);
 
 
 
@@ -472,7 +460,7 @@ namespace LeuciShared
             //5. Apply the multivariate polynomial coefficents to find the value
             return _bsp.getValue(xn, yn, zn);
             //return _bsp.getValue(x, y, z);
-        }                
+        }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -490,15 +478,15 @@ namespace LeuciShared
         //protected Dictionary<int, double> Matrix;
         //protected Single[] Matrix;
 
-        public BetaSpline(Single[] bytes, int start, int length, int x, int y, int z,int degree) : base(bytes, start, length, x, y, z)
+        public BetaSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree) : base(bytes, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = degree;
             _coefficients = getCubeWhole();
-        //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
-        createCoefficients();
+            //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
+            createCoefficients();
         }
-        public BetaSpline(Single[] vals, int start, int length, int x, int y, int z, int degree,bool smaller) : base(vals, start, length, x, y, z)
+        public BetaSpline(Single[] vals, int start, int length, int x, int y, int z, int degree, bool smaller) : base(vals, start, length, x, y, z)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = degree;
@@ -660,13 +648,13 @@ namespace LeuciShared
             catch (Exception e)
             {
                 return 0;
-            }            
+            }
             //if (_coefficients.ContainsKey(pos))
             //    return _coefficients[pos];
             //else            
             //return 0;
         }
-        private void putCoef(int x, int y, int z,double v)
+        private void putCoef(int x, int y, int z, double v)
         {
             int pos = getPosition(x, y, z);
             /*byte[] bv = BitConverter.GetBytes(Convert.ToSingle(v));
@@ -736,11 +724,11 @@ namespace LeuciShared
         private void putRow3d(int y, int z, List<double> row, int length)
         {
             for (int x = 0; x < length; ++x)
-                putCoef(x, y, z,row[x]);
+                putCoef(x, y, z, row[x]);
         }
         private List<double> getColumn3d(int x, int z, int length)
         {
-            List <double> col = new List<double>();
+            List<double> col = new List<double>();
             for (int y = 0; y < length; ++y)
                 col.Add(getCoef(x, y, z));
             return col;
@@ -748,7 +736,7 @@ namespace LeuciShared
         private void putColumn3d(int x, int z, List<double> col, int length)
         {
             for (int y = 0; y < length; ++y)
-                putCoef(x, y, z, col[y]);            
+                putCoef(x, y, z, col[y]);
         }
         private List<double> getHole3d(int x, int y, int length)
         {
@@ -760,7 +748,7 @@ namespace LeuciShared
         private void putHole3d(int x, int y, List<double> bore, int length)
         {
             for (int z = 0; z < length; ++z)
-                putCoef(x, y, z, bore[z]);            
+                putCoef(x, y, z, bore[z]);
         }
 
         private List<double> getPole(int degree)
@@ -967,7 +955,7 @@ namespace LeuciShared
             return ws;
         }
 
-        
+
     }
 
 }

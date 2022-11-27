@@ -1,10 +1,6 @@
 ﻿
 
 using LeuciShared;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Numerics;
-using System.Security.Permissions;
 
 namespace Leucippus.Models
 {
@@ -27,7 +23,7 @@ namespace Leucippus.Models
 
         private void incRefresh()
         {
-            ++_refresh; 
+            ++_refresh;
         }
 
         public static ViewBagMatrix Instance
@@ -42,7 +38,7 @@ namespace Leucippus.Models
         public bool Refresh
         {
             get
-            {                                
+            {
                 return _refresh > 0;
             }
         }
@@ -61,7 +57,7 @@ namespace Leucippus.Models
         public string PdbCode
         {
             get { return _pdbcode; }
-            set 
+            set
             {
                 if (value != "")
                 {
@@ -76,7 +72,7 @@ namespace Leucippus.Models
                     }
                     _pdbcode = value;
                 }
-                else if(_pdbcode != "6eex")
+                else if (_pdbcode != "6eex")
                 {
                     _pdbcode = "6eex";
                     incRefresh();
@@ -101,7 +97,7 @@ namespace Leucippus.Models
                 else if (value != "")
                 {
                     incRefresh();
-                    _interp = value.ToUpper();                    
+                    _interp = value.ToUpper();
                 }
                 else
                 {// we have lost the interp so something has changed
@@ -128,7 +124,7 @@ namespace Leucippus.Models
 
         private double _hover_min = 0;
         public double HoverMin
-        { 
+        {
             get
             {
                 return _hover_min;
@@ -176,7 +172,7 @@ namespace Leucippus.Models
         }
         public string EmCode
         {
-            get;set;
+            get; set;
         }
         public string DensityType
         {
@@ -185,9 +181,9 @@ namespace Leucippus.Models
 
         public string EbiLink
         {
-            get { return "https://www.ebi.ac.uk/pdbe/entry/pdb/" + PdbCode;  }
-            
-        }        
+            get { return "https://www.ebi.ac.uk/pdbe/entry/pdb/" + PdbCode; }
+
+        }
         private string _info = "";
         public string Info
         {
@@ -227,7 +223,7 @@ namespace Leucippus.Models
                 }
             }
         }
-        
+
         private string getNextColour(string colour)
         {
             string retcolour = "BlackWhite";
@@ -240,7 +236,7 @@ namespace Leucippus.Models
                 retcolour = "RedBlueGrey";
             //else if (_denhue == "RedBlue")
             //    retcolour = "RedBlueGrey";
-            
+
             return retcolour;
         }
 
@@ -261,7 +257,7 @@ namespace Leucippus.Models
                 {
                     _denplot = value;
                 }
-                
+
             }
         }
         private string _denhue = "RedBlueGrey";
@@ -270,8 +266,8 @@ namespace Leucippus.Models
             get { return _denhue; }
             set
             {
-                if (value == "+1")                
-                    _denhue = getNextColour(_denhue);                                                        
+                if (value == "+1")
+                    _denhue = getNextColour(_denhue);
                 else if (value != "")
                     _denhue = value;
             }
@@ -281,7 +277,7 @@ namespace Leucippus.Models
         {
             get { return _radplot; }
             set
-            {                
+            {
                 if (value == "+1")
                 {
                     if (_radplot == "contour")
@@ -325,7 +321,7 @@ namespace Leucippus.Models
             {
                 if (value != -100)
                 {
-                    _sdcap = Math.Max(0,value);
+                    _sdcap = Math.Max(0, value);
                 }
             }
         }
@@ -348,8 +344,8 @@ namespace Leucippus.Models
             get { return _radhue; }
             set
             {
-                if (value == "+1")                
-                    _radhue = getNextColour(_radhue);                                    
+                if (value == "+1")
+                    _radhue = getNextColour(_radhue);
                 else if (value != "")
                     _radhue = value;
             }
@@ -359,7 +355,7 @@ namespace Leucippus.Models
         {
             get { return _lapplot; }
             set
-            {                
+            {
                 if (value == "+1")
                 {
                     if (_lapplot == "contour")
@@ -379,10 +375,10 @@ namespace Leucippus.Models
             get { return _laphue; }
             set
             {
-                if (value == "+1")                
-                    _laphue = getNextColour(_laphue);                                    
-                else if (value != "")                
-                    _laphue = value;                
+                if (value == "+1")
+                    _laphue = getNextColour(_laphue);
+                else if (value != "")
+                    _laphue = value;
             }
         }
         private string _denbar = "N";
@@ -394,7 +390,7 @@ namespace Leucippus.Models
                 if (value == "+1")
                 {
                     if (_denbar == "N")
-                        _denbar = "Y";                    
+                        _denbar = "Y";
                     else
                         _denbar = "N";
                 }
@@ -403,7 +399,7 @@ namespace Leucippus.Models
                     _denbar = value;
                 }
             }
-            
+
         }
         public bool IsDenBar
         {
@@ -511,7 +507,7 @@ namespace Leucippus.Models
                     _gap = 0.1;
                 }
                 else if (Math.Round(value, 4) != Math.Round(_gap, 4))
-                {                    
+                {
                     _gap = value;
                     incRefresh();
                 }
@@ -550,7 +546,7 @@ namespace Leucippus.Models
                 {
                     _width = 6.0;
                 }
-                else if (Math.Round(value,4) != Math.Round(_width,4)) 
+                else if (Math.Round(value, 4) != Math.Round(_width, 4))
                 {
                     double aspectRatio = _width * _gap;
                     _width = value;
@@ -558,21 +554,21 @@ namespace Leucippus.Models
                     incRefresh();
                 }
                 if (_width / _gap > 110)
-                {                    
+                {
                     _gap = _width / 110;
                     incRefresh();
                 }
                 _width = Math.Round(_width, 4);
                 _gap = Math.Round(_gap, 4);
             }
-        }                  
+        }
         // Handle setting the central-linear-planar
-        public VectorThree CentralPosVector = new VectorThree(-1, -1, -1);        
+        public VectorThree CentralPosVector = new VectorThree(-1, -1, -1);
         private string _cxyz = "(-1,-1,-1)";
         public VectorThree CAtomStrucVector = new VectorThree(-1, -1, -1);
         public string CentralAtomStrucString = "A:1@C";
         public double CDistance = 0;
-        public void SetCentral(string cxyz, string ca,PdbAtoms pdba,int atom_offset,bool refresh=true)
+        public void SetCentral(string cxyz, string ca, PdbAtoms pdba, int atom_offset, bool refresh = true)
         {
             SetAtom(cxyz, ca, pdba, 0, atom_offset, ref CentralPosVector, ref CAtomStrucVector, ref CentralAtomStrucString, ref _cxyz, ref CDistance);
             /*
@@ -637,7 +633,7 @@ namespace Leucippus.Models
 
             }*/
         }
-        public VectorThree LinearPosVector = new VectorThree(-1,-1,-1);        
+        public VectorThree LinearPosVector = new VectorThree(-1, -1, -1);
         private string _lxyz = "(-1,-1,-1)";
         public VectorThree LAtomStrucVector = new VectorThree(-1, -1, -1);
         public string LinearAtomStrucString = "A:1@O";
@@ -699,15 +695,15 @@ namespace Leucippus.Models
                 }
             } */
         }
-        
-        public VectorThree PlanarPosVector = new VectorThree(-1,-1,-1);
+
+        public VectorThree PlanarPosVector = new VectorThree(-1, -1, -1);
         public VectorThree PAtomStrucVector = new VectorThree(-1, -1, -1);
         private string _pxyz = "(-1,-1,-1)";
         public string PlanarAtomStrucString = "A:2@N";
         public double PDistance = 0;
-        
+
         private void SetAtom(
-            string xyz, string at, PdbAtoms pdba, int pos,int atom_offset,
+            string xyz, string at, PdbAtoms pdba, int pos, int atom_offset,
             ref VectorThree PosVec, ref VectorThree StrucVec, ref string atom, ref string coords, ref double distance)
         {
             if (xyz == null)
@@ -750,11 +746,11 @@ namespace Leucippus.Models
                 PosVec = new VectorThree(StrucVec.A, StrucVec.B, StrucVec.C);
                 incRefresh();
             }
-            distance = Math.Round(PosVec.distance(StrucVec), 3);            
+            distance = Math.Round(PosVec.distance(StrucVec), 3);
         }
         public void SetPlanar(string pxyz, string pa, PdbAtoms pdba, int atom_offset)
         {
-            SetAtom(pxyz, pa, pdba, 2,atom_offset, ref PlanarPosVector, ref PAtomStrucVector, ref PlanarAtomStrucString, ref _pxyz, ref PDistance);                
+            SetAtom(pxyz, pa, pdba, 2, atom_offset, ref PlanarPosVector, ref PAtomStrucVector, ref PlanarAtomStrucString, ref _pxyz, ref PDistance);
             /*if (pxyz == null)
                 pxyz = "";
             if (pa == null)

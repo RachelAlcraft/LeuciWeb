@@ -1,29 +1,20 @@
-﻿using ChartDirector;
-using Leucippus.Models;
+﻿using Leucippus.Models;
 using LeuciShared;
-using MessagePack.Formatters;
 using Microsoft.AspNetCore.Mvc;
-using ScottPlot;
-using ScottPlot.Statistics.Interpolation;
-using System.Collections.Generic;
-using System.Net;
-using System.Numerics;
-using System.Threading;
-using static Plotly.NET.StyleParam;
 
 
 namespace Leucippus.Controllers
 {
     public class MatrixController : Controller
-    {        
-        public async Task <IActionResult> Index(string pdbcode = "")
+    {
+        public async Task<IActionResult> Index(string pdbcode = "")
         {
             try
             {
                 ViewBag.Error = "";
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp,2,-1);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
                 if (DensitySingleton.Instance.NewMatrix)
                 {
                     string[] first_three = DensitySingleton.Instance.FD.PA.getFirstThreeCoords();
@@ -45,15 +36,15 @@ namespace Leucippus.Controllers
 
                 return View();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ViewBag.Error = e.Message;
                 return View();
             }
-            
+
         }
-        
-        public async Task<IActionResult> Plane(string pdbcode = "",int layer = -1, string plane="",string planeplot="")
+
+        public async Task<IActionResult> Plane(string pdbcode = "", int layer = -1, string plane = "", string planeplot = "")
         {
             try
             {
@@ -72,7 +63,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.Layer = layer;
                 ViewBagMatrix.Instance.PlanePlot = planeplot;
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp,2,-1);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
                 dm.calculatePlane(ViewBagMatrix.Instance.Plane, ViewBagMatrix.Instance.Layer);
 
                 if (ViewBagMatrix.Instance.EmCode == "" && layer == -1 && plane == "")
@@ -104,23 +95,23 @@ namespace Leucippus.Controllers
 
         }
         public async Task<IActionResult> Slice(
-            string tabview="A", // A=atoms,S=settgins,N=neighbour X=advanced
+            string tabview = "A", // A=atoms,S=settgins,N=neighbour X=advanced
             string refresh_mode = "R", //V= viewbag only F = force
             string pdbcode = "",
             string c_xyz = "", string l_xyz = "", string p_xyz = "",
-            string ca = "", string la = "", string pa = "",int atom_offset=0,
+            string ca = "", string la = "", string pa = "", int atom_offset = 0,
             string denplot = "", string radplot = "", string lapplot = "",
             string denhue = "", string radhue = "", string laphue = "",
             string denbar = "", string radbar = "", string lapbar = "",
-            double width = -1, double gap = -1, string interp = "", 
-            string valsd = "",double sdcap = -100, double sdfloor = -100,
-            int Fos=2, int Fcs=-1,string ydots="N", string gdots="N",
-            int t1=0,int t2=0,int t3=0,int t4=0,
-            string nav = "",double nav_distance=0.1,
-            double hover_min=0,double hover_max=0)
+            double width = -1, double gap = -1, string interp = "",
+            string valsd = "", double sdcap = -100, double sdfloor = -100,
+            int Fos = 2, int Fcs = -1, string ydots = "N", string gdots = "N",
+            int t1 = 0, int t2 = 0, int t3 = 0, int t4 = 0,
+            string nav = "", double nav_distance = 0.1,
+            double hover_min = 0, double hover_max = 0)
         {
             bool view_change = false;
-              
+
             if (t1 + t2 + t3 + t4 > 0)//then this is a view only change
             {
                 view_change = true;
@@ -142,32 +133,32 @@ namespace Leucippus.Controllers
             ViewBag.TabXName = "none";
 
             if (view_change)//then this is a view only change
-            {                                
+            {
                 if (t1 == 1) //atoms
-                {                    
+                {
                     ViewBag.TabView = "A";
                     ViewBag.TabName = "Atoms";
-                    refresh_mode = "F";                    
+                    refresh_mode = "F";
                 }
                 if (t2 == 1) //settings
-                {                    
+                {
                     ViewBag.TabView = "S";
                     ViewBag.TabName = "Settings";
                 }
                 if (t3 == 1) //neighbours
-                {                 
+                {
                     ViewBag.TabView = "N";
                     refresh_mode = "F";
                     ViewBag.TabName = "Neighbours";
                 }
                 if (t4 == 1)//advanced
-                {                    
+                {
                     ViewBag.TabView = "X";
                     ViewBag.TabName = "Advanced";
                 }
 
             }
-            
+
             //we should make sure we have the correct block selected                            
             ViewBag.TabView = tabview;
             if (tabview == "A")
@@ -199,11 +190,11 @@ namespace Leucippus.Controllers
                 ViewBag.TabName = "Advanced";
             }
 
-            
-            
+
+
             try
             {
-                ViewBag.Error = "";                
+                ViewBag.Error = "";
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
                 ViewBagMatrix.Instance.Interp = interp;
                 ViewBagMatrix.Instance.setFoFc(Fos, Fcs);
@@ -242,7 +233,7 @@ namespace Leucippus.Controllers
                     if (!ok)
                         return View();
                 }
-                
+
                 double nav_space = ViewBagMatrix.Instance.Gap;
                 double hov_min = ViewBagMatrix.Instance.HoverMin;
                 double hov_max = ViewBagMatrix.Instance.HoverMax;
@@ -252,7 +243,7 @@ namespace Leucippus.Controllers
                 {
                     nav_space = ViewBagMatrix.Instance.Width / 25; //we reduce for cryo-em defaults like nav mode
                     hov_min = -1;
-                    hov_max = -1;                    
+                    hov_max = -1;
                 }
 
                 if (tabview == "N")
@@ -263,7 +254,7 @@ namespace Leucippus.Controllers
                         ViewBagMatrix.Instance.Interp = "LINEAR";
                         use_interp = "LINEAR";
                     }
-                                                                   
+
                 }
                 else
                 {
@@ -331,7 +322,7 @@ namespace Leucippus.Controllers
                 {
                     dm.create_scratch_slice(ViewBagMatrix.Instance.Width, nav_space,
                     ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor,
-                    ViewBagMatrix.Instance.CentralPosVector, ViewBagMatrix.Instance.LinearPosVector, ViewBagMatrix.Instance.PlanarPosVector ,
+                    ViewBagMatrix.Instance.CentralPosVector, ViewBagMatrix.Instance.LinearPosVector, ViewBagMatrix.Instance.PlanarPosVector,
                     ViewBagMatrix.Instance.CAtomStrucVector, ViewBagMatrix.Instance.LAtomStrucVector, ViewBagMatrix.Instance.PAtomStrucVector, DensitySingleton.Instance.FD.PA,
                     hov_min, hov_max
                     );
@@ -427,7 +418,7 @@ namespace Leucippus.Controllers
                 ViewBag.Error = e.Message;
                 return View();
             }
-            
+
         }
 
         private async Task<bool> loadFDFiles(string pdbcode)
@@ -451,7 +442,7 @@ namespace Leucippus.Controllers
                     ViewBag.DensityType = ViewBagMatrix.Instance.DensityType;
                     return true;
                 }
-                
+
                 else
                 {
                     ViewBag.Error = "Ccp4 matrix: " + ccp4Status;
@@ -473,19 +464,19 @@ namespace Leucippus.Controllers
             try
             {
                 ViewBag.Error = "";
-                ViewBagMatrix.Instance.PdbCode = pdbcode;                
+                ViewBagMatrix.Instance.PdbCode = pdbcode;
                 DataFiles dfs = new DataFiles("wwwroot/App_Data/");
                 List<DataFile> dataFiles = dfs.Files;
                 ViewBag.BbkPdbs = dfs.BbkPdbs;
                 ViewBag.SmallPdbs = dfs.SmallPdbs;
                 ViewBag.HighPdbs = dfs.HighPdbs;
                 ViewBag.SmallEmPdbs = dfs.SmallEmPdbs;
-                ViewBag.HighEmPdbs = dfs.HighEmPdbs;                
+                ViewBag.HighEmPdbs = dfs.HighEmPdbs;
                 //Load the density matrix
 
                 //if (DensitySingleton.Instance.needMatrix(ViewBagMatrix.Instance.PdbCode))
                 {
-                    bool ok = await loadFDFiles(ViewBagMatrix.Instance.PdbCode);                    
+                    bool ok = await loadFDFiles(ViewBagMatrix.Instance.PdbCode);
                 }
                 ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
                 ViewBag.EmCode = ViewBagMatrix.Instance.EmCode;
@@ -494,11 +485,11 @@ namespace Leucippus.Controllers
                 return View();
             }
             catch (Exception e)
-            {                
+            {
                 ViewBag.Error = "Error from server:" + e.Message;
                 return View();
             }
         }
-        
+
     }
 }

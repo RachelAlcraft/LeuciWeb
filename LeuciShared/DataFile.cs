@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LeuciShared
+﻿namespace LeuciShared
 {
     public class DataFiles
     {
@@ -19,10 +13,10 @@ namespace LeuciShared
             Files.Clear();
             string[] filePaths = Directory.GetFiles(filepath, "*.pdb");
             foreach (string pdbpath in filePaths)
-            {                                
+            {
                 DataFile df = new DataFile(pdbpath.Substring(17, 4));
                 Files.Add(df);
-                  
+
             }
             Files = Files.OrderBy(o => o.PdbCode).ToList();
 
@@ -42,8 +36,8 @@ namespace LeuciShared
 
         }
     }
-    
-    
+
+
     public class DataFile
     {
         public string PdbCode { get; set; } = "";

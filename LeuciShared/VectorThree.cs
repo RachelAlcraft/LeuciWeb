@@ -1,12 +1,4 @@
-﻿using LeuciShared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LeuciShared
+﻿namespace LeuciShared
 {
     public class VectorThree
     {
@@ -63,7 +55,7 @@ namespace LeuciShared
             double mag = (A * A) + (B * B) + (C * C);
             return Math.Sqrt(mag);
         }
-        public static VectorThree operator+ (VectorThree p, VectorThree q)
+        public static VectorThree operator +(VectorThree p, VectorThree q)
         {
             VectorThree r = new VectorThree();
             r.A = p.A + q.A;
@@ -71,7 +63,7 @@ namespace LeuciShared
             r.C = p.C + q.C;
             return r;
         }
-        public static VectorThree operator- (VectorThree p, VectorThree q)
+        public static VectorThree operator -(VectorThree p, VectorThree q)
         {
             VectorThree r = new VectorThree();
             r.A = p.A - q.A;
@@ -79,7 +71,7 @@ namespace LeuciShared
             r.C = p.C - q.C;
             return r;
         }
-        public static VectorThree operator/ (VectorThree p,double val)
+        public static VectorThree operator /(VectorThree p, double val)
         {
             VectorThree r = new VectorThree();
             r.A = p.A / val;
@@ -114,9 +106,9 @@ namespace LeuciShared
             double pz = C * vec.C;
             return px + py + pz;
         }
-        public string getKey(int round=4)
+        public string getKey(int round = 4)
         {
-            return "(" + Convert.ToString(Math.Round(A,round))+","+ Convert.ToString(Math.Round(B,round)) + "," + Convert.ToString(Math.Round(C,round)) + ")";
+            return "(" + Convert.ToString(Math.Round(A, round)) + "," + Convert.ToString(Math.Round(B, round)) + "," + Convert.ToString(Math.Round(C, round)) + ")";
         }
         public List<VectorThree> getArcPositions(VectorThree end, int count)
         {
@@ -148,7 +140,7 @@ namespace LeuciShared
             return new VectorThree(C, B, A);
         }
 
-        public VectorThree getPointPosition(double in_gap,double in_width)
+        public VectorThree getPointPosition(double in_gap, double in_width)
         {
             int nums = Convert.ToInt32(in_width / in_gap);
             double real_width = in_gap * nums;
@@ -159,8 +151,8 @@ namespace LeuciShared
             PP.A = PP.A / real_gap;
             PP.B = PP.B / real_gap;
             PP.C = PP.C / real_gap;
-            double adj = (real_width / (2 * real_gap));                                 
-            if ((int)(nums%2) != 0)            
+            double adj = (real_width / (2 * real_gap));
+            if ((int)(nums % 2) != 0)
                 adj -= 0.5;
             PP.A += adj;// + 1;
             PP.B += adj;
@@ -169,7 +161,7 @@ namespace LeuciShared
             //adjust in the x direction
             //PP.A = num - PP.A;
 
-            return new VectorThree(PP.B,PP.A,PP.C);
+            return new VectorThree(PP.B, PP.A, PP.C);
         }
     }
 }
