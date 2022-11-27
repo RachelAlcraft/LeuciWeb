@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LeuciShared
+﻿namespace LeuciShared
 {
     public class Cubelet
     {
@@ -153,7 +145,7 @@ namespace LeuciShared
             Layer = layer;
             Plane = plane;
             LayerMax = layermax;
-            
+
             for (int x = 0; x < endX; ++x)
             {
                 for (int y = 0; y < endY; ++y)
@@ -183,10 +175,10 @@ namespace LeuciShared
             int eY = _b;
             int eZ = _c;
 
-            int[] dims = new int[2] { 0, 0 };                        
+            int[] dims = new int[2] { 0, 0 };
             if (plane == "XY")
             {
-                dims[0]= _a;
+                dims[0] = _a;
                 dims[1] = _b;
                 LayerMax = eZ;
             }
@@ -228,5 +220,5 @@ namespace LeuciShared
             return ret;
         }
     }
-    
+
 }

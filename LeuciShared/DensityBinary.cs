@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
-
-namespace LeuciShared
+﻿namespace LeuciShared
 {
-   
+
     public class DensityBinary
     {
         public Dictionary<string, string> Words = new Dictionary<string, string>();
@@ -56,13 +47,13 @@ namespace LeuciShared
             {
                 Bytes = ReadBinaryFile(_fileName);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 try
                 {
                     Bytes = ReadBinaryFile(_fileName);
                 }
-                catch(Exception ee)
+                catch (Exception ee)
                 {
                     throw new Exception("Error creating binary so deleted " + _fileName + " - " + ee.Message);
                 }
@@ -176,7 +167,7 @@ namespace LeuciShared
             makeInfo();
             loadInfo();
             calcStats();
-            
+
         }
 
         /*public double[] makePlane(List<int[]> coords)
@@ -206,16 +197,16 @@ namespace LeuciShared
         {
             return bytesToDoubles(Bytes, xyz);
         }
-        public Dictionary<int,double> getFullList(int[] xyz)
+        public Dictionary<int, double> getFullList(int[] xyz)
         {
-            int count = 0;            
-            Dictionary<int,double> matvals=new Dictionary<int,double>();            
+            int count = 0;
+            Dictionary<int, double> matvals = new Dictionary<int, double>();
             for (int i = Bstart; i < Bytes.Length; i += 4)
-            {                
+            {
                 Single value = BitConverter.ToSingle(Bytes, i);
-                matvals[count] = Convert.ToDouble(value);                                
+                matvals[count] = Convert.ToDouble(value);
                 count++;
-                
+
             }
             return matvals;
         }
@@ -232,7 +223,7 @@ namespace LeuciShared
         {
             Single value = BitConverter.ToSingle(bytes, start);
             return value;
-        }        
+        }
         private string bytesToString(byte[] bytes, int start, int length)
         {
             byte[] result = new byte[length];
@@ -247,11 +238,11 @@ namespace LeuciShared
         }
 
         private void calcStats()
-        {            
+        {
             Mean = Convert.ToDouble(Words["22_DMEAN"]);
             Sd = Convert.ToDouble(Words["RMS"]);
             DMin = Convert.ToDouble(Words["20_DMIN"]);
-            DMax = Convert.ToDouble(Words["21_DMAX"]);            
+            DMax = Convert.ToDouble(Words["21_DMAX"]);
             /*
             double sum = 0;
             int count = 0;
@@ -268,10 +259,10 @@ namespace LeuciShared
             sdSum /= count;
             Sd = Math.Sqrt(sdSum);*/
         }
-        private Dictionary<int,double> bytesToDoubles(byte[] bytes, List<int> poses)
-        {            
+        private Dictionary<int, double> bytesToDoubles(byte[] bytes, List<int> poses)
+        {
             int count = 0;
-            int start = bytes.Length - (4 * Blength);                     
+            int start = bytes.Length - (4 * Blength);
             // add the reduced numbre of required values to the list
             //Dictionary<int,double> matvals=new Dictionary<int,double>();
             List<Single> vals = new List<Single>();
@@ -295,13 +286,13 @@ namespace LeuciShared
                     Single value = BitConverter.ToSingle(bytes, start + pos * 4);
                     vals.Add(value);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     string msg = e.Message;
                 }
             }
 
-            Dictionary<int,double> matvals=new Dictionary<int,double>();
+            Dictionary<int, double> matvals = new Dictionary<int, double>();
             for (int m = 0; m < poses.Count; ++m)
             {
                 if (matvals.ContainsKey(poses[m]))
@@ -318,7 +309,7 @@ namespace LeuciShared
 
             return matvals;
         }
-        
+
         public void createMatrix(int xl, int xu, int yl, int yu, int zl, int zu)
         {
             int z = Convert.ToInt32(Words["01_NX"]);
@@ -329,18 +320,18 @@ namespace LeuciShared
             List<int> poses = new List<int>();
             int pos = 0;
             for (int i = 0; i < x; ++i)
-            {                
+            {
                 for (int j = 0; j < y; ++j)
-                {                        
+                {
                     for (int k = 0; k < z; ++k)
                     {
-                        if ((i >= xl && i < xu)  && (j >= yl && j < yu) && (k >= zl && k < zu) || xl+xu+yl+yu+zl+zu==-6)
+                        if ((i >= xl && i < xu) && (j >= yl && j < yu) && (k >= zl && k < zu) || xl + xu + yl + yu + zl + zu == -6)
                         {
                             poses.Add(pos);
                         }
                         pos++;
-                    }                        
-                }                
+                    }
+                }
             }
             //_myMatrixList = bytesToDoubles(_bytes,poses);            
         }
@@ -348,35 +339,35 @@ namespace LeuciShared
         ///////////////////////////////////////////////////
         private void loadInfo()
         {
-        
+
             int len = Convert.ToInt32(Words["01_NX"]) * Convert.ToInt32(Words["02_NY"]) * Convert.ToInt32(Words["03_NZ"]);
-            
-            calculateOrthoMat(      Convert.ToDouble(Words["11_CELLA_X"]), Convert.ToDouble(Words["12_CELLA_Y"]), Convert.ToDouble(Words["13_CELLA_Z"]),
+
+            calculateOrthoMat(Convert.ToDouble(Words["11_CELLA_X"]), Convert.ToDouble(Words["12_CELLA_Y"]), Convert.ToDouble(Words["13_CELLA_Z"]),
                                     Convert.ToDouble(Words["14_CELLB_X"]), Convert.ToDouble(Words["15_CELLB_Y"]), Convert.ToDouble(Words["16_CELLB_Z"]));
-            
-            calculateOrigin(Convert.ToInt32(Words["05_NXSTART"]), Convert.ToInt32(Words["06_NYSTART"]), Convert.ToInt32(Words["07_NZSTART"]), 
+
+            calculateOrigin(Convert.ToInt32(Words["05_NXSTART"]), Convert.ToInt32(Words["06_NYSTART"]), Convert.ToInt32(Words["07_NZSTART"]),
                             Convert.ToInt32(Words["17_MAPC"]), Convert.ToInt32(Words["18_MAPR"]), Convert.ToInt32(Words["08_MX"]), Convert.ToInt32(Words["09_MY"]), Convert.ToInt32(Words["10_MZ"]));
 
             _map2xyz[Convert.ToInt32(Words["17_MAPC"])] = 0;
             _map2xyz[Convert.ToInt32(Words["18_MAPR"])] = 1;
             _map2xyz[Convert.ToInt32(Words["19_MAPS"])] = 2;
-            
+
             _map2crs[0] = Convert.ToInt32(Words["17_MAPC"]);
             _map2crs[1] = Convert.ToInt32(Words["18_MAPR"]);
             _map2crs[2] = Convert.ToInt32(Words["19_MAPS"]);
-            
+
             _cellDims[0] = Convert.ToDouble(Words["11_CELLA_X"]);
             _cellDims[1] = Convert.ToDouble(Words["12_CELLA_Y"]);
             _cellDims[2] = Convert.ToDouble(Words["13_CELLA_Z"]);
-            
+
             _axisSampling[0] = Convert.ToInt32(Words["08_MX"]);
             _axisSampling[1] = Convert.ToInt32(Words["09_MY"]);
             _axisSampling[2] = Convert.ToInt32(Words["10_MZ"]);
-            
+
             _crsStart[0] = Convert.ToInt32(Words["05_NXSTART"]);
             _crsStart[1] = Convert.ToInt32(Words["06_NYSTART"]);
             _crsStart[2] = Convert.ToInt32(Words["07_NZSTART"]);
-            
+
             _dimOrder[0] = Convert.ToInt32(Words["01_NX"]);
             _dimOrder[1] = Convert.ToInt32(Words["02_NY"]);
             _dimOrder[2] = Convert.ToInt32(Words["03_NZ"]);

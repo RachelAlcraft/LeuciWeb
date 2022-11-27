@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-
-namespace LeuciShared
+﻿namespace LeuciShared
 {
     public sealed class DensitySingleton
     {
@@ -31,17 +23,28 @@ namespace LeuciShared
         private string _pdbcode = "";
         private string _interp = "BSPLINE3";
         private DensityMatrix _dm;
-        public FileDownloads FD;        
+        public FileDownloads FD;
         public bool NewMatrix = false;
         private int _fos = 2;
         private int _fcs = -1;
 
-        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp,int fos,int fcs)
+        public bool needMatrix(string pdbcode)
         {
             bool calc = false;
             NewMatrix = false;
             if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
-            { 
+            {
+                calc = true;
+            }
+            return calc;
+        }
+
+        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp, int fos, int fcs)
+        {
+            bool calc = false;
+            NewMatrix = false;
+            if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
+            {
                 calc = true;
             }
             if (fos != _fos || fcs != _fcs)
@@ -51,25 +54,25 @@ namespace LeuciShared
                 _fcs = fcs;
             }
             else if (interp != _interp && interp != "")
-            {                
+            {
                 _interp = interp;
                 if (_dm != null)
                     _dm.changeInterp(_interp);
             }
-            
+
             if (!calc)
             {
                 NewMatrix = false;
                 return _dm;
             }
             else
-            {                                                
+            {
                 _pdbcode = pdbcode;
                 try
                 {
                     _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     try
                     {
@@ -79,7 +82,7 @@ namespace LeuciShared
                     {
                         _pdbcode = "";
                         File.Delete(FD.EmFilePath);
-                        throw new Exception("Error creating binary so deleted " + FD.EmFilePath + " - " + ee.Message);                        
+                        throw new Exception("Error creating binary so deleted " + FD.EmFilePath + " - " + ee.Message);
                     }
 
                 }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LeuciShared
-{    
+﻿namespace LeuciShared
+{
     // -- �Rachel Alcraft 2020, DensityFlight --
     // -- LinearAlgebra matrices for multivariate interpolation --
     // -- This file has been automatically generated from python --

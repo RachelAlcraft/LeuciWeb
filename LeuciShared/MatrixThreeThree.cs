@@ -1,13 +1,4 @@
-﻿using LeuciShared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.Intrinsics;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LeuciShared
+﻿namespace LeuciShared
 {
     public class MatrixThreeThree
     {
@@ -16,7 +7,7 @@ namespace LeuciShared
         public MatrixThreeThree()
         {
             _matrix = new List<double>();
-            for (int i = 0; i< 9; ++i)
+            for (int i = 0; i < 9; ++i)
             {
                 _matrix.Add(0);
             }
@@ -41,7 +32,7 @@ namespace LeuciShared
             transp.Add(_matrix[2]);
             transp.Add(_matrix[5]);
             transp.Add(_matrix[8]);
-            
+
             MatrixThreeThree transpose = new MatrixThreeThree(transp);
             MatrixThreeThree matinverse = new MatrixThreeThree();
             MatrixThreeThree matinverseSwitch = new MatrixThreeThree();
@@ -57,7 +48,7 @@ namespace LeuciShared
                     matinverse.putValue(detReduced * factor / detWhole, i, j);
                     factor *= -1;
                 }
-            }            
+            }
             return matinverse;
         }
 

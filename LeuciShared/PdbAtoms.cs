@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LeuciShared
+﻿namespace LeuciShared
 {
     public class PdbAtoms
     {
@@ -20,7 +12,7 @@ namespace LeuciShared
             foreach (string line in lines)
             {
                 if (line.Substring(0, 4) == "ATOM" || line.Substring(0, 6) == "HETATM")
-                {                                                                                
+                {
                     //The coordinates are at fixed points in the pdb file
                     //ATOM     71  H CYS A   4      12.789   8.657  11.035  1.00  2.08           H
                     string AtomNo = line.Substring(6, 5).Trim();
@@ -44,7 +36,7 @@ namespace LeuciShared
                     if (occupant == "")
                         occupant = "A";
                     string chimera = Chain + ":" + ResidueNo + "@" + AtomType + "." + occupant;
-                    _atoms.Add(chimera, new VectorThree(X,Y,Z));
+                    _atoms.Add(chimera, new VectorThree(X, Y, Z));
                     _aas.Add(chimera, AA);
                 }
 
@@ -68,12 +60,12 @@ namespace LeuciShared
             return atom;
         }
         public VectorThree getCoords(string atom)
-        {                        
+        {
             if (_atoms.ContainsKey(atom))
                 return _atoms[atom];
             if (_atoms.ContainsKey(atom + ".A"))
                 return _atoms[atom + ".A"];
-            return new VectorThree(0,0,0);
+            return new VectorThree(0, 0, 0);
         }
 
         public string[] getFirstThreeCoords()
@@ -90,7 +82,7 @@ namespace LeuciShared
                     {
                         v3[0] = atm.Key;
                         count++;
-                    }                    
+                    }
                 }
                 else if (atm.Key.IndexOf("@CA.A") > 0)
                 {
@@ -120,16 +112,16 @@ namespace LeuciShared
                 count++;
                 if (count >= 3)
                     return v3;
-            }            
+            }
             return v3;
         }
 
-        public List<string> getNearAtoms(VectorThree near, double hover_min,double hover_max)
+        public List<string> getNearAtoms(VectorThree near, double hover_min, double hover_max)
         {
             // max -1 means none
             // ax and min of 0 mins nearest only
             // a range means just that, but ALSO the nearest.
-            
+
             List<String> ats = new List<string>();
             List<double> diss = new List<double>();
             try
@@ -140,12 +132,12 @@ namespace LeuciShared
                     {
                         double distance = near.distance(atm.Value);
                         if (Math.Abs(distance) <= hover_max || hover_max == 0)
-                        {                                                        
+                        {
                             var index = diss.BinarySearch(distance);
                             if (index < 0) index = ~index;
                             diss.Insert(index, distance);
                             string aa = _aas[atm.Key];
-                            ats.Insert(index, aa + " " + atm.Key + "=" + Convert.ToString(Math.Round(distance, 4)));                            
+                            ats.Insert(index, aa + " " + atm.Key + "=" + Convert.ToString(Math.Round(distance, 4)));
                         }
                     }
                     if (hover_max == 0 && hover_min == 0)//nearest only
@@ -158,7 +150,7 @@ namespace LeuciShared
                     {
                         List<String> ats_v2 = new List<string>();
                         ats_v2.Add(ats[0]);
-                        for(int i=1; i < diss.Count; ++i)
+                        for (int i = 1; i < diss.Count; ++i)
                         {
                             if (diss[i] > hover_min)
                                 ats_v2.Add(ats[i]);
@@ -167,7 +159,7 @@ namespace LeuciShared
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 
             }

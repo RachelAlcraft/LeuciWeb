@@ -1,7 +1,5 @@
-﻿using ChartDirector;
-using Leucippus.Models;
+﻿using Leucippus.Models;
 using Microsoft.AspNetCore.Mvc;
-using Plotly.NET;
 using System.Diagnostics;
 
 namespace Leucippus.Controllers
@@ -13,7 +11,7 @@ namespace Leucippus.Controllers
 
         public HomeController(ILogger<HomeController> logger)
         {
-            _logger = logger;            
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -21,8 +19,8 @@ namespace Leucippus.Controllers
             return View();
         }
 
-        public IActionResult Explore(string PdbCode="6eex",double XX=25, double YY=25, double ZZ=25)
-        {            
+        public IActionResult Explore(string PdbCode = "6eex", double XX = 25, double YY = 25, double ZZ = 25)
+        {
             return View();
         }
         public IActionResult Privacy()
@@ -31,7 +29,7 @@ namespace Leucippus.Controllers
         }
 
         public IActionResult About()
-        {         
+        {
             return View();
         }
 
@@ -39,7 +37,7 @@ namespace Leucippus.Controllers
         {
             return View();
         }
-        
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

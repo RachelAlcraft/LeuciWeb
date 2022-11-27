@@ -1,15 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Numerics;
-using System.Reflection.Emit;
-using System.Runtime.Intrinsics;
-using System.Text;
-using System.Threading.Tasks;
-
-/*
+﻿/*
  * This pattern allows an asynchronous constructir
  * https://stackoverflow.com/questions/8145479/can-constructors-be-async/31471915#31471915
  */
@@ -24,10 +13,10 @@ namespace LeuciShared
         private int _B;
         private int _C;
         public string Info = "";
-        
+
         private DensityBinary _densityBinary;
         private DensityBinary _densityDiffBinary;
-        private Cubelet _cublet;        
+        private Cubelet _cublet;
         public double[] MatA = new double[0];
         public double[] MatB = new double[0];
         public double[] MatC = new double[0];
@@ -55,7 +44,7 @@ namespace LeuciShared
         public double[]? SliceProjBlueAtomsY;
         public double[]? SlicePlaneAtomsX;
         public double[]? SlicePlaneAtomsY;
-        public double[]? SliceAxis;       
+        public double[]? SliceAxis;
         private Interpolator _interpMap;
         private string _interp;
         private int _fos;
@@ -65,38 +54,38 @@ namespace LeuciShared
         private double _combMin;
         private double _combMax;
 
-        public static async Task<DensityMatrix> CreateAsync(string pdbcode,string empath,string diffpath,string interp, int fos, int fcs)
-        {            
+        public static async Task<DensityMatrix> CreateAsync(string pdbcode, string empath, string diffpath, string interp, int fos, int fcs)
+        {
             DensityMatrix x = new DensityMatrix();
-            x.InitializeAsync(empath,diffpath,interp,fos,fcs);
+            x.InitializeAsync(empath, diffpath, interp, fos, fcs);
             return x;
         }
         private DensityMatrix() { }
-        private void InitializeAsync(string edFile,string difFile,string interp, int fos, int fcs)
+        private void InitializeAsync(string edFile, string difFile, string interp, int fos, int fcs)
         {
             //_emcode = emcode;
             //string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
             //await DownloadAsync(edFile);
             _fos = fos;
             _fcs = fcs;
-            
+
             _densityBinary = new DensityBinary(edFile);
             if (difFile != "")
             {
                 // for non cryo-em, the max, min, mean and sd are dependent on the fo and fc values
-                _densityDiffBinary = new DensityBinary(difFile);                
+                _densityDiffBinary = new DensityBinary(difFile);
             }
             else
             {
-                _densityDiffBinary = null;                
+                _densityDiffBinary = null;
             }
             _A = _densityBinary.Z3_cap;//Convert.ToInt32(_densityBinary.Words["03_NZ"]);
             _B = _densityBinary.Y2_cap;//Convert.ToInt32(_densityBinary.Words["02_NY"]);
             _C = _densityBinary.X1_cap;//Convert.ToInt32(_densityBinary.Words["01_NX"]);
-            Info = _densityBinary.Info;            
-            _cublet = new Cubelet(_A, _B, _C);            
+            Info = _densityBinary.Info;
+            _cublet = new Cubelet(_A, _B, _C);
             changeInterp(interp);
-            
+
 
 
         }
@@ -140,39 +129,39 @@ namespace LeuciShared
 
             _interp = interp;
             if (_interp == "BSPLINEWHOLE")
-                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A,3);
-            else if (_interp == "LINEAR")                
+                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3);
+            else if (_interp == "LINEAR")
                 _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 1);
             else if (_interp == "CUBIC")
-                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A,3);                
-            else if (_interp == "BSPLINE3")                
+                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3);
+            else if (_interp == "BSPLINE3")
                 _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64);
             else
-                _interpMap = new Nearest(fofc, 0, _densityBinary.Blength,_C, _B, _A);
-        }                
+                _interpMap = new Nearest(fofc, 0, _densityBinary.Blength, _C, _B, _A);
+        }
         private void createData()
         {
-            if (!_densityBinary.INIT)            
-                changeInterp(_interp);                            
+            if (!_densityBinary.INIT)
+                changeInterp(_interp);
         }
-        private void createNewInterpData(Dictionary<int,double> shorterlist,int x,int y,int z)
+        private void createNewInterpData(Dictionary<int, double> shorterlist, int x, int y, int z)
         {
-            if (!_densityBinary.INIT)            
+            if (!_densityBinary.INIT)
                 _densityBinary.Init();
             //if (_interp == "BSPLINE")
             //    (_interpMap as BetaSpline).makeSubMatrix(0,0,0,0,0,0);
-                        
-        }        
+
+        }
         public void calculatePlane(string plane, int layer)
         {
             createData();
             //TODO check if it needs to be recalced            
             int[] XY = _cublet.getPlaneDims(plane, layer);
-            LayerMax = _cublet.LayerMax;            
+            LayerMax = _cublet.LayerMax;
             if (layer > LayerMax)
                 layer = LayerMax;
             Layer = layer;
-            
+
             List<int[]> coords = _cublet.getPlaneCoords3d(plane, layer);
             List<double> doubless = new List<double>();
             for (int i = 0; i < coords.Count; ++i)
@@ -182,25 +171,25 @@ namespace LeuciShared
                 doubless.Add(_interpMap.getExactValueBinary(coord[0], coord[1], coord[2]));
             }
             MatD = _cublet.makeSquare(doubless, XY);
-                        
+
             MatA = new double[XY[1]];
             MatB = new double[XY[0]];
-            MatC = new double[XY[0]*XY[1]];
+            MatC = new double[XY[0] * XY[1]];
             int count = 0;
-            for (int a=0; a < XY[0]; ++a)
+            for (int a = 0; a < XY[0]; ++a)
             {
                 MatB[a] = a;
                 for (int b = 0; b < XY[1]; ++b)
                 {
                     MatA[b] = b;
-                    MatC[count] = MatD[a][b];                    
+                    MatC[count] = MatD[a][b];
                     DMin = Math.Min(DMin, MatC[count]);
                     DMax = Math.Max(DMin, MatC[count]);
                     count++;
 
                 }
-            }            
-        }        
+            }
+        }
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
                                 VectorThree central, VectorThree linear, VectorThree planar,
                                 VectorThree acentral, VectorThree alinear, VectorThree aplanar,
@@ -209,12 +198,12 @@ namespace LeuciShared
             ////////////// general settings for the view /////////////////////
             // we want general info of the max and min given the sd setting
             DenMin = _combMin;
-            DenMax = _combMax;            
+            DenMax = _combMax;
             if (sd)
             {
                 DenMin = (_combMin - _combMean) / _combSd;
-                DenMax = (_combMax - _combMean) / _combSd;                
-            }            
+                DenMax = (_combMax - _combMean) / _combSd;
+            }
             ////////////////////////////////////////////////////////////////////
 
             // we want to first build a smaller cube around the centre
@@ -225,7 +214,7 @@ namespace LeuciShared
             int ymax = (int)Math.Floor(crs_centre.B) + 16;
             int zmin = (int)Math.Floor(crs_centre.C) - 16;
             int zmax = (int)Math.Floor(crs_centre.C) + 16;
-            List<int[]> coords = _cublet.getCubeCoords3d(xmin, xmax, ymin, ymax, zmin,zmax);
+            List<int[]> coords = _cublet.getCubeCoords3d(xmin, xmax, ymin, ymax, zmin, zmax);
 
             //then find the coordinates for it as positions
             List<int> poses = new List<int>();
@@ -233,12 +222,12 @@ namespace LeuciShared
             {
                 poses.Add(_interpMap.getExactPos(xyz[0], xyz[1], xyz[2]));
             }
-            
+
             //Dictionary<int, double> doubles = _densityBinary.getShorterList(poses);                        
             //then create a smaller interpolator                        
             //createNewInterpData(doubles,32,32,32);
-            
-            
+
+
 
             int nums = Convert.ToInt32(width / gap);
             int halfLength = Convert.ToInt32((nums) / 2);
@@ -248,7 +237,7 @@ namespace LeuciShared
             LMax = -100;
 
             Space = new SpaceTransformation(central, linear, planar);
-                        
+
             VectorThree posC = Space.reverseTransformation(central);
             VectorThree posL = Space.reverseTransformation(linear);
             VectorThree posP = Space.reverseTransformation(planar);
@@ -268,11 +257,11 @@ namespace LeuciShared
             List<VectorThree> lSlicePositionAB = new List<VectorThree>(); // for off plane - in front (blue)
             List<VectorThree> lSlicePositionP = new List<VectorThree>(); // for on plane
 
-            if (posCp.A < nums && posCp.B < nums)            
-                lSlicePosition.Add(posCp);                            
-            if (posLp.A < nums && posLp.B < nums)            
-                lSlicePosition.Add(posLp);                            
-            if (posPp.A < nums && posPp.B < nums)            
+            if (posCp.A < nums && posCp.B < nums)
+                lSlicePosition.Add(posCp);
+            if (posLp.A < nums && posLp.B < nums)
+                lSlicePosition.Add(posLp);
+            if (posPp.A < nums && posPp.B < nums)
                 lSlicePosition.Add(posPp);
 
             // the atoms may be on of off plane
@@ -348,7 +337,7 @@ namespace LeuciShared
             {
                 SliceLaplacian = new double[0][];
             }
-            
+
             for (int m = 0; m < nums; ++m)
             {
                 int i = m - halfLength;
@@ -364,20 +353,20 @@ namespace LeuciShared
                 }
                 else if (_interp == "LINEAR")
                 {
-                    SliceDensity[m] = new double[nums];                    
+                    SliceDensity[m] = new double[nums];
                     SliceRadient[m] = new double[nums];
                     Annotations[m] = new string[nums];
                 }
                 else
                 {
-                    SliceDensity[m] = new double[nums];                    
+                    SliceDensity[m] = new double[nums];
                     SliceRadient[m] = new double[nums];
                     SliceLaplacian[m] = new double[nums];
                     Annotations[m] = new string[nums];
                 }
 
                 for (int n = 0; n < nums; ++n)
-                {                    
+                {
                     int j = n - halfLength;
                     double x0 = (i * gap);
                     double y0 = (j * gap);
@@ -386,9 +375,15 @@ namespace LeuciShared
                     VectorThree crs = _densityBinary.getCRSFromXYZ(transformed);
                     List<string> atom_names = PA.getNearAtoms(transformed, hover_min, hover_max);
                     Annotations[m][n] = "";
-                    foreach (string an in atom_names)                    
+                    if (hover_min + hover_max != -2)
+                    {
+                        // first add to the annotations the XYZ and CRS position of this point
+                        Annotations[m][n] += "<br>CRS=" + crs.getKey(0);
+                        Annotations[m][n] += "<br>XYZ=" + transformed.getKey(4) + " ";
+                    }
+                    foreach (string an in atom_names)
                         Annotations[m][n] += "<br>" + an;
-                    
+
 
                     if (_densityBinary.AllValid(crs))
                     {
@@ -397,8 +392,8 @@ namespace LeuciShared
                         {
                             density = (density - _combMean) / _combSd;
                         }
-                        SliceDensity[m][n] = density;                        
-                        
+                        SliceDensity[m][n] = density;
+
                         DMin = Math.Min(DMin, density);
                         DMax = Math.Max(DMax, density);
                         if (_interp.Contains("BSPLINE") || _interp == "LINEAR" || _interp == "CUBIC")
@@ -413,11 +408,11 @@ namespace LeuciShared
                             LMin = Math.Min(LMin, laplacian);
                             LMax = Math.Max(LMax, laplacian);
                         }
-                        
+
                     }
                     else
                     {
-                        SliceDensity[m][n] = -1;                        
+                        SliceDensity[m][n] = -1;
                         if (_interp.Contains("BSPLINE") || _interp == "CUBIC")
                         {
                             SliceRadient[m][n] = -1;
@@ -430,7 +425,7 @@ namespace LeuciShared
                     }
 
                 }
-            }            
+            }
         }
 
     }

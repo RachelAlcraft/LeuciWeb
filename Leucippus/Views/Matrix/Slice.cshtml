@@ -58,37 +58,40 @@
 </div>
 
 <div class="tab">
-<span>
-    <input type="submit" value="Atoms" id="Atoms" onclick="ChangeTab('t1')" style="border:none;"/>
-    <input type="submit" value="Neighbours" id="Neighbours" onclick="ChangeTab('t3')" style="border:none;" />
-    <input type="submit" value="Settings" id="Settings" onclick="ChangeTab('t2')" style="border:none;"/>    
-    <input type="submit" value="Advanced" id="Advanced" onclick="ChangeTab('t4')" style="border:none;" />    
+<span>    
+    <input type="submit" value="Atoms" id="tabAtoms" onclick="ChangeTab('t1')" style="border:none;display:@ViewBag.TabAClick"/>
+    <span style="border:none;display:@ViewBag.TabAName;font-weight:bold">@ViewBag.TabName</span>    
+    <input type="submit" value="Neighbours" id="tabNeighbours" onclick="ChangeTab('t3')" style="border:none;display:@ViewBag.TabNClick"/>
+    <span style="border:none;display:@ViewBag.TabNName;font-weight:bold">@ViewBag.TabName</span>    
+    <input type="submit" value="Settings" id="tabSettings" onclick="ChangeTab('t2')" style="border:none;display:@ViewBag.TabSClick"/>
+    <span style="border:none;display:@ViewBag.TabSName;font-weight:bold">@ViewBag.TabName</span>    
+    <input type="submit" value="Advanced" id="tabAdvanced" onclick="ChangeTab('t4')" style="border:none;display:@ViewBag.TabXClick"/>
+    <span style="border:none;display:@ViewBag.TabXName;font-weight:bold">@ViewBag.TabName</span>    
    
 </span>
 </div>
 <!--##################################### TAB DISPLAY SECTION - ATOMS ############################################# -->
-<div id="Atoms" class="tabcontent" style="display:@ViewBag.T1Display">
-    <h3>Atoms</h3>
+    <div id="Atoms" class="tabcontent" style="display:@ViewBag.T1Display;background-color:Seashell">
     <div>
         <table>
         <tr>
             <td style="width:85%;">
                 <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
                 <tr>
-                        <th style="width:20%;background:lightblue">
+                        <th style="width:20%;background:Gainsboro">
                             <a href=@ViewBag.BrowseAtoms target="_blank">Browse atoms</a>
                         </th>
-                        <th style="background:lightblue;" colspan="1" align="center">
+                        <th style="background:Gainsboro;" colspan="1" align="center">
                             <table style="width:100%;border:none;margin:unset;padding:unset">
                                 <tr>
-                                    <td style="background:lightblue;"><input type="submit" value="<<"  onclick="ForceRefreshAtoms(-1)" /></td>
-                                    <td style="background:lightblue;"><input type="submit" value="Submit Atoms"  onclick="ForceRefreshAtoms(0)" /></td>
-                                    <td style="background:lightblue;"><input type="submit" value=">>"  onclick="ForceRefreshAtoms(1)" /></td>
+                                    <td style="background:Gainsboro;"><input type="submit" value="<<"  onclick="ForceRefreshAtoms(-1)" /></td>
+                                    <td style="background:Gainsboro;"><input type="submit" value="Submit Atoms"  onclick="ForceRefreshAtoms(0)" /></td>
+                                    <td style="background:Gainsboro;"><input type="submit" value=">>"  onclick="ForceRefreshAtoms(1)" /></td>
                                 </tr>
                             </table>                                                                                    
                         </th>
-                        <th style="background:lightblue;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)"  onclick="ForceRefreshCoords()" /></th>                        
-                        <th style="background:lightblue;color:crimson" colspan="1" align="center">distance</th>                
+                        <th style="background:Gainsboro;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)"  onclick="ForceRefreshCoords()" /></th>                        
+                        <th style="background:Gainsboro;color:navy" colspan="1" align="center">distance</th>                
                     </tr>                        
                 <tr>
                     <td>central</td>
@@ -111,7 +114,7 @@
 
                 
             <tr>
-                <td colspan="4" style="background:lightblue;color:crimson">Density Range (@ViewBag.ValSd)</td>
+                <td colspan="4" style="background:Gainsboro;color:navy">Density Range (@ViewBag.ValSd)</td>
             </tr>
             <tr>                                  
                 <td style="background:LightCyan;"><span>Min=@ViewBag.DenMin</span>: Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span></td>
@@ -129,7 +132,7 @@
             <span>            
             <a style="float:left" href="Slice?nav=minus&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
             <img src="~/images/plus.svg" alt="zoom in" style="width:35px;height:35px;"></a>
-            <a style="float:centre" href="Slice?refresh_mode=F&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+            <a style=";" href="Slice?refresh_mode=F&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
             <img src="~/images/refresh.svg" alt="zoom in" style="width:30px;height:30px;"></a>
             <a style="float:right" href="Slice?nav=plus&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
             <img src="~/images/minus.svg" alt="zoom in" style="width:35px;height:35px;"></a>
@@ -195,8 +198,7 @@
     </div>
 </div>
 <!-- #################################### TAB DISPLAY SECTION SETTINGS ######################################-->
-<div id="Settings" class="tabcontent" style="display:@ViewBag.T2Display">
-    <h3>Settings</h3>
+    <div id="Settings" class="tabcontent" style="display:@ViewBag.T2Display;background-color:Seashell">
     <div>
         <table>
             <tr>                
@@ -242,22 +244,73 @@
     </div>
 </div>
 <!-- ############################# TAB NEIGHBOURS ########################################## -->
-<div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display">
-    <h3>Neighbours</h3>
-    <p>Choose range for nearest atoms: (-1,-1)= none, (0,0)=nearest, otherwise specify a range</p>
-    <table>                     
-    <tr>        
-        <td>Min Nearest</td>
-        <td><input id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
-        <td>Max Nearest</td>
-        <td><input id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
-    </tr>        
+<div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display;background-color:Seashell">    
+    <!--<p>Choose range for nearest atoms:[0,0]=nearest, otherwise specify a range</p>-->
+    <table>
+        <tr>
+            <th>Neighbours range (A)</th>
+            <th>Navigate to...</th>
+            <th>Neighbours</th>            
+        </tr>
+            <tr style="vertical-align:top;">
+            <td style="vertical-align:top;background-color:Seashell;border:none">
+                <table style="vertical-align:top;">                    
+                    <tr>        
+                    <td>Min Nearest</td>
+                    <td><input style="width:50px" id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
+                    <td>Max Nearest</td>
+                    <td><input style="width:50px"  id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
+                    </tr>        
+                    <tr>
+                    <th style="border:none;align:left;">
+                        <input style="width:65px;align:left;" type="submit" value="Update" onclick="ForceRefreshCoords()" />
+                    </th>            
+                    <td style="border:none;align:left;background:seashell"></td>
+                    <td style="border:none;align:left;background:seashell"></td>
+                    <td style="border:none;align:left;background:seashell"></td>
+                    </tr>                                        
+                </table>                
+
+            </td>            
+            <td style="vertical-align:top;background-color:Seashell;border:none">
+                <table>                
+                <tr>
+                    <td colspan="3">
+                        <input type="text" id="update_atom" name="update_atom" value=@ViewBag.cAtom>                        
+                    </td>
+                </tr>
+                <tr>
+                    <th><input type="submit" value="Central" onclick="makeAtom('C')"/></th>
+                    <th><input type="submit" value="Linear" onclick="makeAtom('L')"/></th>                  
+                    <th><input type="submit" value="Planar" onclick="makeAtom('P')"/></th>                                 
+                </tr>     
+                <tr>
+                    <td>@ViewBag.cAtom</td>
+                    <td>@ViewBag.lAtom</td>
+                    <td>@ViewBag.pAtom</td>
+                </tr>
+            </table>
+            </td>
+            <td style="vertical-align:top;background-color:Seashell;border:none">
+                <div id="hoverInfo3" >
+                    <table>                                        
+                    <tr>                                                            
+                    <td colspan="3">Click images for neighbour lists</td>
+                    <tr>
+                    <th>AA</th>
+                    <th>Atom</th>
+                    <th>Distance</th>
+                    </tr>
+                    </table>                
+                </div>            
+            </td>            
+        </tr>
     </table>
-    <input type="submit" value="Update" onclick="ForceRefreshCoords()"/>
+    
+        
 </div>
 <!-- ############################# TAB ADVANCED ########################################## -->
-<div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display">
-    <h3>Advanced</h3>            
+    <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display;background-color:Seashell">
     <table>
     <tr>
         <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Extra Interpolation methods</td>
@@ -325,6 +378,7 @@
     pa = @ViewBag.pAtom,
     fos = @ViewBag.Fos,
     fcs = @ViewBag.Fcs,
+    interp = @ViewBag.Interp,
     width = @ViewBag.Width,
     gap = @ViewBag.Gap,
     ydots = @ViewBag.YellowDots,
@@ -486,7 +540,8 @@
             cs = [[0, 'Snow'], [1, 'Black']]
         }
         else if (dhue == "RedBlueZero") {
-            cs = [[0, 'CornflowerBlue'], [String(zero_frac), 'Snow'], [1, 'Crimson']]
+            //cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
+            cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [1, 'Navy']]
         }
         else {
             cs = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[0.99, 'Black']]
@@ -505,7 +560,8 @@
             cs_lap = [[0, 'Snow'], [1, 'Black']]
         }
         else if (lhue == "RedBlueZero") {
-            cs_lap = [[0, 'CornflowerBlue'], [String(zero_frac_lap), 'AliceBlue'],[String(lev1), 'Snow'], [1, 'Crimson']]
+            //cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'AliceBlue'], [String(lev1), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
+            cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'Snow'], [String(lev1), 'AliceBlue'], [1, 'Navy']]
         }
         else {
             cs_lap = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
@@ -518,7 +574,7 @@
             cs_rad = [[0, 'Black'], [1, 'Snow']]
        }
        else if (rhue == "RedBlueZero") {
-            cs_rad = [[0, 'CornflowerBlue'], [0.49, 'AliceBlue'], [0.51, 'Snow'], [1, 'Crimson']]
+            cs_rad = [[0, 'Navy'], [0.49, 'AliceBlue'], [0.51, 'Snow'], [1, 'Crimson']]
         }
        else {
             cs_rad = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
@@ -925,22 +981,32 @@
 </script>
 <script>
     function ChangeTab(tab) {
+        
+        document.getElementById("tabAtoms").style.color = "Black";
+        document.getElementById("tabNeighbours").style.color = "Black";
+        document.getElementById("tabSettings").style.color = "Black";
+        document.getElementById("tabAdvanced").style.color = "Black";
+        
         if (tab == 't1'){
             document.getElementById("t1").value = 1;
             document.getElementById("tabview").value = "A";
+            document.getElementById("tabAtoms").style.color = "crimson";
         }
         else if (tab == 't2'){
             document.getElementById("t2").value = 1;
             document.getElementById("tabview").value = "S";
+            document.getElementById("tabSettings").style.color = "crimson";
         }
         else if (tab == 't3'){
             document.getElementById("t3").value = 1;
             document.getElementById("tabview").value = "N";            
+            document.getElementById("tabNeighbours").style.color = "crimson";
         }
         else if (tab == 't4'){
             document.getElementById("t4").value = 1;
             document.getElementById("tabview").value = "X";
-        }                
+            document.getElementById("tabAdvanced").style.color = "crimson";
+        }        
     }
 </script>
 <script>
@@ -987,5 +1053,81 @@
     function NavPressed(nav){
         document.getElementById("nav").value  = nav;        
     }
+</script>
+<script>
+    var myPlot = document.getElementById('myCountour');
+    var myPlotRad = document.getElementById('myCountourRad');
+    var myPlotLap = document.getElementById('myCountourLap');
+
+    function hoverUpdates(infotext){
+        var hovtext = infotext.join('');
+        //hovtext = hovtext.replace("<br>", "=");  
+        //hovtext = hovtext.replace("<br>", "=");  
+        var hovArray = hovtext.split(" ");                
+        var abovetext = "<tr><td colspan='3'>";
+        var hovintext = "<tr><th>AA</th><th>Atom</th><th>Distance</th></tr><tr>";
+                
+        var count = 0
+        for (let i = 0; i < hovArray.length; i++) {            
+            var itm = hovArray[i];                             
+            if (i < 3) {
+                abovetext = abovetext+itm;
+            }
+            else{
+                itm = itm.replace("<br>", "=");  
+                var itms = itm.split("=");
+                for (let j = 0; j < itms.length; j++) {                                
+                    var itm2 = itms[j];   
+                    if (itm2.length > 0){
+                        if (count % 3 == 0){
+                            hovintext += "</tr><tr>";
+                        }            
+                        hovintext += "<td>" + itm2  + "</td>";
+                        count = count + 1
+                    }
+                }
+            }
+        }
+        abovetext += "</td><tr>"
+        hovintext += "</tr>";
+        tabletext = "<table>" + abovetext + hovintext + "</table>"        
+        hoverInfo3.innerHTML = tabletext;
+    }
+    
+    myPlot.on('plotly_click', function (data) {                
+        var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });                
+        hoverUpdates(infotext);
+    });    
+
+    myPlotRad.on('plotly_click', function (data) {                
+        var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });                
+        hoverUpdates(infotext);
+    });    
+
+    myPlotLap.on('plotly_click', function (data) {                
+        var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });                
+        hoverUpdates(infotext);
+    });    
+</script>
+<script>
+     function makeAtom(atom){
+        //alert(atom);
+        atom_val = document.getElementById("update_atom").value;
+        //alert(atom_val);
+        if (atom == "C"){
+            document.getElementById("ca").value = atom_val;
+        }
+        else if (atom == "L"){
+            document.getElementById("la").value = atom_val;
+        }
+        else if (atom == "P"){
+            document.getElementById("pa").value = atom_val;
+        }
+        document.getElementById("c_xyz").value = "";
+        document.getElementById("l_xyz").value = "";
+        document.getElementById("p_xyz").value = "";
+        document.getElementById("refresh_mode").value = "F";
+    }
+    
 </script>
 

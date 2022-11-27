@@ -1,8 +1,6 @@
 ﻿
 
 using LeuciShared;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Permissions;
 
 namespace Leucippus.Models
 {
@@ -25,7 +23,7 @@ namespace Leucippus.Models
 
         private void incRefresh()
         {
-            ++_refresh; 
+            ++_refresh;
         }
 
         public static ViewBagMatrix Instance
@@ -40,7 +38,7 @@ namespace Leucippus.Models
         public bool Refresh
         {
             get
-            {                                
+            {
                 return _refresh > 0;
             }
         }
@@ -59,7 +57,7 @@ namespace Leucippus.Models
         public string PdbCode
         {
             get { return _pdbcode; }
-            set 
+            set
             {
                 if (value != "")
                 {
@@ -74,7 +72,7 @@ namespace Leucippus.Models
                     }
                     _pdbcode = value;
                 }
-                else if(_pdbcode != "6eex")
+                else if (_pdbcode != "6eex")
                 {
                     _pdbcode = "6eex";
                     incRefresh();
@@ -87,7 +85,7 @@ namespace Leucippus.Models
             get { return _interp; }
             set
             {
-                if (value == _interp)
+                if (value == _interp.ToUpper())
                 {
                     //do nothing
                 }
@@ -99,8 +97,13 @@ namespace Leucippus.Models
                 else if (value != "")
                 {
                     incRefresh();
-                    _interp = value;                    
-                }           
+                    _interp = value.ToUpper();
+                }
+                else
+                {// we have lost the interp so something has changed
+                    _interp = "BSPLINE3";
+                    incRefresh();
+                }
             }
         }
 
@@ -121,7 +124,7 @@ namespace Leucippus.Models
 
         private double _hover_min = 0;
         public double HoverMin
-        { 
+        {
             get
             {
                 return _hover_min;
@@ -169,7 +172,7 @@ namespace Leucippus.Models
         }
         public string EmCode
         {
-            get;set;
+            get; set;
         }
         public string DensityType
         {
@@ -178,9 +181,9 @@ namespace Leucippus.Models
 
         public string EbiLink
         {
-            get { return "https://www.ebi.ac.uk/pdbe/entry/pdb/" + PdbCode;  }
-            
-        }        
+            get { return "https://www.ebi.ac.uk/pdbe/entry/pdb/" + PdbCode; }
+
+        }
         private string _info = "";
         public string Info
         {
@@ -220,7 +223,7 @@ namespace Leucippus.Models
                 }
             }
         }
-        
+
         private string getNextColour(string colour)
         {
             string retcolour = "BlackWhite";
@@ -233,7 +236,7 @@ namespace Leucippus.Models
                 retcolour = "RedBlueGrey";
             //else if (_denhue == "RedBlue")
             //    retcolour = "RedBlueGrey";
-            
+
             return retcolour;
         }
 
@@ -254,7 +257,7 @@ namespace Leucippus.Models
                 {
                     _denplot = value;
                 }
-                
+
             }
         }
         private string _denhue = "RedBlueGrey";
@@ -263,8 +266,8 @@ namespace Leucippus.Models
             get { return _denhue; }
             set
             {
-                if (value == "+1")                
-                    _denhue = getNextColour(_denhue);                                                        
+                if (value == "+1")
+                    _denhue = getNextColour(_denhue);
                 else if (value != "")
                     _denhue = value;
             }
@@ -274,7 +277,7 @@ namespace Leucippus.Models
         {
             get { return _radplot; }
             set
-            {                
+            {
                 if (value == "+1")
                 {
                     if (_radplot == "contour")
@@ -318,7 +321,7 @@ namespace Leucippus.Models
             {
                 if (value != -100)
                 {
-                    _sdcap = Math.Max(0,value);
+                    _sdcap = Math.Max(0, value);
                 }
             }
         }
@@ -341,8 +344,8 @@ namespace Leucippus.Models
             get { return _radhue; }
             set
             {
-                if (value == "+1")                
-                    _radhue = getNextColour(_radhue);                                    
+                if (value == "+1")
+                    _radhue = getNextColour(_radhue);
                 else if (value != "")
                     _radhue = value;
             }
@@ -352,7 +355,7 @@ namespace Leucippus.Models
         {
             get { return _lapplot; }
             set
-            {                
+            {
                 if (value == "+1")
                 {
                     if (_lapplot == "contour")
@@ -372,10 +375,10 @@ namespace Leucippus.Models
             get { return _laphue; }
             set
             {
-                if (value == "+1")                
-                    _laphue = getNextColour(_laphue);                                    
-                else if (value != "")                
-                    _laphue = value;                
+                if (value == "+1")
+                    _laphue = getNextColour(_laphue);
+                else if (value != "")
+                    _laphue = value;
             }
         }
         private string _denbar = "N";
@@ -387,7 +390,7 @@ namespace Leucippus.Models
                 if (value == "+1")
                 {
                     if (_denbar == "N")
-                        _denbar = "Y";                    
+                        _denbar = "Y";
                     else
                         _denbar = "N";
                 }
@@ -396,7 +399,7 @@ namespace Leucippus.Models
                     _denbar = value;
                 }
             }
-            
+
         }
         public bool IsDenBar
         {
@@ -480,7 +483,7 @@ namespace Leucippus.Models
             }
         }
 
-        private double _gap = 0.1;
+        private double _gap = 0.2;
         public double Gap
         {
             get { return _gap; }
@@ -504,7 +507,7 @@ namespace Leucippus.Models
                     _gap = 0.1;
                 }
                 else if (Math.Round(value, 4) != Math.Round(_gap, 4))
-                {                    
+                {
                     _gap = value;
                     incRefresh();
                 }
@@ -543,7 +546,7 @@ namespace Leucippus.Models
                 {
                     _width = 6.0;
                 }
-                else if (Math.Round(value,4) != Math.Round(_width,4)) 
+                else if (Math.Round(value, 4) != Math.Round(_width, 4))
                 {
                     double aspectRatio = _width * _gap;
                     _width = value;
@@ -551,22 +554,24 @@ namespace Leucippus.Models
                     incRefresh();
                 }
                 if (_width / _gap > 110)
-                {                    
+                {
                     _gap = _width / 110;
                     incRefresh();
                 }
                 _width = Math.Round(_width, 4);
                 _gap = Math.Round(_gap, 4);
             }
-        }                  
+        }
         // Handle setting the central-linear-planar
-        public VectorThree Central = new VectorThree(-1, -1, -1);        
+        public VectorThree CentralPosVector = new VectorThree(-1, -1, -1);
         private string _cxyz = "(-1,-1,-1)";
-        public VectorThree CAtom = new VectorThree(-1, -1, -1);
-        public string CentralAtom = "A:1@C";
+        public VectorThree CAtomStrucVector = new VectorThree(-1, -1, -1);
+        public string CentralAtomStrucString = "A:1@C";
         public double CDistance = 0;
-        public void SetCentral(string cxyz, string ca,PdbAtoms pdba,int atom_offset,bool refresh=true)
+        public void SetCentral(string cxyz, string ca, PdbAtoms pdba, int atom_offset, bool refresh = true)
         {
+            SetAtom(cxyz, ca, pdba, 0, atom_offset, ref CentralPosVector, ref CAtomStrucVector, ref CentralAtomStrucString, ref _cxyz, ref CDistance);
+            /*
             if (cxyz == null)
                 cxyz = "";
             if (ca == null)
@@ -589,18 +594,7 @@ namespace Leucippus.Models
                 incRefresh();
             }
             // if we pass only ca in then refresh
-            if (ca != "")
-            {
-                if (ca!= CentralAtom || cxyz == "" || atom_offset != 0)
-                {
-                    CentralAtom = pdba.getIncAtom(ca,atom_offset);
-                    Central = pdba.getCoords(CentralAtom);
-                    CAtom = new VectorThree(Central.A, Central.B, Central.C);
-                    CDistance = 0;
-                    incRefresh();
-                }
-            }
-            else if (cxyz != "" && cxyz != null)
+            if (cxyz != "" && cxyz != null)
             {
                 if (cxyz != _cxyz)
                 {
@@ -610,25 +604,44 @@ namespace Leucippus.Models
                     double x = Convert.ToDouble(xyzs[0].Substring(1));
                     double y = Convert.ToDouble(xyzs[1]);
                     double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
-                    //CentralAtom = "";
+                    if (ca != "")
+                    {
+                        CentralAtom = pdba.getIncAtom(ca, atom_offset);
+                        CAtom = new VectorThree(Central.A, Central.B, Central.C);
+                    }
                     CDistance = Math.Round(CAtom.distance(new VectorThree(x, y, z)), 3);
                     Central = new VectorThree(x, y, z);
-                    _cxyz = cxyz;                    
+                    _cxyz = cxyz;
                 }
-            }            
+                
+
+
+            }
+            else if (ca != "")
+            {
+                if (ca!= CentralAtom || cxyz == "" || atom_offset != 0)
+                {
+                    CentralAtom = pdba.getIncAtom(ca,atom_offset);
+                    Central = pdba.getCoords(CentralAtom);
+                    CAtom = new VectorThree(Central.A, Central.B, Central.C);
+                    CDistance = 0;
+                    incRefresh();
+                }
+            }                      
             else
             {
 
-            }
+            }*/
         }
-        public VectorThree Linear = new VectorThree(-1,-1,-1);        
+        public VectorThree LinearPosVector = new VectorThree(-1, -1, -1);
         private string _lxyz = "(-1,-1,-1)";
-        public VectorThree LAtom = new VectorThree(-1, -1, -1);
-        public string LinearAtom = "A:1@O";
+        public VectorThree LAtomStrucVector = new VectorThree(-1, -1, -1);
+        public string LinearAtomStrucString = "A:1@O";
         public double LDistance = 0;
         public void SetLinear(string lxyz, string la, PdbAtoms pdba, int atom_offset, bool refresh = true)
         {
-            if (lxyz == null)
+            SetAtom(lxyz, la, pdba, 1, atom_offset, ref LinearPosVector, ref LAtomStrucVector, ref LinearAtomStrucString, ref _lxyz, ref LDistance);
+            /*if (lxyz == null)
                 lxyz = "";
             if (la == null)
                 la = "";
@@ -647,18 +660,7 @@ namespace Leucippus.Models
                 LDistance = 0;
                 incRefresh();
             }
-            if (la != "")
-            {
-                if (la != LinearAtom || lxyz == "" || atom_offset!=0)
-                {
-                    LinearAtom = pdba.getIncAtom(la, atom_offset);                    
-                    Linear = pdba.getCoords(LinearAtom);
-                    LAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
-                    LDistance = 0;
-                    incRefresh();
-                }
-            }
-            else if (lxyz != "" && lxyz != null)
+            if (lxyz != "" && lxyz != null)
             {
                 if (lxyz != _lxyz)
                 {
@@ -668,53 +670,109 @@ namespace Leucippus.Models
                     double y = Convert.ToDouble(xyzs[1]);
                     double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
                     LDistance = Math.Round(LAtom.distance(new VectorThree(x, y, z)), 3);
-                    //LinearAtom = "";
-                    Linear = new VectorThree(x, y, z);
+                    if (la != "")
+                    {
+                        LinearAtom = pdba.getIncAtom(la, atom_offset);
+                        LAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
+                    }
+                    else
+                    {
+                        Linear = new VectorThree(x, y, z);
+                    }
                     _lxyz = lxyz;
                     incRefresh();
                 }
             }
-            
-        }
-        
-        public VectorThree Planar = new VectorThree(-1,-1,-1);
-        public VectorThree PAtom = new VectorThree(-1, -1, -1);
-        private string _pxyz = "(-1,-1,-1)";
-        public string PlanarAtom = "A:2@N";
-        public double PDistance = 0;
-        public void SetPlanar(string pxyz, string pa, PdbAtoms pdba, int atom_offset, bool refresh=true)
-        {
-            if (pxyz == null)
-                pxyz = "";
-            if (pa == null)
-                pa = "";
-            if (refresh)
+            else if (la != "")
             {
-                PlanarAtom = pdba.getFirstThreeCoords()[2];                
-                Planar = pdba.getCoords(PlanarAtom);
-                PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
-                PDistance = 0;
-                incRefresh();
-            }
-            else if (Planar.A + Planar.B + Planar.C == -3)
-            {
-                Planar = pdba.getCoords(PlanarAtom);
-                PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
-                PDistance = 0;
-                incRefresh();
-            }
-            if (pa != "")
-            {
-                if (pa != PlanarAtom || pxyz == "" || atom_offset != 0)
+                if (la != LinearAtom || lxyz == "" || atom_offset!=0)
                 {
-                    PlanarAtom = pdba.getIncAtom(pa, atom_offset);                    
-                    Planar = pdba.getCoords(PlanarAtom);
-                    PAtom = new VectorThree(Planar.A, Planar.B, Planar.C);
-                    PDistance = 0;
+                    LinearAtom = pdba.getIncAtom(la, atom_offset);                    
+                    Linear = pdba.getCoords(LinearAtom);
+                    LAtom = new VectorThree(Linear.A, Linear.B, Linear.C);
+                    LDistance = 0;
+                    incRefresh();
+                }
+            } */
+        }
+
+        public VectorThree PlanarPosVector = new VectorThree(-1, -1, -1);
+        public VectorThree PAtomStrucVector = new VectorThree(-1, -1, -1);
+        private string _pxyz = "(-1,-1,-1)";
+        public string PlanarAtomStrucString = "A:2@N";
+        public double PDistance = 0;
+
+        private void SetAtom(
+            string xyz, string at, PdbAtoms pdba, int pos, int atom_offset,
+            ref VectorThree PosVec, ref VectorThree StrucVec, ref string atom, ref string coords, ref double distance)
+        {
+            if (xyz == null)
+                xyz = "";
+            if (at == null)
+                at = "";
+            if (at == "" && xyz == "")
+            {
+                atom = pdba.getFirstThreeCoords()[pos];
+                PosVec = pdba.getCoords(atom);
+                StrucVec = pdba.getCoords(atom);
+                distance = 0;
+                incRefresh();
+            }
+            if (at != "") //we want to set the atoms, we may not want to use them
+            {
+                if (at != atom || atom_offset != 0)
+                {
+                    atom = pdba.getIncAtom(at, atom_offset);
+                    StrucVec = pdba.getCoords(atom);
                     incRefresh();
                 }
             }
-            else if (pxyz != "" && pxyz != null)
+            if (xyz != "")
+            {
+                if (xyz != coords)
+                {
+                    //unwrap
+                    string[] xyzs = xyz.Split(",");
+                    double x = Convert.ToDouble(xyzs[0].Substring(1));
+                    double y = Convert.ToDouble(xyzs[1]);
+                    double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
+                    PosVec = new VectorThree(x, y, z);
+                    incRefresh();
+                    coords = xyz;
+                }
+            }
+            else if (at != "") // we set them up already so now move them to the positions
+            {
+                PosVec = new VectorThree(StrucVec.A, StrucVec.B, StrucVec.C);
+                incRefresh();
+            }
+            distance = Math.Round(PosVec.distance(StrucVec), 3);
+        }
+        public void SetPlanar(string pxyz, string pa, PdbAtoms pdba, int atom_offset)
+        {
+            SetAtom(pxyz, pa, pdba, 2, atom_offset, ref PlanarPosVector, ref PAtomStrucVector, ref PlanarAtomStrucString, ref _pxyz, ref PDistance);
+            /*if (pxyz == null)
+                pxyz = "";
+            if (pa == null)
+                pa = "";
+            if (pa == "" && pxyz == "")
+            {
+                PlanarAtomStrucString = pdba.getFirstThreeCoords()[2];
+                PlanarPosVector = pdba.getCoords(PlanarAtomStrucString);
+                PAtomStrucVector = pdba.getCoords(PlanarAtomStrucString);
+                PDistance = 0;
+                incRefresh();
+            }
+            if (pa != "") //we want to set the atoms, we may not want to use them
+            {
+                if (pa != PlanarAtomStrucString || atom_offset != 0)
+                {
+                    PlanarAtomStrucString = pdba.getIncAtom(pa, atom_offset);
+                    PAtomStrucVector = pdba.getCoords(PlanarAtomStrucString);                                        
+                    incRefresh();
+                }                
+            }
+            if (pxyz != "")
             {
                 if (pxyz != _pxyz)
                 {
@@ -723,13 +781,18 @@ namespace Leucippus.Models
                     double x = Convert.ToDouble(xyzs[0].Substring(1));
                     double y = Convert.ToDouble(xyzs[1]);
                     double z = Convert.ToDouble(xyzs[2].Substring(0, xyzs[2].Length - 1));
-                    PDistance = Math.Round(PAtom.distance(new VectorThree(x, y, z)), 3);
-                    //PlanarAtom = "";
-                    Planar = new VectorThree(x, y, z);
-                    _pxyz = pxyz;
+                    PlanarPosVector = new VectorThree(x, y, z);                    
                     incRefresh();
                 }
-            }            
+            }
+            else if (pa != "") // we set them up already so now move them to the positions
+            {
+                PlanarPosVector = new VectorThree(PAtomStrucVector.A, PAtomStrucVector.B, PAtomStrucVector.C);                                                
+                incRefresh();                
+            }
+            PDistance = Math.Round(PlanarPosVector.distance(PAtomStrucVector), 3);
+            _pxyz = pxyz;
+            */
         }
 
     }
