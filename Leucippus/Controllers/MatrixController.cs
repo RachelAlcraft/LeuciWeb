@@ -242,28 +242,28 @@ namespace Leucippus.Controllers
                     if (!ok)
                         return View();
                 }
-
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, ViewBagMatrix.Instance.Fos, ViewBagMatrix.Instance.Fcs);
-
-                ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.FD.PA, atom_offset);
-                ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.FD.PA, atom_offset);
-                ViewBagMatrix.Instance.SetPlanar(p_xyz, pa, DensitySingleton.Instance.FD.PA, atom_offset);
-
+                
                 double nav_space = ViewBagMatrix.Instance.Gap;
                 double hov_min = ViewBagMatrix.Instance.HoverMin;
                 double hov_max = ViewBagMatrix.Instance.HoverMax;
+                string use_interp = ViewBagMatrix.Instance.Interp;
 
                 if (interp == "" && ViewBagMatrix.Instance.DensityType == "cryo-em")
                 {
                     nav_space = ViewBagMatrix.Instance.Width / 25; //we reduce for cryo-em defaults like nav mode
                     hov_min = -1;
-                    hov_max = -1;
-                    ViewBagMatrix.Instance.Interp = "BSPLINE3";
+                    hov_max = -1;                    
                 }
 
                 if (tabview == "N")
                 {
                     nav_space = ViewBagMatrix.Instance.Width / 15; //we reduce dramatically for nearest neighbor as how often do we need to look?
+                    if (use_interp == "BSPLINE3")
+                    {
+                        ViewBagMatrix.Instance.Interp = "LINEAR";
+                        use_interp = "LINEAR";
+                    }
+                                                                   
                 }
                 else
                 {
@@ -277,8 +277,21 @@ namespace Leucippus.Controllers
                     hov_max = -1;
                 }
 
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, use_interp, ViewBagMatrix.Instance.Fos, ViewBagMatrix.Instance.Fcs);
+
+                ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.FD.PA, atom_offset);
+                ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.FD.PA, atom_offset);
+                ViewBagMatrix.Instance.SetPlanar(p_xyz, pa, DensitySingleton.Instance.FD.PA, atom_offset);
+
+
                 if (nav != "" && nav != null)
                 {
+                    if (use_interp == "BSPLINE3")
+                    {
+                        ViewBagMatrix.Instance.Interp = "LINEAR";
+                        use_interp = "LINEAR";
+                    }
+
                     if (nav == "plus")
                     {
                         double ratio = ViewBagMatrix.Instance.Width / ViewBagMatrix.Instance.Gap;

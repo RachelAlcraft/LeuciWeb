@@ -114,9 +114,9 @@ namespace LeuciShared
             double pz = C * vec.C;
             return px + py + pz;
         }
-        public string getKey()
+        public string getKey(int round=4)
         {
-            return "(" + Convert.ToString(A)+","+ Convert.ToString(B) + "," + Convert.ToString(C) + ")";
+            return "(" + Convert.ToString(Math.Round(A,round))+","+ Convert.ToString(Math.Round(B,round)) + "," + Convert.ToString(Math.Round(C,round)) + ")";
         }
         public List<VectorThree> getArcPositions(VectorThree end, int count)
         {

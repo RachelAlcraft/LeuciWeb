@@ -386,6 +386,12 @@ namespace LeuciShared
                     VectorThree crs = _densityBinary.getCRSFromXYZ(transformed);
                     List<string> atom_names = PA.getNearAtoms(transformed, hover_min, hover_max);
                     Annotations[m][n] = "";
+                    if (hover_min + hover_max != -2)
+                    {
+                        // first add to the annotations the XYZ and CRS position of this point
+                        Annotations[m][n] += "<br>CRS=" + crs.getKey(0);
+                        Annotations[m][n] += "<br>XYZ=" + transformed.getKey(4) + " ";
+                    }
                     foreach (string an in atom_names)                    
                         Annotations[m][n] += "<br>" + an;
                     

@@ -250,11 +250,11 @@
         <tr>
             <th>Neighbours range (A)</th>
             <th>Navigate to...</th>
-            <th>Neighbours</th>
+            <th>Neighbours</th>            
         </tr>
-        <tr>
-            <td>
-                <table>                    
+            <tr style="vertical-align:top;">
+            <td style="vertical-align:top;background-color:Seashell;border:none">
+                <table style="vertical-align:top;">                    
                     <tr>        
                     <td>Min Nearest</td>
                     <td><input style="width:50px" id="hover_min" value=@ViewBag.HoverMin name="hover_min" /></td>
@@ -262,14 +262,17 @@
                     <td><input style="width:50px"  id="hover_max" value=@ViewBag.HoverMax name="hover_max" /></td>
                     </tr>        
                     <tr>
-                    <th colspan="4">
-                    <input style="width:65px" type="submit" value="Update" onclick="ForceRefreshCoords()"/>                        
+                    <th style="border:none;align:left;">
+                        <input style="width:65px;align:left;" type="submit" value="Update" onclick="ForceRefreshCoords()" />
                     </th>            
-                    </tr>
+                    <td style="border:none;align:left;background:seashell"></td>
+                    <td style="border:none;align:left;background:seashell"></td>
+                    <td style="border:none;align:left;background:seashell"></td>
+                    </tr>                                        
                 </table>                
 
             </td>            
-            <td>
+            <td style="vertical-align:top;background-color:Seashell;border:none">
                 <table>                
                 <tr>
                     <td colspan="3">
@@ -280,18 +283,27 @@
                     <th><input type="submit" value="Central" onclick="makeAtom('C')"/></th>
                     <th><input type="submit" value="Linear" onclick="makeAtom('L')"/></th>                  
                     <th><input type="submit" value="Planar" onclick="makeAtom('P')"/></th>                                 
-                </tr>                                
+                </tr>     
+                <tr>
+                    <td>@ViewBag.cAtom</td>
+                    <td>@ViewBag.lAtom</td>
+                    <td>@ViewBag.pAtom</td>
+                </tr>
             </table>
             </td>
-                <td>
-                    <table>                    
+            <td style="vertical-align:top;background-color:Seashell;border:none">
+                <div id="hoverInfo3" >
+                    <table>                                        
+                    <tr>                                                            
+                    <td colspan="3">Click images for neighbour lists</td>
                     <tr>
-                    <td>
-                        <div id="hoverInfo3" />
-                    </td>
-                </tr>
-                </table>
-                </td>                                                           
+                    <th>AA</th>
+                    <th>Atom</th>
+                    <th>Distance</th>
+                    </tr>
+                    </table>                
+                </div>            
+            </td>            
         </tr>
     </table>
     
@@ -528,7 +540,8 @@
             cs = [[0, 'Snow'], [1, 'Black']]
         }
         else if (dhue == "RedBlueZero") {
-            cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
+            //cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
+            cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [1, 'Navy']]
         }
         else {
             cs = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[0.99, 'Black']]
@@ -547,7 +560,8 @@
             cs_lap = [[0, 'Snow'], [1, 'Black']]
         }
         else if (lhue == "RedBlueZero") {
-            cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'AliceBlue'], [String(lev1), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
+            //cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'AliceBlue'], [String(lev1), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
+            cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'Snow'], [String(lev1), 'AliceBlue'], [1, 'Navy']]
         }
         else {
             cs_lap = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
@@ -560,7 +574,7 @@
             cs_rad = [[0, 'Black'], [1, 'Snow']]
        }
        else if (rhue == "RedBlueZero") {
-            cs_rad = [[0, 'CornflowerBlue'], [0.49, 'AliceBlue'], [0.51, 'Snow'], [1, 'Crimson']]
+            cs_rad = [[0, 'Navy'], [0.49, 'AliceBlue'], [0.51, 'Snow'], [1, 'Crimson']]
         }
        else {
             cs_rad = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
@@ -1047,8 +1061,8 @@
 
     function hoverUpdates(infotext){
         var hovtext = infotext.join('');
-        hovtext = hovtext.replace("<br>", "=");  
-        hovtext = hovtext.replace("<br>", "=");  
+        //hovtext = hovtext.replace("<br>", "=");  
+        //hovtext = hovtext.replace("<br>", "=");  
         var hovArray = hovtext.split(" ");                
         var abovetext = "<tr><td colspan='3'>";
         var hovintext = "<tr><th>AA</th><th>Atom</th><th>Distance</th></tr><tr>";
@@ -1056,7 +1070,7 @@
         var count = 0
         for (let i = 0; i < hovArray.length; i++) {            
             var itm = hovArray[i];                             
-            if (i < 2) {
+            if (i < 3) {
                 abovetext = abovetext+itm;
             }
             else{
