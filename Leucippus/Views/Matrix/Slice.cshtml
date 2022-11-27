@@ -249,8 +249,8 @@
     <table>
         <tr>
             <th>Neighbours range (A)</th>
-            <th>Neighbours</th>
             <th>Navigate to...</th>
+            <th>Neighbours</th>
         </tr>
         <tr>
             <td>
@@ -1042,18 +1042,14 @@
 </script>
 <script>
     var myPlot = document.getElementById('myCountour');
-    myPlot.on('plotly_click', function (data) {        
-        //var infotext = data.points.map(function(d){return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3)) + " " + d.text;});        
-        var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });
-        //alert(infotext);
-        //hoverInfo.innerHTML = infotext.join('<br/>');     
-        
+    var myPlotRad = document.getElementById('myCountourRad');
+    var myPlotLap = document.getElementById('myCountourLap');
+
+    function hoverUpdates(infotext){
         var hovtext = infotext.join('');
         hovtext = hovtext.replace("<br>", "=");  
         hovtext = hovtext.replace("<br>", "=");  
-        var hovArray = hovtext.split(" ");
-        //alert(hovArray);
-        
+        var hovArray = hovtext.split(" ");                
         var abovetext = "<tr><td colspan='3'>";
         var hovintext = "<tr><th>AA</th><th>Atom</th><th>Distance</th></tr><tr>";
                 
@@ -1080,10 +1076,23 @@
         }
         abovetext += "</td><tr>"
         hovintext += "</tr>";
-        tabletext = "<table>" + abovetext + hovintext + "</table>"
-        //alert(tabletext);
-        //hoverInfo2.innerHTML = tabletext;
+        tabletext = "<table>" + abovetext + hovintext + "</table>"        
         hoverInfo3.innerHTML = tabletext;
+    }
+    
+    myPlot.on('plotly_click', function (data) {                
+        var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });                
+        hoverUpdates(infotext);
+    });    
+
+    myPlotRad.on('plotly_click', function (data) {                
+        var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });                
+        hoverUpdates(infotext);
+    });    
+
+    myPlotLap.on('plotly_click', function (data) {                
+        var infotext = data.points.map(function (d) { return (d.data.name + '= '+d.z.toPrecision(3)) + " " + d.text; });                
+        hoverUpdates(infotext);
     });    
 </script>
 <script>
