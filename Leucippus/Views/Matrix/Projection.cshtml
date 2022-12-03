@@ -160,6 +160,12 @@
     var ScatXY_X = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
     var ScatXY_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
     var ScatXY_V = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_V));
+    var ScatYZ_X = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_X));
+    var ScatYZ_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_Y));
+    var ScatYZ_V = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_V));
+    var ScatZX_X = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_X));
+    var ScatZX_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_Y));
+    var ScatZX_V = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_V));
     
     var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
     var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
@@ -176,31 +182,33 @@
     }
 
     if (minv < 0) {
-        cs_scl = [[0, 'Silver'], [zero_frac, 'AliceBlue'], [zero_frac+0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+        cs_scl = [[0, 'Snow'], [zero_frac, 'AliceBlue'], [zero_frac + 0.01, 'LightBlue'], [zero_frac + 0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
     }else{
-        cs_scl = [[0, 'AliceBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+        cs_scl = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
     }
 
     
     // make the crystal heatmaps
     
     var dataXY = [{x: jSideX, y: jSideY, z: jMatXY, type: 'heatmap',  colorscale: cs_scl, 
-                    line: { width: 0.5, color: 'Gray' }, showscale: true,  
-                    colorbar: col_bar, name: "XY",
-                    zmin: minv,
-                    zmax: maxv,
+                    line: { width: 0.5, color: 'Gray' },
+        showscale: false,
+        colorbar: col_bar, 
+        name: "XY",
+        zmin: minv,
+        zmax: maxv,
                     }];
     
     var dataYZ = [{x: jSideY, y: jSideZ, z: jMatYZ, type: 'heatmap',  colorscale: cs_scl, 
                     line: { width: 0.5, color: 'Gray' },
-                    showscale: true, colorbar: col_bar, name: "YZ", 
-                    zmin: minv,
+        showscale: false, colorbar: col_bar, name: "YZ",
+        zmin: minv,
                     zmax: maxv,
                     }];
     
     var dataZX = [{ x: jSideZ, y: jSideX, z: jMatZX, type: 'heatmap', colorscale: cs_scl, 
-                    line: { width: 0.5, color: 'Gray' }, 
-                    showscale: true, colorbar: col_bar, name: "ZX",
+                    line: { width: 0.5, color: 'Gray' },
+        showscale: false, colorbar: col_bar, name: "ZX",
                     zmin: minv,
                     zmax: maxv,
                     }];
@@ -221,7 +229,6 @@
 
 
     // make the atom projections
-
     var traceXY = {
         x: ScatXY_X,
         y: ScatXY_Y,
@@ -229,13 +236,39 @@
         marker: {
             colorscale: cs_scl,
             color: ScatXY_V,
-            size: 3,
+            size: 5,
+            showscale: false,
+            colorbar: col_bar,
+        },
+    };    
+    var traceYZ = {
+        x: ScatYZ_X,
+        y: ScatYZ_Y,
+        mode: 'markers',
+        marker: {
+            colorscale: cs_scl,
+            color: ScatYZ_V,
+            size: 5,
+            showscale: false,        
+            colorbar: col_bar,
+        },
+        
+    };
+    var traceZX = {
+        x: ScatZX_X,
+        y: ScatZX_Y,
+        mode: 'markers',
+        marker: {
+            colorscale: cs_scl,
+            color: ScatZX_V,
+            size: 5,
+            showscale: false,        
+            colorbar: col_bar,
         },
     };
-    
     Plotly.newPlot('myScatterXY', [traceXY], {});
+    Plotly.newPlot('myScatterYZ', [traceYZ], {});
+    Plotly.newPlot('myScatterZX', [traceZX], {});
     
-
-   
-        
+           
 </script>

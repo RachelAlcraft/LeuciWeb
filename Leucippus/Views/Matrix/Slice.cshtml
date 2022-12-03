@@ -111,19 +111,7 @@
                     <td><input style="color:@ViewBag.PColor" type="text" id="pa" name="pa" value=@ViewBag.pAtom></td>
                     <td><input type="text" id="p_xyz" name="p_xyz" value=@ViewBag.pXYZ></td>
                     <td><div id="pdistance">@ViewBag.PDistance</div></td>                
-                </tr>
-
-                
-            <tr>
-                <td colspan="4" style="background:Gainsboro;color:navy">Density Range (@ViewBag.ValSd)</td>
-            </tr>
-            <tr>                                  
-                <td style="background:LightCyan;"><span>Min=@ViewBag.DenMin</span>: Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span></td>
-                <td style="background:LightCyan;"><input type="range" min=@ViewBag.DenMin max=0 value=@ViewBag.SdFloor step="0.1" style="direction:ltr" id="rangeValueMin"></td>
-                <td style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax"></td>
-                <td style="background:LightCyan;"><span>Max=@ViewBag.DenMax</span>: Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
-            </tr>        
-    
+                </tr>                                            
                 </table>                        
             </td>   
             <td>
@@ -216,18 +204,9 @@
                 <td>Fcs=</td>
                 <td><input style="width:35px;" type="text" id="fcs" name="fcs" value=@ViewBag.Fcs></td>
             </tr>
+    
         </table>    
-    <!--<table>
-        <tr>
-            <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Density Range (standard deviations)</td>
-            <td>Min=@ViewBag.DenMin</td>
-            <td>Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span></td>
-            <td><input type="range" min=@ViewBag.DenMin max=0 value=@ViewBag.SdFloor step="0.1" style="direction:ltr" id="rangeValueMin"></td>
-            <td><input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax"></td>
-            <td>Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
-            <td>Max=@ViewBag.DenMax</td>
-        </tr>
-            </table>         -->
+    
      <table>
         <tr>
             <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Width(Å)=</td>
@@ -241,6 +220,17 @@
             <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>
             <th style="background-color:DarkSlateGray;color:crimson;border:none;"><input type="submit" value="Update" /></th>
         </tr>
+    </table>
+    <table>
+                <tr>
+                <td colspan="4" style="background:Gainsboro;color:navy">Density Range (@ViewBag.ValSd)</td>
+            </tr>
+                <tr>
+                    <td style="background:LightCyan;"><span>Min=@ViewBag.DenMin</span>: Floor=<span><input style="width:50px" type="text" id="sdfloor" name="sdfloor" value=@ViewBag.SdFloor></span></td>
+                    <td style="background:LightCyan;"><input type="range" min=@ViewBag.DenMin max=0 value=@ViewBag.SdFloor step="0.1" style="direction:ltr" id="rangeValueMin"></td>
+                    <td style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax"></td>
+                    <td style="background:LightCyan;"><span>Max=@ViewBag.DenMax</span>: Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
+                </tr>
     </table>
     </div>
 </div>

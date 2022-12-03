@@ -96,7 +96,7 @@ namespace Leucippus.Controllers
 
         }
         public async Task<IActionResult> Slice(
-            string tabview = "A", // A=atoms,S=settgins,N=neighbour X=advanced
+            string tabview = "S", // A=atoms,S=settgins,N=neighbour X=advanced
             string refresh_mode = "R", //V= viewbag only F = force
             string pdbcode = "",
             string c_xyz = "", string l_xyz = "", string p_xyz = "",
@@ -123,7 +123,7 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.T2Display = "none";
             ViewBagMatrix.Instance.T3Display = "none";
             ViewBagMatrix.Instance.T4Display = "none";
-            ViewBag.TabName = "Atoms";
+            ViewBag.TabName = "Navigate";
             ViewBag.TabAClick = "inherit";
             ViewBag.TabSClick = "inherit";
             ViewBag.TabNClick = "inherit";
@@ -138,13 +138,13 @@ namespace Leucippus.Controllers
                 if (t1 == 1) //atoms
                 {
                     ViewBag.TabView = "A";
-                    ViewBag.TabName = "Atoms";
+                    ViewBag.TabName = "Navigate";
                     refresh_mode = "F";
                 }
                 if (t2 == 1) //settings
                 {
                     ViewBag.TabView = "S";
-                    ViewBag.TabName = "Settings";
+                    ViewBag.TabName = "Display";
                 }
                 if (t3 == 1) //neighbours
                 {
@@ -181,7 +181,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.T2Display = "block";
                 ViewBag.TabSClick = "none";
                 ViewBag.TabSName = "contents";
-                ViewBag.TabName = "Settings";
+                ViewBag.TabName = "Display";
             }
             else if (tabview == "X")
             {

@@ -64,7 +64,7 @@ namespace Leucippus.Models
                     if (value != _pdbcode)
                     {
                         incRefresh();
-                        _interp = "BSPLINE3";
+                        _interp = "LINEAR";
                         //FileDownloads fd = new FileDownloads(value);
                         //fd.downloadAll();
                         //EmCode = fd.EmCode;
@@ -79,7 +79,7 @@ namespace Leucippus.Models
                 }
             }
         }
-        private string _interp = "BSPLINE3";
+        private string _interp = "LINEAR";
         public string Interp
         {
             get { return _interp; }
@@ -101,7 +101,7 @@ namespace Leucippus.Models
                 }
                 else
                 {// we have lost the interp so something has changed
-                    _interp = "BSPLINE3";
+                    _interp = "LINEAR";
                     incRefresh();
                 }
             }
