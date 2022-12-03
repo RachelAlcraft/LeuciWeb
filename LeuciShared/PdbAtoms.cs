@@ -2,12 +2,12 @@
 {
     public class PdbAtoms
     {
-        private Dictionary<string, VectorThree> _atoms = new Dictionary<string, VectorThree>();
+        public Dictionary<string, VectorThree> Atoms = new Dictionary<string, VectorThree>();
         private Dictionary<string, string> _aas = new Dictionary<string, string>();
         public bool Init = false;
         public PdbAtoms(string[] lines) //constructor for pdb file
         {
-            _atoms.Clear();
+            Atoms.Clear();
             Init = true;
             foreach (string line in lines)
             {
@@ -36,7 +36,7 @@
                     if (occupant == "")
                         occupant = "A";
                     string chimera = Chain + ":" + ResidueNo + "@" + AtomType + "." + occupant;
-                    _atoms.Add(chimera, new VectorThree(X, Y, Z));
+                    Atoms.Add(chimera, new VectorThree(X, Y, Z));
                     _aas.Add(chimera, AA);
                 }
 
@@ -52,19 +52,19 @@
             int atm = Convert.ToInt32(pst[0]);
             atm += offset;
             string newatom = beg[0] + ":" + Convert.ToString(atm) + "@" + pst[1];
-            if (_atoms.ContainsKey(newatom))
+            if (Atoms.ContainsKey(newatom))
                 return newatom;
-            if (_atoms.ContainsKey(newatom + ".A"))
+            if (Atoms.ContainsKey(newatom + ".A"))
                 return newatom;
 
             return atom;
         }
         public VectorThree getCoords(string atom)
         {
-            if (_atoms.ContainsKey(atom))
-                return _atoms[atom];
-            if (_atoms.ContainsKey(atom + ".A"))
-                return _atoms[atom + ".A"];
+            if (Atoms.ContainsKey(atom))
+                return Atoms[atom];
+            if (Atoms.ContainsKey(atom + ".A"))
+                return Atoms[atom + ".A"];
             return new VectorThree(0, 0, 0);
         }
 
@@ -74,7 +74,7 @@
             string[] v3 = new string[3];
             int count = 0;
             int found_ca = 0;
-            foreach (var atm in _atoms)
+            foreach (var atm in Atoms)
             {
                 if (atm.Key.IndexOf("@C.A") > 0)
                 {
@@ -106,7 +106,7 @@
             }
             //if we get here then it didin;t work, it could be a CA only pdb structure.
             count = 0;
-            foreach (var atm in _atoms)
+            foreach (var atm in Atoms)
             {
                 v3[count] = atm.Key;
                 count++;
@@ -128,7 +128,7 @@
             {
                 if (hover_max > -1) // none
                 {
-                    foreach (var atm in _atoms)
+                    foreach (var atm in Atoms)
                     {
                         double distance = near.distance(atm.Value);
                         if (Math.Abs(distance) <= hover_max || hover_max == 0)

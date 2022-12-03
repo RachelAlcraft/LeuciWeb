@@ -25,6 +25,7 @@
             SmallPdbs.Add(new DataFile("6eex"));
             SmallPdbs.Add(new DataFile("6efg"));
             SmallPdbs.Add(new DataFile("6fgz"));
+            SmallPdbs.Add(new DataFile("6q53"));
 
             HighPdbs.Add(new DataFile("1ejg"));
             HighPdbs.Add(new DataFile("3nir"));

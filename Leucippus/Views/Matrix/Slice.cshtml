@@ -6,7 +6,8 @@
 <span>                                    
     @Html.ActionLink(linkText: "Choose",actionName: "Browse",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })                                    
     @Html.ActionLink(linkText: "Slice",actionName: "Slice",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })                                    
-    @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })            
+    @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+    @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
     
 </span>
 </div>
@@ -59,23 +60,23 @@
 
 <div class="tab">
 <span>    
-    <input type="submit" value="Atoms" id="tabAtoms" onclick="ChangeTab('t1')" style="border:none;display:@ViewBag.TabAClick"/>
+    <input type  ="submit" value="Display" id="tabSettings" onclick="ChangeTab('t2')" style="border:none;display:@ViewBag.TabSClick"/>
+    <span style="border:none;display:@ViewBag.TabSName;font-weight:bold">@ViewBag.TabName</span>    
+    <input type="submit" value="Navigate" id="tabAtoms" onclick="ChangeTab('t1')" style="border:none;display:@ViewBag.TabAClick"/>
     <span style="border:none;display:@ViewBag.TabAName;font-weight:bold">@ViewBag.TabName</span>    
     <input type="submit" value="Neighbours" id="tabNeighbours" onclick="ChangeTab('t3')" style="border:none;display:@ViewBag.TabNClick"/>
-    <span style="border:none;display:@ViewBag.TabNName;font-weight:bold">@ViewBag.TabName</span>    
-    <input type="submit" value="Settings" id="tabSettings" onclick="ChangeTab('t2')" style="border:none;display:@ViewBag.TabSClick"/>
-    <span style="border:none;display:@ViewBag.TabSName;font-weight:bold">@ViewBag.TabName</span>    
+    <span style="border:none;display:@ViewBag.TabNName;font-weight:bold">@ViewBag.TabName</span>        
     <input type="submit" value="Advanced" id="tabAdvanced" onclick="ChangeTab('t4')" style="border:none;display:@ViewBag.TabXClick"/>
     <span style="border:none;display:@ViewBag.TabXName;font-weight:bold">@ViewBag.TabName</span>    
    
 </span>
 </div>
 <!--##################################### TAB DISPLAY SECTION - ATOMS ############################################# -->
-    <div id="Atoms" class="tabcontent" style="display:@ViewBag.T1Display;background-color:Seashell">
+    <div id="Atoms" class="tabcontent" style="display:@ViewBag.T1Display;background-color:@ViewBag.TabBackClr">
     <div>
         <table>
         <tr>
-            <td style="width:85%;">
+            <td style="width:85%;background-color:@ViewBag.TabBackClr">
                 <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
                 <tr>
                         <th style="width:20%;background:Gainsboro">
@@ -198,7 +199,7 @@
     </div>
 </div>
 <!-- #################################### TAB DISPLAY SECTION SETTINGS ######################################-->
-    <div id="Settings" class="tabcontent" style="display:@ViewBag.T2Display;background-color:Seashell">
+    <div id="Settings" class="tabcontent" style="display:@ViewBag.T2Display;background-color:@ViewBag.TabBackClr">
     <div>
         <table>
             <tr>                
@@ -244,7 +245,7 @@
     </div>
 </div>
 <!-- ############################# TAB NEIGHBOURS ########################################## -->
-<div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display;background-color:Seashell">    
+<div id="Neighbours" class="tabcontent" style="display:@ViewBag.T3Display;background-color:@ViewBag.TabBackClr">    
     <!--<p>Choose range for nearest atoms:[0,0]=nearest, otherwise specify a range</p>-->
     <table>
         <tr>
@@ -253,7 +254,7 @@
             <th>Neighbours</th>            
         </tr>
             <tr style="vertical-align:top;">
-            <td style="vertical-align:top;background-color:Seashell;border:none">
+            <td style="vertical-align:top;background-color:gainsboro;border:none">
                 <table style="vertical-align:top;">                    
                     <tr>        
                     <td>Min Nearest</td>
@@ -265,14 +266,14 @@
                     <th style="border:none;align:left;">
                         <input style="width:65px;align:left;" type="submit" value="Update" onclick="ForceRefreshCoords()" />
                     </th>            
-                    <td style="border:none;align:left;background:seashell"></td>
-                    <td style="border:none;align:left;background:seashell"></td>
-                    <td style="border:none;align:left;background:seashell"></td>
+                    <td style="border:none;align:left;background:gainsboro"></td>
+                    <td style="border:none;align:left;background:gainsboro"></td>
+                    <td style="border:none;align:left;background:gainsboro"></td>
                     </tr>                                        
                 </table>                
 
             </td>            
-            <td style="vertical-align:top;background-color:Seashell;border:none">
+            <td style="vertical-align:top;background-color:gainsboro;border:none">
                 <table>                
                 <tr>
                     <td colspan="3">
@@ -291,7 +292,7 @@
                 </tr>
             </table>
             </td>
-            <td style="vertical-align:top;background-color:Seashell;border:none">
+            <td style="vertical-align:top;background-color:gainsboro;border:none">
                 <div id="hoverInfo3" >
                     <table>                                        
                     <tr>                                                            
@@ -310,7 +311,7 @@
         
 </div>
 <!-- ############################# TAB ADVANCED ########################################## -->
-    <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display;background-color:Seashell">
+    <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display;background-color:@ViewBag.TabBackClr">
     <table>
     <tr>
         <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Extra Interpolation methods</td>
@@ -519,7 +520,7 @@
             maxc = 0.001;
         }
 
-        var size = (maxc - minc) / 20
+        var size = (maxc - minc) / 10
         var zero_frac = 0.001            
         zero_frac = (0 - minc) / (maxc - minc)
         var lev1 = zero_frac + 0.1 * (1 - zero_frac)    
@@ -535,19 +536,21 @@
                     [String(lev2), 'CornflowerBlue'], 
                     [String(lev3), 'Crimson'],
                     [1, 'rgb(100, 0, 0)']]
+            // Birkbeck colours!!!!
+            //cs = [[0, 'IndianRed'], [0.1, 'PaleVioletRed'], [String(zero_frac - 0.0001), 'Snow'], [String(zero_frac + 0.0001), 'Gold'], [String(lev1), 'RosyBrown'], [1, 'Black']]
         }    
         else if (dhue == "BlackWhite") {
             cs = [[0, 'Snow'], [1, 'Black']]
         }
         else if (dhue == "RedBlueZero") {
-            //cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
-            cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [1, 'Navy']]
+            cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
+            //cs = [[0, 'Crimson'], [String(zero_frac), 'Snow'], [1, 'Navy']]
         }
         else {
             cs = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[0.99, 'Black']]
         }
                  
-        var sizel = (maxl - minl) / 20
+        var sizel = (maxl - minl) / 10
         zero_frac_lap = (0 - minl) / (maxl - minl)  
         zero_frac_lap = 1 - zero_frac_lap
         var lev1 = zero_frac_lap + 0.1 * (1 - zero_frac_lap)
@@ -560,8 +563,8 @@
             cs_lap = [[0, 'Snow'], [1, 'Black']]
         }
         else if (lhue == "RedBlueZero") {
-            //cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'AliceBlue'], [String(lev1), 'Snow'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
-            cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'Snow'], [String(lev1), 'AliceBlue'], [1, 'Navy']]
+            cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'AliceBlue'], [0.99, 'CornflowerBlue'], [1, 'Navy']]
+            //cs_lap = [[0, 'Crimson'], [String(zero_frac_lap), 'Snow'], [String(lev1), 'AliceBlue'], [1, 'Navy']]
         }
         else {
             cs_lap = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
@@ -574,7 +577,7 @@
             cs_rad = [[0, 'Black'], [1, 'Snow']]
        }
        else if (rhue == "RedBlueZero") {
-            cs_rad = [[0, 'Navy'], [0.49, 'AliceBlue'], [0.51, 'Snow'], [1, 'Crimson']]
+            cs_rad = [[0, 'CornflowerBlue'], [0.49, 'AliceBlue'], [0.51, 'Snow'], [1, 'Crimson']]
         }
        else {
             cs_rad = [[0, 'LightBlue'], [0.99, 'rgb(100, 0, 0)'],[1, 'Black']]
@@ -698,7 +701,7 @@
                 reversescale: false,            
                 line: {
                     width: 0.5,
-                    color: 'DimGray'
+                    color: 'Gray'
                 },            
                 showscale: dbar,
                 colorbar: col_bar,            
@@ -719,7 +722,7 @@
                 autocontour: false,
                 line: {
                     width: 0.5,
-                    color: 'DimGray'
+                    color: 'Gray'
                 },
                 contours: {
                     start: minc,
@@ -746,7 +749,7 @@
             autocontour: true,
             line: {
                 width: 0,
-                color: 'DimGray'
+                color: 'Gray'
             },        
             showscale: rbar,
             colorbar: col_bar,    
@@ -767,7 +770,7 @@
                 reversescale: true,                
                 line: {
                     width: 0.5,
-                    color: 'DimGray'
+                    color: 'Gray'
                 },
                 showscale: lbar,
                 colorbar: col_bar,  
@@ -787,7 +790,7 @@
             autocontour: false,
             line: {
                 width: 0.5,
-                color: 'DimGray'
+                color: 'Gray'
             },        
             showscale: lbar,
             colorbar: col_bar,            
@@ -991,21 +994,25 @@
             document.getElementById("t1").value = 1;
             document.getElementById("tabview").value = "A";
             document.getElementById("tabAtoms").style.color = "crimson";
+            document.getElementById("refresh_mode").value = "F";
         }
         else if (tab == 't2'){
             document.getElementById("t2").value = 1;
             document.getElementById("tabview").value = "S";
             document.getElementById("tabSettings").style.color = "crimson";
+            document.getElementById("refresh_mode").value = "F";
         }
         else if (tab == 't3'){
             document.getElementById("t3").value = 1;
             document.getElementById("tabview").value = "N";            
             document.getElementById("tabNeighbours").style.color = "crimson";
+            document.getElementById("refresh_mode").value = "F";
         }
         else if (tab == 't4'){
             document.getElementById("t4").value = 1;
             document.getElementById("tabview").value = "X";
             document.getElementById("tabAdvanced").style.color = "crimson";
+            document.getElementById("refresh_mode").value = "F";
         }        
     }
 </script>

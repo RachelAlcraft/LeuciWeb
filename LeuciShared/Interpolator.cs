@@ -71,6 +71,7 @@
                 return 0;
             }
         }
+
         public double getRadient(double x, double y, double z)
         {
             double val = getValue(x, y, z);

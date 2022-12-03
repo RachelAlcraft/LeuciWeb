@@ -16,7 +16,7 @@
 <div>
 <h5>Interactive matrix explorer - planes</h5>
 
-@using (Html.BeginForm("Plane", "Matrix", FormMethod.Post))
+    @using (Html.BeginForm("Projection", "Matrix", FormMethod.Post))
     {
         <table cellpadding="0" cellspacing="0"><!-- style="background-color:PowderBlue">-->
             <tr style="height:25%">
@@ -31,7 +31,7 @@
                 <td>
                                 @Html.ActionLink(
                             linkText: "XY Plane",
-                            actionName: "Plane",
+                            actionName: "Projection",
                             controllerName: "Matrix",
                             routeValues: new {
                             pdbcode = @ViewBag.PdbCode,
@@ -43,7 +43,7 @@
                                 <span> ~ </span>
                                 @Html.ActionLink(
                             linkText: "YZ Plane",
-                            actionName: "Plane",
+                actionName: "Projection",
                 controllerName: "Matrix",
                             routeValues: new {
                             pdbcode = @ViewBag.PdbCode,
@@ -55,7 +55,7 @@
                                 <span> ~ </span>
                                 @Html.ActionLink(
                             linkText: "ZX Plane",
-                            actionName: "Plane",
+                actionName: "Projection",
                 controllerName: "Matrix",
                             routeValues: new {
                             pdbcode = @ViewBag.PdbCode,
@@ -68,7 +68,7 @@
                 <td>
                                 @Html.ActionLink(
                             linkText: " - 1",
-                            actionName: "Plane",
+                            actionName: "Projection",
                             controllerName: "Matrix",
                             routeValues: new {
                             pdbcode = @ViewBag.PdbCode,
@@ -80,7 +80,7 @@
                                 <span> ~ </span>
                                 @Html.ActionLink(
                             linkText: " + 1",
-                            actionName: "Plane",
+                actionName: "Projection",
                             controllerName: "Matrix",
                             routeValues: new {
                             pdbcode = @ViewBag.PdbCode,
@@ -108,30 +108,34 @@
 
 <table>
     <tr>
-        <td style="width: 450px;">
-            Plane
-            <br />
-            <div id="myCountour" style="width:100%"></div>
-            <br />
-            @Html.ActionLink(
-            linkText: "Toggle Plot",
-            actionName: "Plane",
-            controllerName: "Matrix",
-            routeValues: new {
-            planeplot = "+1",
-            pdbcode = @ViewBag.PdbCode,
-            },
-            htmlAttributes: null
-            )
-        </td>
-        <td style="width: 450px;">
-            Values
-            <br />
-            <div id="myDiv" style="width:100%"></div>            
-            <br />
-        </td>
-        
+        <th>XY Plane</th>
+        <th>YZ Plane</th>
+        <th>ZX Plane</th>
     </tr>
+    <tr>
+        <td style="width: 450px;">            
+            <div id="myCountourXY" style="width:100%"></div>            
+        </td>
+        <td style="width: 450px;">            
+            <div id="myCountourYZ" style="width:100%"></div>            
+        </td>
+        <td style="width: 450px;">            
+            <div id="myCountourZX" style="width:100%"></div>            
+        </td>                
+    </tr>  
+    <tr>
+        <td style="width: 450px;">
+            <div id="myScatterXY" style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">
+            <div id="myScatterYZ" style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">
+            <div id="myScatterZX" style="width:100%"></div>
+        </td>
+    </tr>
+        
+        
 </table>
 
     <!--<div>
@@ -145,91 +149,93 @@
     </p>@ViewBag.Error<p>
 </div>
 <script>
-    var jx = @Html.Raw(Json.Serialize(@ViewBag.MtxX));
-    var jy = @Html.Raw(Json.Serialize(@ViewBag.MtxY));
-    var jz = @Html.Raw(Json.Serialize(@ViewBag.MtxZ));    
-    var jv = @Html.Raw(Json.Serialize(@ViewBag.MtxV));    
+    //heatmap for crystal projection
+    var jSideX = @Html.Raw(Json.Serialize(@ViewBag.SideX));
+    var jSideY = @Html.Raw(Json.Serialize(@ViewBag.SideY));
+    var jSideZ = @Html.Raw(Json.Serialize(@ViewBag.SideZ));    
+    var jMatXY = @Html.Raw(Json.Serialize(@ViewBag.MatXY));
+    var jMatYZ = @Html.Raw(Json.Serialize(@ViewBag.MatYZ));
+    var jMatZX = @Html.Raw(Json.Serialize(@ViewBag.MatZX));
+    // atoms for scatter projection
+    var ScatXY_X = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
+    var ScatXY_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
+    var ScatXY_V = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_V));
+    
     var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
     var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
-    var planeplot = @Html.Raw(Json.Serialize(@ViewBag.PlanePlot));
-                    
-    var layoutH = {
-        autosize: true,
-        title: 'Electron density values in this plane'     
-    };
 
-    var traceH = {
-    x: jz,
-    type: 'histogram',
-    nbinsx: 50,
-    marker: {
-        color: "Crimson",
-        line: {
-            color:  "Silver", 
-            width: 1
-        }
+    var size = (maxv - minv) / 10
+    var zero_frac = 0.001
+    zero_frac = (0 - minv) / (maxv - minv)
+        
+    col_bar = {
+        title: "",
+        thickness: 15,
+        len: 0.85,
+        x: +.95
     }
-    };
-    var dataH = [traceH];
-    var config = { responsive: true }
 
-    Plotly.newPlot('myDiv', dataH,layoutH,config);
-    
-    var minc = minv
-    var maxc = 3
-    var size = (maxc - minc)/10
-    var zero_frac = 0.001    
-    var cs = []
-    if (minc < 0){
-        zero_frac = (0 - minc) / (maxc-minc)
-        var lev1 = zero_frac + 0.1*(1-zero_frac)
-        var lev2 = zero_frac + 0.3*(1-zero_frac)
-        var lev3 = zero_frac + 0.5*(1-zero_frac)
-        cs =  [[0,'RosyBrown'],[String(zero_frac+0.001),'AliceBlue'],[String(lev1),'LightBlue'],[String(lev2),'CornflowerBlue'],[String(lev3),'Crimson'],[1,'rgb(100, 0, 0)']]
+    if (minv < 0) {
+        cs_scl = [[0, 'Silver'], [zero_frac, 'AliceBlue'], [zero_frac+0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+    }else{
+        cs_scl = [[0, 'AliceBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
     }
-    else{
-        cs =  [[0,'AliceBlue'],[0.25,'LightBlue'],[0.5,'CornflowerBlue'],[0.75,'Crimson'],[1,'rgb(100, 0, 0)']]
-    }
-    cs =  [[0,'AliceBlue'],[0.25,'LightBlue'],[0.5,'CornflowerBlue'],[0.75,'Crimson'],[1,'rgb(100, 0, 0)']]
-    
-    
-    var data = [ {
-		z: jv,
-		x: jx,
-		y: jy,
-        type: planeplot,
-        colorscale: cs,
-        reversescale : false,
-        autocontour: false,
-        line : {
-            width:0.5,            
-            color:'DimGray'
-        },
-        contours: {
-            start: minc,
-            end: maxc,
-            size: size            
-        },
-        showscale: false,
-        colorbar: {
-            thickness: 15,
-        }
-    }];
 
+    
+    // make the crystal heatmaps
+    
+    var dataXY = [{x: jSideX, y: jSideY, z: jMatXY, type: 'heatmap',  colorscale: cs_scl, 
+                    line: { width: 0.5, color: 'Gray' }, showscale: true,  
+                    colorbar: col_bar, name: "XY",
+                    zmin: minv,
+                    zmax: maxv,
+                    }];
+    
+    var dataYZ = [{x: jSideY, y: jSideZ, z: jMatYZ, type: 'heatmap',  colorscale: cs_scl, 
+                    line: { width: 0.5, color: 'Gray' },
+                    showscale: true, colorbar: col_bar, name: "YZ", 
+                    zmin: minv,
+                    zmax: maxv,
+                    }];
+    
+    var dataZX = [{ x: jSideZ, y: jSideX, z: jMatZX, type: 'heatmap', colorscale: cs_scl, 
+                    line: { width: 0.5, color: 'Gray' }, 
+                    showscale: true, colorbar: col_bar, name: "ZX",
+                    zmin: minv,
+                    zmax: maxv,
+                    }];
+    
     var layout = {
+        grid: { rows: 1, columns: 1, pattern: 'independent' },
         autosize: true,
-        title: 'Contour plot of electron density plane',
-        xaxis: {        
-        showgrid: false,
-        zeroline: false
+        title: '',
+        showlegend: false,
+        xaxis: {showgrid: false,zeroline: false,visible: false,},        
+        yaxis: {scaleanchor: 'x',scaleratio: 1,visible: false,},      
+        margin: {l: 20,r: 80,b: 20,t: 20,pad: 4},
+    };
+
+    Plotly.newPlot('myCountourXY', dataXY, layout);
+    Plotly.newPlot('myCountourYZ', dataYZ, layout);
+    Plotly.newPlot('myCountourZX', dataZX, layout);
+
+
+    // make the atom projections
+
+    var traceXY = {
+        x: ScatXY_X,
+        y: ScatXY_Y,
+        mode: 'markers',
+        marker: {
+            colorscale: cs_scl,
+            color: ScatXY_V,
+            size: 3,
         },
-        yaxis: {
-        scaleanchor: 'x',
-        scaleratio: 1
-        }
     };
     
+    Plotly.newPlot('myScatterXY', [traceXY], {});
     
-    Plotly.newPlot('myCountour', data,layout,config);
+
+   
         
 </script>

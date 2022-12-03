@@ -1,6 +1,7 @@
 ﻿using Leucippus.Models;
 using LeuciShared;
 using Microsoft.AspNetCore.Mvc;
+using Plotly.NET;
 
 
 namespace Leucippus.Controllers
@@ -250,8 +251,7 @@ namespace Leucippus.Controllers
                 {
                     nav_space = ViewBagMatrix.Instance.Width / 15; //we reduce dramatically for nearest neighbor as how often do we need to look?
                     if (use_interp == "BSPLINE3")
-                    {
-                        ViewBagMatrix.Instance.Interp = "LINEAR";
+                    {                        
                         use_interp = "LINEAR";
                     }
 
@@ -268,6 +268,14 @@ namespace Leucippus.Controllers
                     hov_max = -1;
                 }
 
+                if (nav != "" && nav != null)
+                {
+                    if (use_interp == "BSPLINE3")
+                    {
+                        use_interp = "LINEAR";
+                    }
+                }
+
                 DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, use_interp, ViewBagMatrix.Instance.Fos, ViewBagMatrix.Instance.Fcs);
 
                 ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.FD.PA, atom_offset);
@@ -276,13 +284,7 @@ namespace Leucippus.Controllers
 
 
                 if (nav != "" && nav != null)
-                {
-                    if (use_interp == "BSPLINE3")
-                    {
-                        ViewBagMatrix.Instance.Interp = "LINEAR";
-                        use_interp = "LINEAR";
-                    }
-
+                {                    
                     if (nav == "plus")
                     {
                         double ratio = ViewBagMatrix.Instance.Width / ViewBagMatrix.Instance.Gap;
@@ -408,6 +410,9 @@ namespace Leucippus.Controllers
                 ViewBag.RefreshMode = "R";
                 ViewBag.AtomOffset = 0;
 
+                // visual
+                ViewBag.TabBackClr = "Gainsboro";
+
 
                 ViewBagMatrix.Instance.Reset();
 
@@ -489,6 +494,50 @@ namespace Leucippus.Controllers
                 ViewBag.Error = "Error from server:" + e.Message;
                 return View();
             }
+        }
+
+        public async Task<IActionResult> Projection(string pdbcode = "", string plane = "XY", string planeplot = "")
+        {
+            ViewBag.Error = "";                        
+            ViewBagMatrix.Instance.PdbCode = pdbcode;
+            ViewBagMatrix.Instance.Plane = plane;            
+            ViewBagMatrix.Instance.PlanePlot = planeplot;
+
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
+            dm.projection();
+            dm.atomsProjection(DensitySingleton.Instance.FD.PA);
+
+            //var jSideX = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
+            //var jSideY = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
+            //var jSideV = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_V));
+
+            //scatter
+            ViewBag.ScatXY_X = dm.ScatXY_X;
+            ViewBag.ScatXY_Y = dm.ScatXY_Y;
+            ViewBag.ScatXY_V = dm.ScatXY_V;
+            ViewBag.ScatYZ_X = dm.ScatYZ_X;
+            ViewBag.ScatYZ_Y = dm.ScatYZ_Y;
+            ViewBag.ScatYZ_V = dm.ScatYZ_V;
+            ViewBag.ScatZX_X = dm.ScatZX_X;
+            ViewBag.ScatZX_Y = dm.ScatZX_Y;
+            ViewBag.ScatZX_V = dm.ScatZX_V;
+
+            //heatmap
+            ViewBag.SideX = dm.SideX;
+            ViewBag.SideY = dm.SideY;
+            ViewBag.SideZ = dm.SideZ;
+            ViewBag.MatXY = dm.MatXY;
+            ViewBag.MatYZ = dm.MatYZ;
+            ViewBag.MatZX = dm.MatZX;
+
+
+            ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
+            ViewBag.Plane = ViewBagMatrix.Instance.Plane;            
+            ViewBag.MinV = dm.DMin;
+            ViewBag.MaxV = dm.DMax;
+            ViewBag.PlanePlot = ViewBagMatrix.Instance.PlanePlot;
+
+            return View();
         }
 
     }

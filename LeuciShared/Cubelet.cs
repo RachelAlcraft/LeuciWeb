@@ -196,7 +196,15 @@
             }
             return dims;
         }
-
+        public double[][] makeSquare(double[] doubles, int[] XY)
+        {
+            List<double> dbls = new List<double>();
+            for (int i=0; i < doubles.Length; ++i)
+            {
+                dbls.Add(doubles[i]);
+            }
+            return makeSquare(dbls, XY);
+        }
         public double[][] makeSquare(List<double> doubles, int[] XY)
         {
             double[][] ret = new double[XY[0]][];//, XY[1]];
