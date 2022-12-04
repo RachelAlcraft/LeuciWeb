@@ -47,8 +47,8 @@
     fcs=@ViewBag.Fcs       <!--<input id="fcs"     value=@ViewBag.Fcs      name="fcs"/>-->
     width=@ViewBag.Width<!--<input id="width"      value=@ViewBag.Width    name="width"/>-->
     gap=@ViewBag.Gap<!--<input id="gap"            value=@ViewBag.Gap      name="gap"/>-->
-    ydots<input id="ydots"      value=@ViewBag.YellowDots name="ydots"/>
-    gdots<input id="gdots"      value=@ViewBag.GreenDots name="gdots"/>
+    ydots=@ViewBag.YellowDots
+    gdots=@ViewBag.GreenDots
     sdcap=@ViewBag.SdCap<!--<input id="sdcap"      value=@ViewBag.SdCap    name="width"/>-->
     sdfloor=@ViewBag.SdFloor<!--<input id="sdfloor" value=@ViewBag.SdFloor    name="width"/>-->
     hover_min=@ViewBag.HoverMin<!--<input id="hover_min" value=@ViewBag.HoverMin    name="hover_min"/>-->
@@ -56,6 +56,7 @@
     nav_distance=@ViewBag.NavDistance<!--<input id="hover_min" value=@ViewBag.NavDistance    name="nav_distance"/>-->
     atom_offset=<input id="atom_offset" value=@ViewBag.AtomOffset name="atom_offset"/>
     refresh_mode=<input id="refresh_mode" value=@ViewBag.RefreshMode name="refresh_mode"/>
+    force_slow=@ViewBag.ForceSlow
 </div>
 
 <div class="tab">
@@ -147,32 +148,32 @@
                 <circle cx="50" cy="50" r="38" fill="url(#grad3)" />
                 <circle cx="50" cy="50" r="20" fill="#cccccc" stroke="black" stroke-width="2px"/>                                
                  <!--<a href="/Matrix/Slice">-->
-                <a href="Slice?nav=tilt_up&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=tilt_up&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M50,0 54,8 46,8Z" fill="rgba(0,0,0,0.8)"><title>tilt over</title></path></a>                
-                <a href="Slice?nav=up&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=up&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M50,14 54,22 46,22Z" fill="rgba(0,0,0,0.8)"><title>up</title></path></a>                
-                <a href="Slice?nav=down&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=down&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M50,86 54,78 46,78Z" fill="rgba(0,0,0,0.8)"><title>down</title></path></a>                
-                <a href="Slice?nav=tilt_down&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=tilt_down&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M50,100 54,92 46,92Z" fill="rgba(0,0,0,0.8)"><title>tilt under</title></path></a>                
-                <a href="Slice?nav=left&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=left&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M14,50 22,54 22,46Z" fill="rgba(0,0,0,0.8)"><title>left</title></path></a>                
-                <a href="Slice?nav=tilt_left&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=tilt_left&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M0,50 8,54 8,46Z" fill="rgba(0,0,0,0.8)"><title>tilt left</title></path></a>                
-                <a href="Slice?nav=right&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=right&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M86,50 78,54 78,46Z" fill="rgba(0,0,0,0.8)"><title>right</title></path></a>                
-                <a href="Slice?nav=tilt_right&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=tilt_right&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M100,50 92,54 92,46Z" fill="rgba(0,0,0,0.8)"><title>tilt right</title></path></a>                
-                <a href="Slice?nav=anti&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=anti&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M20,20 15,15 10,25Z" fill="rgba(0,0,0,0.8)"><title>anti-clockwise</title></path></a>                
-                <a href="Slice?nav=clock&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=clock&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <path d="M80,20 85,15 90,25Z" fill="rgba(0,0,0,0.8)"><title>clockwise</title></path></a>
                 <clipPath id="cut-off">
                 <rect x="0" y="0" width="70" height="50"/>
                 </clipPath>
-                <a href="Slice?nav=back&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=back&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <circle cx="50" cy="50" r="20" fill="darkseagreen"><title>back</title></circle></a>
-                <a href="Slice?nav=fwd&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp">
+                <a href="Slice?nav=fwd&denbar=@ViewBag.DenBar&radbar=@ViewBag.RadBar&lapbar=@ViewBag.LapBar&denhue=@ViewBag.DenHue&radhue=@ViewBag.RadHue&laphue=@ViewBag.LapHue&denplot=@ViewBag.DenPlot&radplot=@ViewBag.RadPlot&lapplot=@ViewBag.LapPlot&pdbcode=@ViewBag.PdbCode&c_xyz=@ViewBag.cXYZ&l_xyz=@ViewBag.lXYZ&p_xyz=@ViewBag.pXYZ&ca=&la=&pa=&fos=@ViewBag.Fos&fcs=@ViewBag.Fcs&width=@ViewBag.Width&gap=@ViewBag.Gap&ydots=@ViewBag.YellowDots&gdots=@ViewBag.GreenDots&sdcap=@ViewBag.SdCap&sdfloor=@ViewBag.SdFloor&hover_min=@ViewBag.HoverMin&hover_max=@ViewBag.HoverMax&nav_distance=@ViewBag.NavDistance&interp=@ViewBag.Interp&tabview=A">
                 <circle cx="50" cy="50" r="20" fill="lightseagreen" clip-path="url(#cut-off)"><title>fwd</title></circle></a>
             </svg>
         </div>
@@ -334,17 +335,24 @@
     <table class="inner-tbl">
     <tr>    
     <td>Atom dots=</td>
-    <td><input type="radio" id="gon" name="green_dots" value="Y" onclick="myAtomDots()" /></td>
+    <td><input type="radio" id="gon" name="green_dots" value="Y" onclick="myAtomDots('Y')" /></td>
     <td><label for="gon">Y</label></td>
-    <td><input type="radio" id="goff" name="green_dots" value="N" onclick="myAtomDots()" /></td>
+    <td><input type="radio" id="goff" name="green_dots" value="N" onclick="myAtomDots('N')" /></td>
     <td><label for="gon">N</label></td>    
+    <td><input id="gdots" value=@ViewBag.GreenDots name="gdots"/></td>    
     <td>Position dots=</td>
-    <td><input type="radio" id="on" name="yell_dots" value="Y" onclick="myPositionDots()" /></td>
+    <td><input type="radio" id="on" name="yell_dots" value="Y" onclick="myPositionDots('Y')" /></td>
     <td><label for="on">Y</label></td>
-    <td><input type="radio" id="off" name="yell_dots" value="N" onclick="myPositionDots()" /></td>
+    <td><input type="radio" id="off" name="yell_dots" value="N" onclick="myPositionDots('N')" /></td>
     <td><label for="on">N</label></td>
+    <td><input id="ydots" value=@ViewBag.YellowDots name="ydots"/></td>        
+    <td>Override optimised nagiviation</td>
+    <td><input type="radio" id="oon" name="opt" value="Y" onclick="myOptimise('Y')" /></td>
+    <td><label for="oon">Y</label></td>
+    <td><input type="radio" id="ooff" name="opt" value="N" onclick="myOptimise('N')" /></td>
+    <td><label for="oon">N</label></td>
+    <td><input id="force_slow" value=@ViewBag.ForceSlow name="force_slow" /></td>
     </tr>
-    <hr />
     </table>      
     @Html.ActionLink(
     linkText: "Get full link",
@@ -376,7 +384,7 @@
     gdots = @ViewBag.GreenDots,
     sdcap = @ViewBag.SdCap,
     sdfloor = @ViewBag.SdFloor,
-    tabview = "A",
+    tabview = "S",
     },
     htmlAttributes: null
     )
@@ -907,37 +915,28 @@
         var gdots = document.getElementById("gdots").value.trim();
         makePlots(outputMin.value, outputMax.value, ydots == "Y", gdots == "Y");
     }
-    function myPositionDots() {
+    function myPositionDots(val) {
         var outputMin = document.getElementById("sdfloor");
         var outputMax = document.getElementById("sdcap");
         var optOn = document.getElementById("on");
         var optOff = document.getElementById("off");
-
-        if (optOn.checked == true) {
-            document.getElementById("ydots").value = "Y";
-        }
-        if (optOff.checked == true) {
-            document.getElementById("ydots").value = "N";
-        }
+        document.getElementById("ydots").value = val;        
         var ydots = document.getElementById("ydots").value.trim();
         var gdots = document.getElementById("gdots").value.trim();
         makePlots(outputMin.value, outputMax.value, ydots == "Y", gdots == "Y");
     }
-    function myAtomDots() {
+    function myAtomDots(val) {
         var outputMin = document.getElementById("sdfloor");
         var outputMax = document.getElementById("sdcap");
         var optgOn = document.getElementById("gon");
-        var optgOff = document.getElementById("goff");
-
-        if (optgOn.checked == true) {
-            document.getElementById("gdots").value = "Y";
-        }
-        if (optgOff.checked == true) {
-            document.getElementById("gdots").value = "N";
-        }
+        var optgOff = document.getElementById("goff");        
+        document.getElementById("gdots").value = val;
         var ydots = document.getElementById("ydots").value.trim();
         var gdots = document.getElementById("gdots").value.trim();
         makePlots(outputMin.value, outputMax.value, ydots == "Y", gdots == "Y");
+    }
+    function myOptimise(val){
+        document.getElementById("force_slow").value = val;
     }
 </script>
 <script>

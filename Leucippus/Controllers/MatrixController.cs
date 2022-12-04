@@ -109,7 +109,7 @@ namespace Leucippus.Controllers
             int Fos = 2, int Fcs = -1, string ydots = "N", string gdots = "N",
             int t1 = 0, int t2 = 0, int t3 = 0, int t4 = 0,
             string nav = "", double nav_distance = 0.1,
-            double hover_min = 0, double hover_max = 0)
+            double hover_min = 0, double hover_max = 0,string force_slow="N")
         {
             bool view_change = false;
 
@@ -247,10 +247,10 @@ namespace Leucippus.Controllers
                     hov_max = -1;
                 }
 
-                if (tabview == "N")
+                if (tabview != "S" && force_slow == "N") //for any tabview other than display we want to force a change to linear
                 {
                     nav_space = ViewBagMatrix.Instance.Width / 15; //we reduce dramatically for nearest neighbor as how often do we need to look?
-                    if (use_interp == "BSPLINE3")
+                    if (use_interp != "NEAREST")
                     {                        
                         use_interp = "LINEAR";
                     }
@@ -270,7 +270,7 @@ namespace Leucippus.Controllers
 
                 if (nav != "" && nav != null)
                 {
-                    if (use_interp == "BSPLINE3")
+                    if (use_interp != "NEAREST")
                     {
                         use_interp = "LINEAR";
                     }
@@ -409,6 +409,7 @@ namespace Leucippus.Controllers
                 ViewBag.NavDistance = ViewBagMatrix.Instance.NavDistance;
                 ViewBag.RefreshMode = "R";
                 ViewBag.AtomOffset = 0;
+                ViewBag.ForceSlow = force_slow;
 
                 // visual
                 ViewBag.TabBackClr = "Gainsboro";
