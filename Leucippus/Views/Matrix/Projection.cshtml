@@ -16,10 +16,39 @@
 <div>
     <table>
         <tr>
-            <td>Toggle Hue</td>
-            <td>Slider for hue with caps</td>
+            <td>
+                <table>
+                <tr>
+                    <th>Show colour bar</th>
+                    <td><input type="radio" id="con" name="barr" value="Y" onclick="showBar('Y')" /></td>
+                    <td><label for="con">Y</label></td>
+                    <td><input type="radio" id="coff" name="barr" value="N" onclick="showBar('N')" /></td>
+                    <td><label for="coff">N</label></td>                
+                </tr>
+                <tr>
+                    <th colspan="5">
+                        <input type="button" id="huebtn" name="huebtn" value="Toggle hue" onclick="changeHue()" />
+                        <input style="display:none;visibility:collapse;" id="hue" name="hue" value="RedBlueGrey" />
+                        <input style="display:none;visibility:collapse;" id="cbar" value='N' name="cbar" />
+                    </th>
+                </tr>
+                </table>
+            </td>
+            <td>
+                <table>
+                <tr>
+                <td colspan="4" style="background:Gainsboro;color:navy">Density Cap</td>
+                </tr>
+                <tr>                        
+                <td style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax"></td>
+                <td style="background:LightCyan;"><span>Max=@ViewBag.DenMax</span>: Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
+                </tr>
+                </table>
+            </td>            
         </tr>
     </table>
+    
+    
 </div>
 <hr />
 <h5>Crystal Projection</h5>
@@ -67,126 +96,193 @@
     </p>@ViewBag.Error<p>
 </div>
 <script>
-    //heatmap for crystal projection
-    var jSideX = @Html.Raw(Json.Serialize(@ViewBag.SideX));
-    var jSideY = @Html.Raw(Json.Serialize(@ViewBag.SideY));
-    var jSideZ = @Html.Raw(Json.Serialize(@ViewBag.SideZ));    
-    var jMatXY = @Html.Raw(Json.Serialize(@ViewBag.MatXY));
-    var jMatYZ = @Html.Raw(Json.Serialize(@ViewBag.MatYZ));
-    var jMatZX = @Html.Raw(Json.Serialize(@ViewBag.MatZX));
-    // atoms for scatter projection
-    var ScatXY_X = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
-    var ScatXY_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
-    var ScatXY_V = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_V));
-    var ScatYZ_X = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_X));
-    var ScatYZ_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_Y));
-    var ScatYZ_V = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_V));
-    var ScatZX_X = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_X));
-    var ScatZX_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_Y));
-    var ScatZX_V = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_V));
+    function makePlots(dfloor,dcap,cbar,hue){
+        //cbar=true;
+        //heatmap for crystal projection
+        var jSideX = @Html.Raw(Json.Serialize(@ViewBag.SideX));
+        var jSideY = @Html.Raw(Json.Serialize(@ViewBag.SideY));
+        var jSideZ = @Html.Raw(Json.Serialize(@ViewBag.SideZ));    
+        var jMatXY = @Html.Raw(Json.Serialize(@ViewBag.MatXY));
+        var jMatYZ = @Html.Raw(Json.Serialize(@ViewBag.MatYZ));
+        var jMatZX = @Html.Raw(Json.Serialize(@ViewBag.MatZX));
+        // atoms for scatter projection
+        var ScatXY_X = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
+        var ScatXY_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
+        var ScatXY_V = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_V));
+        var ScatYZ_X = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_X));
+        var ScatYZ_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_Y));
+        var ScatYZ_V = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_V));
+        var ScatZX_X = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_X));
+        var ScatZX_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_Y));
+        var ScatZX_V = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_V));
     
-    var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
-    var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
+        var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
+        var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
 
-    var size = (maxv - minv) / 10
-    var zero_frac = 0.001
-    zero_frac = (0 - minv) / (maxv - minv)
+        if (dfloor != -1){
+            minv = dfloor
+        }
+        if (dcap != -1){
+            maxv = dcap
+        }
+
+        var size = (maxv - minv) / 10
+        var zero_frac = 0.001
+        zero_frac = (0 - minv) / (maxv - minv)
         
-    col_bar = {
-        title: "",
-        thickness: 15,
-        len: 0.85,
-        x: +.95
-    }
-
-    if (minv < 0) {
-        cs_scl = [[0, 'Snow'], [zero_frac, 'AliceBlue'], [zero_frac + 0.01, 'LightBlue'], [zero_frac + 0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
-    }else{
-        cs_scl = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
-    }
-
-    
-    // make the crystal heatmaps
-    
-    var dataXY = [{x: jSideX, y: jSideY, z: jMatXY, type: 'heatmap',  colorscale: cs_scl, 
-                    line: { width: 0.5, color: 'Gray' },
-        showscale: false,
-        colorbar: col_bar, 
-        name: "XY",
-        zmin: minv,
-        zmax: maxv,
-                    }];
-    
-    var dataYZ = [{x: jSideY, y: jSideZ, z: jMatYZ, type: 'heatmap',  colorscale: cs_scl, 
-                    line: { width: 0.5, color: 'Gray' },
-        showscale: false, colorbar: col_bar, name: "YZ",
-        zmin: minv,
-                    zmax: maxv,
-                    }];
-    
-    var dataZX = [{ x: jSideZ, y: jSideX, z: jMatZX, type: 'heatmap', colorscale: cs_scl, 
-                    line: { width: 0.5, color: 'Gray' },
-        showscale: false, colorbar: col_bar, name: "ZX",
-                    zmin: minv,
-                    zmax: maxv,
-                    }];
-    
-    var layout = {
-        grid: { rows: 1, columns: 1, pattern: 'independent' },
-        autosize: true,
-        title: '',
-        showlegend: false,
-        xaxis: {showgrid: false,zeroline: false,visible: false,},        
-        yaxis: {scaleanchor: 'x',scaleratio: 1,visible: false,},      
-        margin: {l: 20,r: 80,b: 20,t: 20,pad: 4},
-    };
-
-    Plotly.newPlot('myCountourXY', dataXY, layout);
-    Plotly.newPlot('myCountourYZ', dataYZ, layout);
-    Plotly.newPlot('myCountourZX', dataZX, layout);
-
-
-    // make the atom projections
-    var traceXY = {
-        x: ScatXY_X,
-        y: ScatXY_Y,
-        mode: 'markers',
-        marker: {
-            colorscale: cs_scl,
-            color: ScatXY_V,
-            size: 5,
-            showscale: false,
-            colorbar: col_bar,
-        },
-    };    
-    var traceYZ = {
-        x: ScatYZ_X,
-        y: ScatYZ_Y,
-        mode: 'markers',
-        marker: {
-            colorscale: cs_scl,
-            color: ScatYZ_V,
-            size: 5,
-            showscale: false,        
-            colorbar: col_bar,
-        },
+        col_bar = {
+            title: "",
+            thickness: 15,
+            len: 0.85,
+            x: +.95
+        }
         
-    };
-    var traceZX = {
-        x: ScatZX_X,
-        y: ScatZX_Y,
-        mode: 'markers',
-        marker: {
-            colorscale: cs_scl,
-            color: ScatZX_V,
-            size: 5,
-            showscale: false,        
-            colorbar: col_bar,
-        },
-    };
-    Plotly.newPlot('myScatterXY', [traceXY], {});
-    Plotly.newPlot('myScatterYZ', [traceYZ], {});
-    Plotly.newPlot('myScatterZX', [traceZX], {});
+        if (hue == "RedBlueGrey"){
+            if (minv < 0) {
+                cs_scl = [[0, 'Snow'], [zero_frac, 'AliceBlue'], [zero_frac + 0.01, 'LightBlue'], [zero_frac + 0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            } else {
+                cs_scl = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            }
+        }else{
+            cs_scl = [[0, 'Snow'], [1, 'Black']];
+        }
+
+
+        
+
     
-           
+        // make the crystal heatmaps
+    
+        var dataXY = [{x: jSideX, y: jSideY, z: jMatXY, type: 'heatmap',  colorscale: cs_scl, 
+                        line: { width: 0.5, color: 'Gray' },
+            showscale: cbar,
+            colorbar: col_bar, 
+            name: "XY",
+            zmin: minv,
+            zmax: maxv,
+                        }];
+    
+        var dataYZ = [{x: jSideY, y: jSideZ, z: jMatYZ, type: 'heatmap',  colorscale: cs_scl, 
+                        line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, colorbar: col_bar, name: "YZ",
+            zmin: minv,
+                        zmax: maxv,
+                        }];
+    
+        var dataZX = [{ x: jSideZ, y: jSideX, z: jMatZX, type: 'heatmap', colorscale: cs_scl, 
+                        line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, colorbar: col_bar, name: "ZX",
+                        zmin: minv,
+                        zmax: maxv,
+                        }];
+    
+        var layout = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,
+            xaxis: {showgrid: false,zeroline: false,visible: false,},        
+            yaxis: {scaleanchor: 'x',scaleratio: 1,visible: false,},      
+            margin: {l: 20,r: 80,b: 20,t: 20,pad: 4},
+        };
+
+        var config = {
+            responsive: true,
+            toImageButtonOptions: { scale: 6, width: 540, height: 540 }
+        };
+
+        Plotly.newPlot('myCountourXY', dataXY, layout,config);
+        Plotly.newPlot('myCountourYZ', dataYZ, layout,config);
+        Plotly.newPlot('myCountourZX', dataZX, layout, config);
+
+
+        // make the atom projections
+        var traceXY = {
+            x: ScatXY_X,
+            y: ScatXY_Y,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_scl,
+                color: ScatXY_V,
+                size: 5,
+                showscale: cbar,
+                colorbar: col_bar,
+                cmin: minv,
+                cmax: maxv,
+            },
+        };    
+        var traceYZ = {
+            x: ScatYZ_X,
+            y: ScatYZ_Y,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_scl,
+                color: ScatYZ_V,
+                size: 5,
+                showscale: cbar,
+                colorbar: col_bar,
+                cmin: minv,
+                cmax: maxv,
+            },
+        
+        };
+        var traceZX = {
+            x: ScatZX_X,
+            y: ScatZX_Y,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_scl,
+                color: ScatZX_V,
+                size: 5,
+                showscale: cbar,
+                colorbar: col_bar,
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+        Plotly.newPlot('myScatterXY', [traceXY], {});
+        Plotly.newPlot('myScatterYZ', [traceYZ], {});
+        Plotly.newPlot('myScatterZX', [traceZX], {});
+    }               
 </script>
+
+<script>
+    var sliderMax = document.getElementById("rangeValueMax");
+    var outputMax = document.getElementById("sdcap");
+    
+    sliderMax.oninput = function () {
+        outputMax.value = this.value;
+        var outputMin = document.getElementById("sdfloor");
+        var cbar = document.getElementById("cbar").value;
+        var hue = document.getElementById("hue").value.trim();
+        makePlots(-1, outputMax.value, cbar=="Y", hue);
+    }
+</script>
+<script>
+    function showBar(val) {                
+        var outputMin = document.getElementById("sdfloor");
+        var outputMax = document.getElementById("sdcap");
+        var hue = document.getElementById("hue").value.trim();
+        document.getElementById("cbar").value = val;        
+        makePlots(-1, outputMax.value, val == "Y", hue);
+    }
+    function changeHue(){
+        var outputMin = document.getElementById("sdfloor");
+        var outputMax = document.getElementById("sdcap");
+        var cbar = document.getElementById("cbar").value;
+        var hue = document.getElementById("hue").value;        
+        if (hue == "RedBlueGrey") {
+            document.getElementById("hue").value = "BlackWhite";            
+            makePlots(-1, outputMax.value,cbar== "Y","BlackWhite");            
+        }else{
+            document.getElementById("hue").value = "RedBlueGrey";
+            makePlots(-1, outputMax.value, cbar == "Y", "RedBlueGrey");
+        }        
+    }
+</script>
+<script>
+    makePlots(-1, -1, false,"RedBlueGrey")
+    document.getElementById("con").checked = false;
+    document.getElementById("coff").checked = true;
+</script>
+

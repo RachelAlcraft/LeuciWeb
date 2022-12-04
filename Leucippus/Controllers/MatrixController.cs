@@ -497,13 +497,11 @@ namespace Leucippus.Controllers
             }
         }
 
-        public async Task<IActionResult> Projection(string pdbcode = "", string plane = "XY", string planeplot = "")
+        public async Task<IActionResult> Projection(string pdbcode = "", double dmin = -1, double dmax = -1)
         {
             ViewBag.Error = "";                        
             ViewBagMatrix.Instance.PdbCode = pdbcode;
-            ViewBagMatrix.Instance.Plane = plane;            
-            ViewBagMatrix.Instance.PlanePlot = planeplot;
-
+            
             DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
             dm.projection();
             dm.atomsProjection(DensitySingleton.Instance.FD.PA);
@@ -536,8 +534,27 @@ namespace Leucippus.Controllers
             ViewBag.Plane = ViewBagMatrix.Instance.Plane;            
             ViewBag.MinV = dm.DMin;
             ViewBag.MaxV = dm.DMax;
-            ViewBag.PlanePlot = ViewBagMatrix.Instance.PlanePlot;
-
+            if (dmin == -1)
+            {
+                ViewBag.SdFloor = dm.DMin;
+                ViewBag.DenMin = dm.DMin;
+            }
+            else
+            {
+                ViewBag.SdFloor = dmin;
+                ViewBag.DenMin = dmin;
+            }
+            if (dmax == -1)
+            {                
+                ViewBag.SdCap = Math.Round(dm.DMax, 2);
+                ViewBag.DenMax = Math.Round(dm.DMax,2);
+            }
+            else
+            {
+                ViewBag.SdCap = Math.Round(dmax, 2);
+                ViewBag.DenMax = Math.Round(dmax,2);
+            }
+            
             return View();
         }
 
