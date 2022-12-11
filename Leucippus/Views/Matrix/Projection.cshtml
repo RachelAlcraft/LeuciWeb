@@ -9,6 +9,7 @@
         @Html.ActionLink(linkText: "Slice",actionName: "Slice",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
         @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
         @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Overlay",actionName: "Overlay",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
     </span>
 </div>
 <h3>Projection of Density Matrix - @ViewBag.PdbCode</h3>
@@ -19,19 +20,33 @@
             <td>
                 <table>
                 <tr>
-                    <th>Show colour bar</th>
+                    <th>Show colour bar
+                            <input style="display:none;visibility:collapse;" id="cbar" value='N' name="cbar" />
+                    </th>
                     <td><input type="radio" id="con" name="barr" value="Y" onclick="showBar('Y')" /></td>
                     <td><label for="con">Y</label></td>
                     <td><input type="radio" id="coff" name="barr" value="N" onclick="showBar('N')" /></td>
                     <td><label for="coff">N</label></td>                
                 </tr>
-                <tr>
-                    <th colspan="5">
-                        <input type="button" id="huebtn" name="huebtn" value="Toggle hue" onclick="changeHue()" />
-                        <input style="display:none;visibility:collapse;" id="hue" name="hue" value="RedBlueGrey" />
-                        <input style="display:none;visibility:collapse;" id="cbar" value='N' name="cbar" />
+                <!--<tr>
+                    <th>Toggle plot
+                            <input style="display:none;visibility:collapse;" id="plot" value='heatmap' name="plot" />
                     </th>
-                </tr>
+                    <td><input type="radio" id="cheat" name="blot" value="heatmap" onclick="changePlot('heatmap')" /></td>
+                    <td><label for="con">heatmap</label></td>
+                    <td><input type="radio" id="ccon" name="blot" value="contour" onclick="changePlot('contour')" /></td>
+                    <td><label for="coff">contour</label></td>                
+                </tr>-->
+                    <tr>
+                        <th>
+                            Toggle plot
+                            <input style="display:none;visibility:collapse;" id="hue" value='RedBlueGrey' name="hue" />
+                        </th>
+                        <td><input type="radio" id="rb" name="bue" value="RedBlueGrey" onclick="changeHue('RedBlueGrey')" /></td>
+                        <td><label for="con">RedBlueGrey</label></td>
+                        <td><input type="radio" id="bw" name="bue" value="BlackWhite" onclick="changeHue('BlackWhite')" /></td>
+                        <td><label for="coff">BlackWhite</label></td>
+                    </tr>                
                 </table>
             </td>
             <td>
@@ -96,8 +111,9 @@
     </p>@ViewBag.Error<p>
 </div>
 <script>
-    function makePlots(dfloor,dcap,cbar,hue){
+    function makePlots(dfloor,dcap,cbar,hue,plot){
         //cbar=true;
+        //alert(plot)
         //heatmap for crystal projection
         var jSideX = @Html.Raw(Json.Serialize(@ViewBag.SideX));
         var jSideY = @Html.Raw(Json.Serialize(@ViewBag.SideY));
@@ -153,8 +169,10 @@
     
         // make the crystal heatmaps
     
-        var dataXY = [{x: jSideX, y: jSideY, z: jMatXY, type: 'heatmap',  colorscale: cs_scl, 
-                        line: { width: 0.5, color: 'Gray' },
+        var dataXY = [{x: jSideX, y: jSideY, z: jMatXY, type: 
+            plot,  
+            colorscale: cs_scl, 
+            line: { width: 0.5, color: 'Gray' },
             showscale: cbar,
             colorbar: col_bar, 
             name: "XY",
@@ -162,15 +180,20 @@
             zmax: maxv,
                         }];
     
-        var dataYZ = [{x: jSideY, y: jSideZ, z: jMatYZ, type: 'heatmap',  colorscale: cs_scl, 
-                        line: { width: 0.5, color: 'Gray' },
+        var dataYZ = [{x: jSideY, y: jSideZ, z: jMatYZ, type: 
+            plot,  
+            colorscale: cs_scl, 
+            line: { width: 0.5, color: 'Gray' },
             showscale: cbar, colorbar: col_bar, name: "YZ",
             zmin: minv,
                         zmax: maxv,
                         }];
     
-        var dataZX = [{ x: jSideZ, y: jSideX, z: jMatZX, type: 'heatmap', colorscale: cs_scl, 
-                        line: { width: 0.5, color: 'Gray' },
+        var dataZX = [{ x: jSideZ, y: jSideX, z: jMatZX, type: 
+            //'heatmap', 
+            plot,
+            colorscale: cs_scl, 
+            line: { width: 0.5, color: 'Gray' },
             showscale: cbar, colorbar: col_bar, name: "ZX",
                         zmin: minv,
                         zmax: maxv,
@@ -255,7 +278,8 @@
         var outputMin = document.getElementById("sdfloor");
         var cbar = document.getElementById("cbar").value;
         var hue = document.getElementById("hue").value.trim();
-        makePlots(-1, outputMax.value, cbar=="Y", hue);
+        var plot = document.getElementById("plot").value.trim();
+        makePlots(-1, outputMax.value, cbar=="Y", hue,plot);
     }
 </script>
 <script>
@@ -263,26 +287,34 @@
         var outputMin = document.getElementById("sdfloor");
         var outputMax = document.getElementById("sdcap");
         var hue = document.getElementById("hue").value.trim();
+        var plot = document.getElementById("plot").value;      
         document.getElementById("cbar").value = val;        
-        makePlots(-1, outputMax.value, val == "Y", hue);
+        makePlots(-1, outputMax.value, val == "Y", hue,plot);
     }
-    function changeHue(){
+    function changeHue(hue){
+        var outputMin = document.getElementById("sdfloor");
+        var outputMax = document.getElementById("sdcap");
+        var cbar = document.getElementById("cbar").value;        
+        var plot = document.getElementById("plot").value;              
+        document.getElementById("hue").value = hue;            
+        makePlots(-1, outputMax.value,cbar== "Y",hue,plot);                    
+    }
+    function changePlot(plot) {
         var outputMin = document.getElementById("sdfloor");
         var outputMax = document.getElementById("sdcap");
         var cbar = document.getElementById("cbar").value;
-        var hue = document.getElementById("hue").value;        
-        if (hue == "RedBlueGrey") {
-            document.getElementById("hue").value = "BlackWhite";            
-            makePlots(-1, outputMax.value,cbar== "Y","BlackWhite");            
-        }else{
-            document.getElementById("hue").value = "RedBlueGrey";
-            makePlots(-1, outputMax.value, cbar == "Y", "RedBlueGrey");
-        }        
+        var hue = document.getElementById("hue").value;                
+        document.getElementById("plot").value = plot;
+        makePlots(-1, outputMax.value, cbar == "Y", hue,plot);        
     }
 </script>
 <script>
-    makePlots(-1, -1, false,"RedBlueGrey")
+    makePlots(-1, -1, false,"RedBlueGrey","heatmap")
     document.getElementById("con").checked = false;
     document.getElementById("coff").checked = true;
+    document.getElementById("cheat").checked = true;
+    document.getElementById("ccon").checked = false;
+    document.getElementById("rb").checked = true;
+    document.getElementById("bw").checked = false;
 </script>
 

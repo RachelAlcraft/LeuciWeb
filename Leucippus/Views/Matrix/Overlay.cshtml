@@ -1,0 +1,310 @@
+﻿
+@{
+    ViewData["Title"] = "Matrix";
+    Layout = "~/Views/Shared/_LayoutDensity.cshtml";
+}
+<div class="subheader">
+    <span>
+        @Html.ActionLink(linkText: "Choose",actionName: "Browse",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Slice",actionName: "Slice",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Overlay",actionName: "Overlay",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+    </span>
+</div>
+<br/>
+<h3>Overlay of Density Matrix - @ViewBag.PdbCode</h3>
+<hr />
+<div>
+    @using (Html.BeginForm("Overlay", "Matrix", FormMethod.Post))
+    {        
+        <table>
+            <tr>
+                <th>Overlay motif</th>
+                <td><input type="text" id="motif" name="motif" value=@ViewBag.Motif style="height:30px;" /></td>
+                <td style="color:crimson">atoms configured in central-linear-planar, eg CA:C:N+1 will show the peptide bond</td>
+            </tr>
+            <tr>
+                <th>Exclusions</th>
+                <td><input type="text" id="exclusions" name="exclusions" value=@ViewBag.Exclusions style="height:30px;" /></td>
+                <td style="color:crimson">any residue numbers to exclude, comma delim</td>
+            </tr>
+            <tr>
+                <th>Inclusions</th>
+                <td><input type="text" id="inclusions" name="inclusions" value=@ViewBag.Inclusions style="height:30px;" /></td>
+                <td style="color:crimson">only this comma delim list (ignores the exclusions)</td>
+            </tr>
+        </table>
+        <input type="submit" value="Create overlay" />
+    }
+        
+</div>
+<hr />
+<div>
+    <table>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <th>
+                            Show colour bar
+                            <input style="display:none;visibility:collapse;" id="cbar" value='N' name="cbar" />
+                        </th>
+                        <th>
+                        Toggle plot
+                        <input style="display:none;visibility:collapse;" id="plot" value='heatmap' name="plot" />
+                        </th>
+                        <th>
+                            Toggle hue
+                            <input style="display:none;visibility:collapse;" id="hue" value='RedBlueGrey' name="hue" />
+                        </th>                        
+                    </tr>    
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td style="border:none"><input type="radio" id="con" name="barr" value="Y" onclick="showBar('Y')" /></td>
+                                    <td style ="border:none"><label for="con">Y</label></td>
+                                </tr>
+                                <tr>
+                                    <td style ="border:none"><input type="radio" id="coff" name="barr" value="N" onclick="showBar('N')" /></td>
+                                    <td style ="border:none"><label for="coff">N</label></td>
+                                </tr>
+                            </table>
+                            
+                        </td>                                            
+                        <td>
+                            <table>
+                                <tr>
+                                <td style ="border:none"><input type="radio" id="cheat" name="blot" value="heatmap" onclick="changePlot('heatmap')" /></td>
+                                <td style ="border:none"><label for="con">heatmap</label>
+                                </tr>
+                                <tr>
+                                <td style ="border:none"><input type="radio" id="ccon" name="blot" value="contour" onclick="changePlot('contour')" /></td>
+                                <td style ="border:none"><label for="coff">contour</label></td>
+                                </tr>
+                            </table>                                                                                        
+                       </td>                                                                                                                        
+                        <td>
+                            <table>
+                                <tr>
+                                <td style ="border:none"><input type="radio" id="rb" name="bue" value="RedBlueGrey" onclick="changeHue('RedBlueGrey')" /></td>
+                                <td style ="border:none"><label for="con">RedBlueGrey</label></td>
+                                </tr>
+                                <tr>
+                                <td style ="border:none"><input type="radio" id="bw" name="bue" value="BlackWhite" onclick="changeHue('BlackWhite')" /></td>
+                                <td style ="border:none"><label for="coff">BlackWhite</label></td>
+                                </tr>
+                            </table>                            
+                        </td>                        
+                    </tr>
+                </table>
+            </td>            
+        </tr>
+    </table>
+<hr/>
+<h5>Density Overlays</h5>
+<table>
+    <tr>
+        <th>Density</th>
+        <th>Radient</th>
+        <th>Laplacian</th>
+    </tr>
+    <tr>
+        <td style="width: 450px;">            
+            <div id="myCountourDEN" style="width:100%"></div>            
+        </td>
+        <td style="width: 450px;">            
+            <div id="myCountourRAD" style="width:100%"></div>            
+        </td>
+        <td style="width: 450px;">            
+            <div id="myCountourLAP" style="width:100%"></div>            
+        </td>                
+    </tr>      
+</table>
+<div>
+    @foreach (var item in ViewBag.Matches)
+    {
+        <span>
+            @item[0]            
+        </span>
+        <span>
+            @item[1]            
+        </span>
+        <span>
+            @item[2]            
+        </span>
+        <br />
+    }
+</div>
+
+   
+<div>
+    </p>@ViewBag.Error<p>
+</div>
+<script>
+    function makePlots(dfloor,dcap,cbar,hue,plot){
+        //cbar=true;
+        //alert(plot)
+        //heatmap for overlay
+
+        hueL = hue
+        hueR = hue
+
+        var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
+        var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
+        var jd = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
+        var jr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
+        var jl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
+
+        var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
+        var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
+
+        var minl = @Html.Raw(Json.Serialize(@ViewBag.MinL));    
+        var maxl = @Html.Raw(Json.Serialize(@ViewBag.MaxL));  
+
+        if (dfloor != -1){
+            minv = dfloor;
+        }
+        if (dcap != -1){
+            maxv = dcap;
+        }
+
+        var size = (maxv - minv) / 10;
+        var zero_frac = 0.001;
+        zero_frac = (0 - minv) / (maxv - minv);
+
+        var sizeL = (maxl - minl) / 10;
+        var zero_fracL = 0.001;
+        zero_fracL = (0 - minl) / (maxl - minl);
+        zero_fracL = 1 - zero_fracL;
+        
+        col_bar = {
+            title: "",
+            thickness: 15,
+            len: 0.85,
+            x: +.95
+        }
+        //alert(minv)
+        //alert(minl)
+        
+        if (hue == "RedBlueGrey"){
+            if (minv < 0) {
+                cs_scl = [[0, 'Grey'], [zero_frac, 'Snow'],[zero_frac + 0.01, 'LightBlue'], [zero_frac + 0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            } else {
+                cs_scl = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            }
+        }else{
+            cs_scl = [[0, 'Snow'], [1, 'Black']];
+        }
+
+        if (hueR == "RedBlueGrey") {            
+            cs_sclR = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];            
+        } else {
+            cs_sclR = [[0, 'Snow'], [1, 'Black']];
+        }
+
+        if (hueL == "RedBlueGrey"){
+            if (minl < 0) {
+                cs_sclL = [[0, 'Grey'], [zero_fracL, 'Snow'],[zero_fracL + 0.01, 'LightBlue'], [zero_fracL + 0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            } else {
+                cs_sclL = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            }
+        }else{
+            cs_sclL = [[0, 'Snow'], [1, 'Black']];
+        }
+
+
+
+
+        
+
+    
+        // make the crystal heatmaps
+    
+        var dataDEN = [{x: jx, y: jx, z: jd, type: 
+            plot,  
+            colorscale: cs_scl, 
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar,
+            colorbar: col_bar, 
+            name: "XY",
+            zmin: minv,
+            zmax: maxv,
+                        }];
+    
+        var dataRAD = [{x: jx, y: jx, z: jr, type: 
+            plot,  
+            colorscale: cs_sclR, 
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, 
+            colorbar: col_bar, 
+            name: "YZ",
+            //zmin: minv,
+            //zmax: maxv,
+            }];
+    
+        var dataLAP = [{ x: jx, y: jx, z: jl, type:             
+            plot,
+            colorscale: cs_sclL,
+            reversescale: true,
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, 
+            colorbar: col_bar, 
+            name: "ZX",
+            zmin: minl,
+            zmax: maxl,
+            }];
+    
+        var layout = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,
+            xaxis: {showgrid: false,zeroline: false,visible: false,},        
+            yaxis: {scaleanchor: 'x',scaleratio: 1,visible: false,},      
+            margin: {l: 20,r: 80,b: 20,t: 20,pad: 4},
+        };
+
+        var config = {
+            responsive: true,
+            toImageButtonOptions: { scale: 6, width: 540, height: 540 }
+        };
+
+        Plotly.newPlot('myCountourDEN', dataDEN, layout,config);
+        Plotly.newPlot('myCountourRAD', dataRAD, layout,config);
+        Plotly.newPlot('myCountourLAP', dataLAP, layout, config);
+        
+    }               
+</script>
+
+<script>
+    function showBar(val) {                        
+        var hue = document.getElementById("hue").value.trim();
+        var plot = document.getElementById("plot").value;      
+        document.getElementById("cbar").value = val;        
+        makePlots(-1, -1, val == "Y", hue,plot);
+    }
+    function changeHue(hue){        
+        var cbar = document.getElementById("cbar").value;        
+        var plot = document.getElementById("plot").value;              
+        document.getElementById("hue").value = hue;            
+        makePlots(-1, -1,cbar== "Y",hue,plot);                    
+    }
+    function changePlot(plot) {        
+        var cbar = document.getElementById("cbar").value;
+        var hue = document.getElementById("hue").value;                
+        document.getElementById("plot").value = plot;
+        makePlots(-1, -1, cbar == "Y", hue,plot);        
+    }
+</script>
+<script>
+    makePlots(-1, -1, false,"RedBlueGrey","heatmap")    
+    document.getElementById("con").checked = false;
+    document.getElementById("coff").checked = true;
+    document.getElementById("cheat").checked = true;
+    document.getElementById("ccon").checked = false;
+    document.getElementById("rb").checked = true;
+    document.getElementById("bw").checked = false;
+</script>
+

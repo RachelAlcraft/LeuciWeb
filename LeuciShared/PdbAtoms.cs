@@ -1,8 +1,11 @@
-﻿namespace LeuciShared
+﻿using System.Numerics;
+
+namespace LeuciShared
 {
     public class PdbAtoms
     {
         public Dictionary<string, VectorThree> Atoms = new Dictionary<string, VectorThree>();
+        private List<string> Residues = new List<string>();
         private Dictionary<string, string> _aas = new Dictionary<string, string>();
         public bool Init = false;
         public PdbAtoms(string[] lines) //constructor for pdb file
@@ -38,6 +41,10 @@
                     string chimera = Chain + ":" + ResidueNo + "@" + AtomType + "." + occupant;
                     Atoms.Add(chimera, new VectorThree(X, Y, Z));
                     _aas.Add(chimera, AA);
+
+                    string rid = Chain + ":" + ResidueNo;
+                    if (!Residues.Contains(rid))                   
+                        Residues.Add(rid);                    
                 }
 
             }
@@ -165,6 +172,75 @@
             }
             return ats;
 
+        }        
+        public List<string[]> getMatchMotif(string motif, string exclusions, string inclusions, out List<VectorThree[]> coords)
+        {
+            //the very first can be nont very string ED so get the... 3rd?
+            List<string[]> motifs = new List<string[]>();
+            coords = new List<VectorThree[]>();
+            string[] mtf = motif.Split(":");
+            int[] offs = new int[3];
+            for (int i = 0; i < mtf.Length; ++i)
+            {
+                string mf = mtf[i];
+                int offset = 0;
+                if (mf.Contains("+"))
+                {
+                    string[] mm = mf.Split("+");
+                    mf = mm[0];
+                    offset = Convert.ToInt32(mm[1]);
+                    mtf[i] = mf;
+                }
+                else if (mf.Contains("-"))
+                {
+                    string[] mm = mf.Split("-");
+                    mf = mm[0];
+                    offset = -1 * Convert.ToInt32(mm[1]);
+                    mtf[i] = mf;
+                }
+                offs[i] = offset;
+            }
+
+            int current_rid = -1;
+            int found = -1;
+            if (exclusions == null)
+                exclusions = "";
+            exclusions += ",";
+            if (inclusions == null)
+                inclusions = "";
+            inclusions += ",";
+            foreach (var ridx in Residues)
+            {
+                if (!exclusions.Contains(ridx + ","))
+                {
+                    if (inclusions == "," || inclusions.Contains(ridx + ","))
+                    {
+                        string[] spl = ridx.Split(":");
+                        string ch = spl[0];
+                        int rida = Convert.ToInt32(spl[1]);
+                        int rid0 = rida + offs[0];
+                        int rid1 = rida + offs[1];
+                        int rid2 = rida + offs[2];
+                        string candiate0 = ch + ":" + rid0 + "@" + mtf[0] + ".A";
+                        string candiate1 = ch + ":" + rid1 + "@" + mtf[1] + ".A";
+                        string candiate2 = ch + ":" + rid2 + "@" + mtf[2] + ".A";
+                        if (Atoms.ContainsKey(candiate0) && Atoms.ContainsKey(candiate1) && Atoms.ContainsKey(candiate2))
+                        {
+                            string[] match = new string[3];
+                            match[0] = candiate0;
+                            match[1] = candiate1;
+                            match[2] = candiate2;
+                            motifs.Add(match);
+                            VectorThree[] v3 = new VectorThree[3];
+                            v3[0] = getCoords(candiate0);
+                            v3[1] = getCoords(candiate1);
+                            v3[2] = getCoords(candiate2);
+                            coords.Add(v3);
+                        }
+                    }
+                }                                
+            }
+            return motifs;            
         }
     }
 }

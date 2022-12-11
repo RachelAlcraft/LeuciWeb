@@ -557,6 +557,85 @@ namespace Leucippus.Controllers
             
             return View();
         }
+        public async Task<IActionResult> Overlay(
+            string pdbcode = "", 
+            string motif= "C:CA:O",
+            string exclusions="A:1,A:2",
+            string inclusions = null)
+        {
+            ViewBag.Error = "";
+            ViewBagMatrix.Instance.PdbCode = pdbcode;
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
+            List<VectorThree[]> match_coords = new List<VectorThree[]>();
+            List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchMotif(motif,exclusions,inclusions,out match_coords);
+
+            double[][]? sliceDensity = null;
+            double[][]? sliceRadient = null;
+            double[][]? sliceLaplacian = null;
+
+            double minV = 1000;
+            double maxV = -1000;
+            double minL = 1000;
+            double maxL = -1000;
+
+            // create each matrix
+            foreach (VectorThree[] coord in match_coords)
+            {
+                dm.create_scratch_slice(5, 0.1,
+                    true, -1, -1,
+                    coord[0], coord[1], coord[2],
+                    coord[0], coord[1], coord[2],
+                    DensitySingleton.Instance.FD.PA,-1,-1);
+
+                if (sliceDensity == null)
+                {
+                    sliceDensity = dm.SliceDensity;
+                    sliceRadient = dm.SliceRadient;
+                    sliceLaplacian = dm.SliceLaplacian;
+                }
+                else
+                {
+                    for (int i = 0; i < sliceDensity.Length; i++)
+                    {
+                        for (int j=0; j < sliceDensity[i].Length; j++)
+                        {                            
+                            sliceDensity[i][j] += dm.SliceDensity[i][j];
+                            maxV = Math.Max(maxV, sliceDensity[i][j]);
+                            minV = Math.Min(minV, sliceDensity[i][j]);
+                            
+                            if (sliceRadient.Length == sliceDensity.Length)
+                                sliceRadient[i][j] += dm.SliceRadient[i][j];
+
+                            if (sliceLaplacian.Length == sliceDensity.Length)
+                            {
+                                sliceLaplacian[i][j] += dm.SliceLaplacian[i][j];
+                                maxL = Math.Max(maxL, sliceLaplacian[i][j]);
+                                minL = Math.Min(minL, sliceLaplacian[i][j]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // matrix
+            ViewBag.SliceDensity = sliceDensity;
+            ViewBag.SliceRadient = sliceRadient;
+            ViewBag.SliceLaplacian = sliceLaplacian;
+            ViewBag.MinV = minV;
+            ViewBag.MaxV = maxV;
+            ViewBag.MinL = minL;
+            ViewBag.MaxL = maxL;
+
+
+            // View items
+            ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
+            ViewBag.Motif = motif;
+            ViewBag.Exclusions = exclusions;
+            ViewBag.Inclusions = inclusions;
+            ViewBag.Matches = match_motif;
+            return View();
+
+        }
 
     }
 }
