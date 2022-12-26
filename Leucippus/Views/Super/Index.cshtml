@@ -1,19 +1,9 @@
 ﻿
 @{
     ViewData["Title"] = "Matrix";
-    Layout = "~/Views/Shared/_LayoutDensity.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="subheader">
-    <span>
-        @Html.ActionLink(linkText: "Choose",actionName: "Browse",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-        @Html.ActionLink(linkText: "Slice",actionName: "Slice",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-        @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-        @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-        @Html.ActionLink(linkText: "Overlay",actionName: "Overlay",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-    </span>
-</div>
-<br/>
-<h3>Overlay of Density Matrix - @ViewBag.PdbCode</h3>
+<h3>Superposition of Electron Density</h3>
 <hr />
 <div>
     @using (Html.BeginForm("Overlay", "Matrix", FormMethod.Post))

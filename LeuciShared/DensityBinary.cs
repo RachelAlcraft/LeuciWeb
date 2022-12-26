@@ -140,18 +140,39 @@
             Words["21_DMAX"] = Convert.ToString(bytesToSingle(fileInBinary, 80)); // 21
             Words["22_DMEAN"] = Convert.ToString(bytesToSingle(fileInBinary, 84)); // 22
 
-            Words["ISPG"] = Convert.ToString(bytesToInt(fileInBinary, 88)); // 23
-            Words["NYSYMBT"] = Convert.ToString(bytesToInt(fileInBinary, 92)); // 24
-                                                                               //EXTRA
-            Words["EXTTYP"] = Convert.ToString(bytesToInt(fileInBinary, 104)); // 27
-            Words["NVERSION"] = Convert.ToString(bytesToInt(fileInBinary, 108)); // 28
-                                                                                 //EXTRA
-            Words["ORIGIN_X"] = Convert.ToString(bytesToSingle(fileInBinary, 196)); // 50
-            Words["ORIGIN_Y"] = Convert.ToString(bytesToSingle(fileInBinary, 200)); // 51
-            Words["ORIGIN_Z"] = Convert.ToString(bytesToSingle(fileInBinary, 204)); // 52
-            Words["MAP"] = Convert.ToString(bytesToString(fileInBinary, 208, 4)); // 53
-            Words["RMS"] = Convert.ToString(bytesToSingle(fileInBinary, 216)); // 55
-            Words["NLABL"] = Convert.ToString(bytesToInt(fileInBinary, 220)); // 56
+            // Symmetry operations
+            Words["23_ISPG"] = Convert.ToString(bytesToInt(fileInBinary, 88)); // 23
+            Words["24_NYSYMBT"] = Convert.ToString(bytesToInt(fileInBinary, 92)); // 24            
+            int symms = Convert.ToInt32(Words["24_NYSYMBT"]) / 80;
+
+            //some differences with ED and XRAY
+
+            //EXTRA
+            Words["27_EXTTYP"] = Convert.ToString(bytesToInt(fileInBinary, 104)); // 27
+            Words["28_NVERSION"] = Convert.ToString(bytesToInt(fileInBinary, 108)); // 28            
+            
+            Words["25_LSKFLG"] = Convert.ToString(bytesToInt(fileInBinary, 96)); // 25            
+            Words["26_SKWMAT_S11"] = Convert.ToString(bytesToInt(fileInBinary, 100)); // 26
+            Words["27_SKWMAT_S12"] = Convert.ToString(bytesToInt(fileInBinary, 104)); // 27
+            Words["28_SKWMAT_S13"] = Convert.ToString(bytesToInt(fileInBinary, 108)); // 28
+            Words["29_SKWMAT_S21"] = Convert.ToString(bytesToInt(fileInBinary, 112)); // 29
+            Words["30_SKWMAT_S22"] = Convert.ToString(bytesToInt(fileInBinary, 116)); // 30
+            Words["31_SKWMAT_S23"] = Convert.ToString(bytesToInt(fileInBinary, 120)); // 31
+            Words["32_SKWMAT_S31"] = Convert.ToString(bytesToInt(fileInBinary, 124)); // 32
+            Words["33_SKWMAT_S32"] = Convert.ToString(bytesToInt(fileInBinary, 128)); // 33
+            Words["34_SKWMAT_S33"] = Convert.ToString(bytesToInt(fileInBinary, 132)); // 34
+
+            Words["35_SKWTRN_T1"] = Convert.ToString(bytesToInt(fileInBinary, 136)); // 35
+            Words["36_SKWTRN_T2"] = Convert.ToString(bytesToInt(fileInBinary, 140)); // 36
+            Words["37_SKWTRN_T3"] = Convert.ToString(bytesToInt(fileInBinary, 144)); // 37
+
+            //EXTRA
+            Words["50_ORIGIN_X"] = Convert.ToString(bytesToSingle(fileInBinary, 196)); // 50
+            Words["51_ORIGIN_Y"] = Convert.ToString(bytesToSingle(fileInBinary, 200)); // 51
+            Words["52_ORIGIN_Z"] = Convert.ToString(bytesToSingle(fileInBinary, 204)); // 52
+            Words["53_MAP"] = Convert.ToString(bytesToString(fileInBinary, 208, 4)); // 53
+            Words["55_RMS"] = Convert.ToString(bytesToSingle(fileInBinary, 216)); // 55
+            Words["56_NLABL"] = Convert.ToString(bytesToInt(fileInBinary, 220)); // 56
             Words["LABEL1"] = Convert.ToString(bytesToString(fileInBinary, 224, 80)); // 57
             Words["LABEL2"] = Convert.ToString(bytesToString(fileInBinary, 304, 80)); // 58
             Words["LABEL3"] = Convert.ToString(bytesToString(fileInBinary, 384, 80)); // 59
@@ -162,6 +183,14 @@
             Words["LABEL8"] = Convert.ToString(bytesToString(fileInBinary, 784, 80)); // 64
             Words["LABEL9"] = Convert.ToString(bytesToString(fileInBinary, 864, 80)); // 65
             Words["LABEL10"] = Convert.ToString(bytesToString(fileInBinary, 944, 80)); // 66
+            // Finally symmetry info in the next block defined by 24_NYSYMBT
+            int start = 944+80;
+            for (int i = 0; i < symms; ++i)
+            {
+                Words[Convert.ToString(i) + "_SYM"] = Convert.ToString(bytesToString(fileInBinary, start, 80)); 
+                start += 80;
+            }
+
             Blength = Convert.ToInt32(Words["01_NX"]) * Convert.ToInt32(Words["02_NY"]) * Convert.ToInt32(Words["03_NZ"]);
             Bstart = Bytes.Length - (4 * Blength);
             makeInfo();
@@ -240,7 +269,7 @@
         private void calcStats()
         {
             Mean = Convert.ToDouble(Words["22_DMEAN"]);
-            Sd = Convert.ToDouble(Words["RMS"]);
+            Sd = Convert.ToDouble(Words["55_RMS"]);
             DMin = Convert.ToDouble(Words["20_DMIN"]);
             DMax = Convert.ToDouble(Words["21_DMAX"]);
             /*

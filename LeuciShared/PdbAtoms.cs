@@ -5,6 +5,7 @@ namespace LeuciShared
     public class PdbAtoms
     {
         public Dictionary<string, VectorThree> Atoms = new Dictionary<string, VectorThree>();
+        public Dictionary<string, string> Lines = new Dictionary<string, string>();
         private List<string> Residues = new List<string>();
         private Dictionary<string, string> _aas = new Dictionary<string, string>();
         public bool Init = false;
@@ -40,6 +41,7 @@ namespace LeuciShared
                         occupant = "A";
                     string chimera = Chain + ":" + ResidueNo + "@" + AtomType + "." + occupant;
                     Atoms.Add(chimera, new VectorThree(X, Y, Z));
+                    Lines.Add(chimera, line);
                     _aas.Add(chimera, AA);
 
                     string rid = Chain + ":" + ResidueNo;
@@ -73,6 +75,15 @@ namespace LeuciShared
             if (Atoms.ContainsKey(atom + ".A"))
                 return Atoms[atom + ".A"];
             return new VectorThree(0, 0, 0);
+        }
+
+        public string getLine(string atom)
+        {
+            if (Lines.ContainsKey(atom))
+                return Lines[atom];
+            if (Lines.ContainsKey(atom + ".A"))
+                return Lines[atom + ".A"];
+            return "";
         }
 
         public string[] getFirstThreeCoords()
@@ -173,11 +184,13 @@ namespace LeuciShared
             return ats;
 
         }        
-        public List<string[]> getMatchMotif(string motif, string exclusions, string inclusions, out List<VectorThree[]> coords)
+        public List<string[]> getMatchMotif(string motif, string exclusions, string inclusions, out List<VectorThree[]> coords, out List<string> lines)
         {
-            //the very first can be nont very string ED so get the... 3rd?
-            List<string[]> motifs = new List<string[]>();
+            // out init
+            lines = new List<string>();
             coords = new List<VectorThree[]>();
+            //the very first can be nont very string ED so get the... 3rd?
+            List<string[]> motifs = new List<string[]>();            
             string[] mtf = motif.Split(":");
             int[] offs = new int[3];
             for (int i = 0; i < mtf.Length; ++i)
@@ -236,6 +249,10 @@ namespace LeuciShared
                             v3[1] = getCoords(candiate1);
                             v3[2] = getCoords(candiate2);
                             coords.Add(v3);
+                            lines.Add(getLine(candiate0));
+                            lines.Add(getLine(candiate1));
+                            lines.Add(getLine(candiate2));
+                            lines.Add(getLine(""));
                         }
                     }
                 }                                

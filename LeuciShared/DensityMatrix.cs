@@ -40,6 +40,29 @@ namespace LeuciShared
         public double[] ScatZX_X = new double[0];
         public double[] ScatZX_Y = new double[0];
         public double[] ScatZX_V = new double[0];
+        
+        // for the projections atoms over crystal        
+        //public double[] CScatXY_X = new double[0];
+        //public double[] CScatXY_Y = new double[0];
+        //public double[] CScatXY_V = new double[0]; 
+        //public double[] CScatYZ_X = new double[0];
+        //public double[] CScatYZ_Y = new double[0];
+        //public double[] CScatYZ_V = new double[0];
+        //public double[] CScatZX_X = new double[0];
+        //public double[] CScatZX_Y = new double[0];
+        //public double[] CScatZX_V = new double[0];
+
+        // for the crs projection of atoms 
+        public double[] AScatXY_X = new double[0];
+        public double[] AScatXY_Y = new double[0];
+        //public double[] AScatXY_V = new double[0];
+        public double[] AScatYZ_X = new double[0];
+        public double[] AScatYZ_Y = new double[0];
+        //public double[] AScatYZ_V = new double[0];
+        public double[] AScatZX_X = new double[0];
+        public double[] AScatZX_Y = new double[0];
+        //public double[] AScatZX_V = new double[0]; v is the same as xyz
+
         // for the projections heatmap
         public double[][] MatXY = new double[0][];
         public double[][] MatYZ = new double[0][];
@@ -47,6 +70,9 @@ namespace LeuciShared
         public double[] SideX = new double[0];
         public double[] SideY = new double[0];
         public double[] SideZ = new double[0];
+        public double[][] AMatXY = new double[0][];
+        public double[][] AMatYZ = new double[0][];
+        public double[][] AMatZX = new double[0][];
 
 
         // for the slider and contours
@@ -112,9 +138,11 @@ namespace LeuciShared
             Info = _densityBinary.Info;
             _cublet = new Cubelet(_A, _B, _C);
             changeInterp(interp);
+        }
 
-
-
+        public VectorThree getMatrixDims()
+        {
+            return new VectorThree(_A, _B, _C);
         }
 
         public void changeInterp(string interp)
@@ -243,6 +271,9 @@ namespace LeuciShared
             MatXY = new double[XY[0]][];
             MatYZ = new double[YZ[0]][];
             MatZX = new double[ZX[0]][];
+            AMatXY = new double[XY[0]][];
+            AMatYZ = new double[YZ[0]][];
+            AMatZX = new double[ZX[0]][];
             SideX = new double[XY[0]];
             SideY = new double[YZ[0]];
             SideZ = new double[ZX[0]];            
@@ -250,16 +281,19 @@ namespace LeuciShared
             {
                 SideX[i] = i;
                 MatXY[i] = new double[XY[1]];
+                AMatXY[i] = new double[XY[1]];
             }
             for (int i = 0; i < YZ[0]; ++i)
             {
                 SideY[i] = i;
                 MatYZ[i] = new double[YZ[1]];
+                AMatYZ[i] = new double[YZ[1]];
             }
             for (int i = 0; i < ZX[0]; ++i)
             {
                 SideZ[i] = i;
                 MatZX[i] = new double[ZX[1]];
+                AMatZX[i] = new double[ZX[1]];
             }
                         
             //if (plane == "XY") coords.Add(new int[] { layer, y, x });            
@@ -288,9 +322,71 @@ namespace LeuciShared
 
                 }
             }
+
+            /*
+            // finally add the max vals to a scatter plot
+            List<double> xyX = new List<double>();
+            List<double> xyY = new List<double>();
+            List<double> xyV = new List<double>();
+            List<double> yzY = new List<double>();
+            List<double> yzZ = new List<double>();
+            List<double> yzV = new List<double>();
+            List<double> zxZ = new List<double>();
+            List<double> zxX = new List<double>();
+            List<double> zxV = new List<double>();
+
+            for (int l = 0; l < YZMax; ++l)
+            {
+                List<int[]> coords = _cublet.getPlaneCoords3d("YZ", l);
+                for (int i = 0; i < coords.Count; ++i)
+                {
+                    int[] coord = coords[i];
+                    double val = _interpMap.getExactValueBinary(coord[0], coord[1], coord[2]);
+                    VectorThree xyz = _densityBinary.getXYZFromCRS(new VectorThree(coord[0], coord[1], coord[2]));
+                    xyX.Add(xyz.A);
+                    xyY.Add(xyz.B);
+                    xyV.Add(val);
+
+                    yzY.Add(xyz.B);
+                    yzZ.Add(xyz.C);
+                    yzV.Add(val);
+
+                    zxZ.Add(xyz.C);
+                    zxX.Add(xyz.A);
+                    zxV.Add(val);
+                }
+            }
+            CScatXY_X = new double[xyX.Count];
+            CScatXY_Y = new double[xyY.Count];
+            CScatXY_V = new double[xyV.Count];
+            for (int i = 0; i < xyX.Count; ++i)
+            {
+                CScatXY_X[i] = xyX[i];
+                CScatXY_Y[i] = xyY[i];
+                CScatXY_V[i] = xyV[i];                
+            }
+            CScatYZ_X = new double[yzY.Count];
+            CScatYZ_Y = new double[yzZ.Count];
+            CScatYZ_V = new double[yzV.Count];
+            for (int i = 0; i < yzV.Count; ++i)
+            {
+                CScatYZ_X[i] = yzY[i];
+                CScatYZ_Y[i] = yzZ[i];
+                CScatYZ_V[i] = yzV[i];
+            }
+            CScatZX_X = new double[zxZ.Count];
+            CScatZX_Y = new double[zxX.Count];
+            CScatZX_V = new double[zxV.Count];
+            for (int i = 0; i < yzV.Count; ++i)
+            {
+                CScatZX_X[i] = zxZ[i];
+                CScatZX_Y[i] = zxX[i];
+                CScatZX_V[i] = zxV[i];
+            }*/
+
         }
 
-        public void atomsProjection(PdbAtoms pa)
+        public void atomsProjection(PdbAtoms pa, Symmetry sym)
         {
             //var jSideX = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
             //var jSideY = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
@@ -299,17 +395,26 @@ namespace LeuciShared
             List<double> XY_X = new List<double>();
             List<double> XY_Y = new List<double>();
             List<double> XY_V = new List<double>();
+            List<double> AXY_X = new List<double>();
+            List<double> AXY_Y = new List<double>();
+            
             List<double> YZ_X = new List<double>();
             List<double> YZ_Y = new List<double>();
             List<double> YZ_V = new List<double>();
+            List<double> AYZ_X = new List<double>();
+            List<double> AYZ_Y = new List<double>();
+
             List<double> ZX_X = new List<double>();
             List<double> ZX_Y = new List<double>();
             List<double> ZX_V = new List<double>();
+            List<double> AZX_X = new List<double>();
+            List<double> AZX_Y = new List<double>();
             createData();
             foreach (var atom in pa.Atoms)
             {
                 VectorThree xyz = atom.Value;
                 VectorThree crs = _densityBinary.getCRSFromXYZ(xyz);
+                VectorThree sym_crs = sym.applySymmetry(crs);
                 double val = _interpMap.getValue(crs.A, crs.B, crs.C);
                 //XY plane
                 var indexXY = XY_V.BinarySearch(val);
@@ -317,49 +422,67 @@ namespace LeuciShared
                 XY_V.Insert(indexXY, val);
                 XY_X.Insert(indexXY, xyz.A);
                 XY_Y.Insert(indexXY, xyz.B);
+                AXY_X.Insert(indexXY, sym_crs.B);
+                AXY_Y.Insert(indexXY, sym_crs.C);
                 //YZ plane
                 var indexYZ = YZ_V.BinarySearch(val);
                 if (indexYZ < 0) indexYZ = ~indexYZ;
                 YZ_V.Insert(indexYZ, val);
                 YZ_X.Insert(indexYZ, xyz.B);
                 YZ_Y.Insert(indexYZ, xyz.C);
+                AYZ_X.Insert(indexYZ, sym_crs.A);
+                AYZ_Y.Insert(indexYZ, sym_crs.B);
                 //ZX plane
                 var indexZX = ZX_V.BinarySearch(val);
                 if (indexZX < 0) indexZX = ~indexZX;
                 ZX_V.Insert(indexZX, val);
                 ZX_X.Insert(indexZX, xyz.C);
                 ZX_Y.Insert(indexZX, xyz.A);
+                AZX_X.Insert(indexZX, sym_crs.C);
+                AZX_Y.Insert(indexZX, sym_crs.A);
             }
 
             // XY plane
             ScatXY_X = new double[XY_X.Count];
             ScatXY_Y = new double[XY_Y.Count];
             ScatXY_V = new double[XY_V.Count];
+            AScatXY_X = new double[XY_X.Count];
+            AScatXY_Y = new double[XY_Y.Count];
             for (int i=0; i < XY_V.Count; ++i)
             {
                 ScatXY_X[i] = XY_X[i];
                 ScatXY_Y[i] = XY_Y[i];
                 ScatXY_V[i] = XY_V[i];
+                AScatXY_X[i] = AXY_X[i];
+                AScatXY_Y[i] = AXY_Y[i];
             }
             // YZ plane
             ScatYZ_X = new double[YZ_X.Count];
             ScatYZ_Y = new double[YZ_Y.Count];
             ScatYZ_V = new double[YZ_V.Count];
+            AScatYZ_X = new double[YZ_X.Count];
+            AScatYZ_Y = new double[YZ_Y.Count];
             for (int i = 0; i < YZ_V.Count; ++i)
             {
                 ScatYZ_X[i] = YZ_X[i];
                 ScatYZ_Y[i] = YZ_Y[i];
                 ScatYZ_V[i] = YZ_V[i];
+                AScatYZ_X[i] = AYZ_X[i];
+                AScatYZ_Y[i] = AYZ_Y[i];
             }
             // ZX plane
             ScatZX_X = new double[ZX_X.Count];
             ScatZX_Y = new double[ZX_Y.Count];
             ScatZX_V = new double[ZX_V.Count];
+            AScatZX_X = new double[ZX_X.Count];
+            AScatZX_Y = new double[ZX_Y.Count];
             for (int i = 0; i < ZX_V.Count; ++i)
             {
                 ScatZX_X[i] = ZX_X[i];
                 ScatZX_Y[i] = ZX_Y[i];
                 ScatZX_V[i] = ZX_V[i];
+                AScatZX_X[i] = AZX_X[i];
+                AScatZX_Y[i] = AZX_Y[i];
             }
         }
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,

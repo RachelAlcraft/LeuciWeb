@@ -14,12 +14,24 @@
 </div>
 <h3>Projection of Density Matrix - @ViewBag.PdbCode</h3>
 <hr />
-<div>
+@using (Html.BeginForm("Projection", "Matrix", FormMethod.Post))
+{
+<div>                        
+        <input style="display:none;visibility:collapse;" id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" />
     <table>
         <tr>
-            <td>
+            <td>                    
                 <table>
                 <tr>
+                    <th>Include atoms                        
+                        <input style="display:none;visibility:collapse;" id="incatoms" value='N' name="incatoms" />
+                    </th>
+                    <td><input type="radio" id="incon" name="incarr" value="Y" onclick="includeAtoms('Y')" /></td>
+                    <td><label for="con">Y</label></td>
+                        <td><input type="radio" id="incoff" name="incarr" value="N" onclick="includeAtoms('N')" /></td>
+                    <td><label for="coff">N</label></td>                
+                </tr>
+                    <tr>
                     <th>Show colour bar
                             <input style="display:none;visibility:collapse;" id="cbar" value='N' name="cbar" />
                     </th>
@@ -60,12 +72,44 @@
                 </tr>
                 </table>
             </td>            
+            <td>                
+                <table>
+                <tr>
+                    <td colspan="5" style="background:Gainsboro;color:navy">Symmetry</td>                    
+                </tr>
+                <tr>                    
+                    <td style="background:LightCyan;">(</td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="xfac" name="xfac" value=@ViewBag.xFactor></td>
+                    <td style="background:LightCyan;">* X + </td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="xtran" name="xtran" value=@ViewBag.xTrans></td>
+                    <td style="background:LightCyan;">)</td>                                        
+                </tr>
+                <tr>                    
+                    <td style="background:LightCyan;">(</td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="yfac" name="yfac" value=@ViewBag.yFactor></td>
+                    <td style="background:LightCyan;">* Y + </td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="ytran" name="ytran" value=@ViewBag.yTrans></td>
+                    <td style="background:LightCyan;">)</td>
+                </tr>
+                <tr>                    
+                    <td style="background:LightCyan;">(</td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="zfac" name="zfac" value=@ViewBag.zFactor></td>
+                    <td style="background:LightCyan;">* Z + </td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="ztran" name="ztran" value=@ViewBag.zTrans></td>
+                    <td style="background:LightCyan;">)</td>
+                </tr>
+                <tr>
+                     <th colspan="5" style="background-color:DarkSlateGray;color:crimson;border:none;"><input type="submit" value="Update" /></th>
+                </tr>
+                </table>
+                
+
+            </td>
         </tr>
-    </table>
-    
-    
+    </table>            
 </div>
-<hr />
+}
+<hr/>
 <h5>Crystal Projection</h5>
 <table>
     <tr>
@@ -103,6 +147,7 @@
             <div id="myScatterZX" style="width:100%"></div>
         </td>
     </tr>
+    
 </table>
 
     
@@ -111,9 +156,9 @@
     </p>@ViewBag.Error<p>
 </div>
 <script>
-    function makePlots(dfloor,dcap,cbar,hue,plot){
+    function makePlots(dfloor,dcap,cbar,incatoms,hue,plot){
         //cbar=true;
-        //alert(plot)
+        //alert(hue)
         //heatmap for crystal projection
         var jSideX = @Html.Raw(Json.Serialize(@ViewBag.SideX));
         var jSideY = @Html.Raw(Json.Serialize(@ViewBag.SideY));
@@ -131,7 +176,14 @@
         var ScatZX_X = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_X));
         var ScatZX_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_Y));
         var ScatZX_V = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_V));
-    
+        // crs atoms scatter projection
+        var AScatXY_X = @Html.Raw(Json.Serialize(@ViewBag.AScatXY_X));
+        var AScatXY_Y = @Html.Raw(Json.Serialize(@ViewBag.AScatXY_Y));        
+        var AScatYZ_X = @Html.Raw(Json.Serialize(@ViewBag.AScatYZ_X));
+        var AScatYZ_Y = @Html.Raw(Json.Serialize(@ViewBag.AScatYZ_Y));        
+        var AScatZX_X = @Html.Raw(Json.Serialize(@ViewBag.AScatZX_X));
+        var AScatZX_Y = @Html.Raw(Json.Serialize(@ViewBag.AScatZX_Y));
+            
         var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
         var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
 
@@ -169,7 +221,7 @@
     
         // make the crystal heatmaps
     
-        var dataXY = [{x: jSideX, y: jSideY, z: jMatXY, type: 
+        var dataXY = {x: jSideX, y: jSideY, z: jMatXY, type: 
             plot,  
             colorscale: cs_scl, 
             line: { width: 0.5, color: 'Gray' },
@@ -178,18 +230,18 @@
             name: "XY",
             zmin: minv,
             zmax: maxv,
-                        }];
+                        };
     
-        var dataYZ = [{x: jSideY, y: jSideZ, z: jMatYZ, type: 
+        var dataYZ = {x: jSideY, y: jSideZ, z: jMatYZ, type: 
             plot,  
             colorscale: cs_scl, 
             line: { width: 0.5, color: 'Gray' },
             showscale: cbar, colorbar: col_bar, name: "YZ",
             zmin: minv,
                         zmax: maxv,
-                        }];
+                        };
     
-        var dataZX = [{ x: jSideZ, y: jSideX, z: jMatZX, type: 
+        var dataZX = { x: jSideZ, y: jSideX, z: jMatZX, type: 
             //'heatmap', 
             plot,
             colorscale: cs_scl, 
@@ -197,7 +249,7 @@
             showscale: cbar, colorbar: col_bar, name: "ZX",
                         zmin: minv,
                         zmax: maxv,
-                        }];
+                        };
     
         var layout = {
             grid: { rows: 1, columns: 1, pattern: 'independent' },
@@ -213,12 +265,7 @@
             responsive: true,
             toImageButtonOptions: { scale: 6, width: 540, height: 540 }
         };
-
-        Plotly.newPlot('myCountourXY', dataXY, layout,config);
-        Plotly.newPlot('myCountourYZ', dataYZ, layout,config);
-        Plotly.newPlot('myCountourZX', dataZX, layout, config);
-
-
+        
         // make the atom projections
         var traceXY = {
             x: ScatXY_X,
@@ -263,9 +310,81 @@
                 cmax: maxv,
             },
         };
+
+        // make the atom projections in CRS
+        var traceAXY = {
+            x: AScatXY_X,
+            y: AScatXY_Y,            
+            mode: 'markers',
+            marker: {
+                colorscale: [[0, "PaleGoldenrod"], [0.5, "GreenYellow"],[1, "Black"]],
+                color: ScatYZ_V,
+                size: 9,
+                opacity:0.7,
+                showscale: false,                
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+        var traceAYZ = {
+            x: AScatYZ_X,
+            y: AScatYZ_Y,
+            mode: 'markers',
+            marker: {
+                colorscale: [[0, "PaleGoldenrod"], [0.5, "GreenYellow"],[1, "Black"]],
+                color: ScatYZ_V,
+                size: 9,
+                opacity:0.7,
+                showscale: false,                
+                cmin: minv,
+                cmax: maxv,
+            },
+
+        };
+        var traceAZX = {
+            x: AScatZX_X,
+            y: AScatZX_Y,
+            mode: 'markers',
+            marker: {
+                colorscale: [[0, "PaleGoldenrod"], [0.5, "GreenYellow"],[1, "Black"]],
+                color: ScatYZ_V,
+                size: 9,
+                opacity:0.7,
+                showscale: false,                
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+        
+        
+        var layout2 = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,
+            xaxis: { showgrid: false, zeroline: false, visible: false, },
+            yaxis: { scaleanchor: 'x', scaleratio: 1, visible: false, },
+            xaxis2: { showgrid: false, zeroline: false, visible: false, },
+            yaxis2: { scaleanchor: 'x', scaleratio: 1, visible: false, },
+            margin: { l: 20, r: 80, b: 20, t: 20, pad: 4 },
+        };
+
+        if (incatoms){
+            Plotly.newPlot('myCountourXY', [dataXY, traceAXY], layout2, config);
+            Plotly.newPlot('myCountourYZ', [dataYZ, traceAYZ], layout2, config);
+            Plotly.newPlot('myCountourZX', [dataZX, traceAZX], layout2, config);
+        }
+        else{
+            Plotly.newPlot('myCountourXY', [dataXY], layout, config);
+            Plotly.newPlot('myCountourYZ', [dataYZ], layout, config);
+            Plotly.newPlot('myCountourZX', [dataZX], layout, config);
+        }
+
         Plotly.newPlot('myScatterXY', [traceXY], {});
         Plotly.newPlot('myScatterYZ', [traceYZ], {});
         Plotly.newPlot('myScatterZX', [traceZX], {});
+                
+        
     }               
 </script>
 
@@ -274,47 +393,76 @@
     var outputMax = document.getElementById("sdcap");
     
     sliderMax.oninput = function () {
-        outputMax.value = this.value;
-        var outputMin = document.getElementById("sdfloor");
+        outputMax.value = this.value;        
         var cbar = document.getElementById("cbar").value;
-        var hue = document.getElementById("hue").value.trim();
-        var plot = document.getElementById("plot").value.trim();
-        makePlots(-1, outputMax.value, cbar=="Y", hue,plot);
+        var hue = document.getElementById("hue").value.trim();        
+        var atoms = document.getElementById("incatoms").value;
+        makePlots(-1, outputMax.value, cbar=="Y", atoms == "Y",hue,"heatmap");
     }
 </script>
 <script>
-    function showBar(val) {                
-        var outputMin = document.getElementById("sdfloor");
-        var outputMax = document.getElementById("sdcap");
-        var hue = document.getElementById("hue").value.trim();
-        var plot = document.getElementById("plot").value;      
-        document.getElementById("cbar").value = val;        
-        makePlots(-1, outputMax.value, val == "Y", hue,plot);
+    function showBar(val) {                        
+        var outputMax = document.getElementById("sdcap");        
+        var hue = document.getElementById("hue").value;                
+        var cbar = document.getElementById("cbar").value;
+        var atoms = document.getElementById("incatoms").value;
+          
+        document.getElementById("cbar").value = val;                
+            
+        makePlots(-1, outputMax.value, val == "Y",atoms == "Y", hue,"heatmap");
     }
-    function changeHue(hue){
-        var outputMin = document.getElementById("sdfloor");
+    function includeAtoms(val) {
         var outputMax = document.getElementById("sdcap");
-        var cbar = document.getElementById("cbar").value;        
-        var plot = document.getElementById("plot").value;              
-        document.getElementById("hue").value = hue;            
-        makePlots(-1, outputMax.value,cbar== "Y",hue,plot);                    
+        var hue = document.getElementById("hue").value;
+        var cbar = document.getElementById("cbar").value;
+        var atoms = document.getElementById("incatoms").value;
+        
+        document.getElementById("incatoms").value = val;                
+        
+        makePlots(-1, outputMax.value, cbar == "Y",val == "Y", hue, "heatmap");
     }
-    function changePlot(plot) {
-        var outputMin = document.getElementById("sdfloor");
+    function changeHue(val){          
+        var outputMax = document.getElementById("sdcap");
+        var hue = document.getElementById("hue").value;                
+        var cbar = document.getElementById("cbar").value;             
+        var atoms = document.getElementById("incatoms").value;
+        
+        document.getElementById("hue").value = val;
+
+        makePlots(-1, outputMax.value,cbar== "Y",atoms == "Y",val,"heatmap");
+    }
+    function changePlot(plot) {             
         var outputMax = document.getElementById("sdcap");
         var cbar = document.getElementById("cbar").value;
         var hue = document.getElementById("hue").value;                
-        document.getElementById("plot").value = plot;
-        makePlots(-1, outputMax.value, cbar == "Y", hue,plot);        
+        var atoms = document.getElementById("incatoms").value;
+
+        document.getElementById("plot").value = plot;                
+        
+        makePlots(-1, outputMax.value, cbar == "Y",atoms == "Y", hue,"heatmap");
     }
 </script>
 <script>
-    makePlots(-1, -1, false,"RedBlueGrey","heatmap")
+    makePlots(-1, -1, false,false,"RedBlueGrey","heatmap")
     document.getElementById("con").checked = false;
     document.getElementById("coff").checked = true;
+    document.getElementById("incon").checked = false;
+    document.getElementById("incoff").checked = true;
     document.getElementById("cheat").checked = true;
     document.getElementById("ccon").checked = false;
     document.getElementById("rb").checked = true;
     document.getElementById("bw").checked = false;
+    document.getElementById("incatoms").checked = false;
+
+    var outputMax = document.getElementById("sdcap");
+    var cbar = document.getElementById("cbar").value;
+    var hue = document.getElementById("hue").value;                
+    var atoms = document.getElementById("incatoms").value;
+
+    document.getElementById("plot").value = "heatmap";                    
+    document.getElementById("cbar").value = "N";                
+    document.getElementById("hue").value = "RedBlueGrey";                
+    document.getElementById("incatoms").value = "N";                
+
 </script>
 
