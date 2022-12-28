@@ -501,7 +501,8 @@ namespace Leucippus.Controllers
         }
 
         public async Task<IActionResult> Projection(
-            string pdbcode = "", 
+            string pdbcode = "",
+            string symmetry = "Y",
             double dmin = -1, 
             double dmax = -1,
             int xfac = 1,
@@ -513,15 +514,46 @@ namespace Leucippus.Controllers
         {
             ViewBag.Error = "";                        
             ViewBagMatrix.Instance.PdbCode = pdbcode;                        
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
+            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, "NEAREST", 2, -1,symmetry=="Y");
             VectorThree dims = dm.getMatrixDims();
-            Symmetry sym = new Symmetry(xfac, yfac, zfac, xtran, ytran, ztran,(int)dims.A, (int)dims.B, (int)dims.C);
-            dm.projection();
-            dm.atomsProjection(DensitySingleton.Instance.FD.PA,sym);
+            //Symmetry sym = new Symmetry(xfac, yfac, zfac, xtran, ytran, ztran,(int)dims.A, (int)dims.B, (int)dims.C);
+            /*if (asymmetric == "Y")
+            {
+                //dm.unitProjection();
+                dm.asymmetricProjection(DensitySingleton.Instance.FD.PA);
+                dm.atomsProjection(DensitySingleton.Instance.FD.PA,true);
+            }*/
+            //else
+            {
+                dm.unitProjection(symmetry=="Y");                
+                dm.atomsProjection(DensitySingleton.Instance.FD.PA,symmetry=="Y");
+            }
+
+            List<double> xProjSide;
+            List<double> yProjSide;
+            List<double> zProjSide;
+            Array xyProjMat;
+            Array yzProjMat;
+            Array zxProjMat;
+
+            dm.xyzProjection(
+                DensitySingleton.Instance.FD.PA,
+                symmetry == "Y",
+                out xProjSide, out yProjSide, out zProjSide, out xyProjMat, out yzProjMat, out zxProjMat);
+
 
             //var jSideX = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
             //var jSideY = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
             //var jSideV = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_V));
+
+            //crystal sampling in xyz
+            ViewBag.CrysXY = Helper.convertArray(xyProjMat);
+            ViewBag.CrysYZ = Helper.convertArray(yzProjMat);
+            ViewBag.CrysZX = Helper.convertArray(zxProjMat);
+            ViewBag.CrysX = Helper.convertList(xProjSide);
+            ViewBag.CrysY = Helper.convertList(yProjSide);
+            ViewBag.CrysZ = Helper.convertList(zProjSide);
+
 
             //scatter
             ViewBag.ScatXY_X = dm.ScatXY_X;
@@ -532,33 +564,21 @@ namespace Leucippus.Controllers
             ViewBag.ScatYZ_V = dm.ScatYZ_V;
             ViewBag.ScatZX_X = dm.ScatZX_X;
             ViewBag.ScatZX_Y = dm.ScatZX_Y;
-            ViewBag.ScatZX_V = dm.ScatZX_V;
-            // crystal scatter
-            //ViewBag.CScatXY_X = dm.CScatXY_X;
-            //ViewBag.CScatXY_Y = dm.CScatXY_Y;
-            //ViewBag.CScatXY_V = dm.CScatXY_V;
-            //ViewBag.CScatYZ_X = dm.CScatYZ_X;
-            //ViewBag.CScatYZ_Y = dm.CScatYZ_Y;
-            //ViewBag.CScatYZ_V = dm.CScatYZ_V;
-            //ViewBag.CScatZX_X = dm.CScatZX_X;
-            //ViewBag.CScatZX_Y = dm.CScatZX_Y;
-            //ViewBag.CScatZX_V = dm.CScatZX_V;
+            ViewBag.ScatZX_V = dm.ScatZX_V;            
             // atoms crs scatter
             ViewBag.AScatXY_X = dm.AScatXY_X;
             ViewBag.AScatXY_Y = dm.AScatXY_Y;            
             ViewBag.AScatYZ_X = dm.AScatYZ_X;
             ViewBag.AScatYZ_Y = dm.AScatYZ_Y;            
             ViewBag.AScatZX_X = dm.AScatZX_X;
-            ViewBag.AScatZX_Y = dm.AScatZX_Y;
-            
-
+            ViewBag.AScatZX_Y = dm.AScatZX_Y;            
             //heatmap
             ViewBag.SideX = dm.SideX;
             ViewBag.SideY = dm.SideY;
             ViewBag.SideZ = dm.SideZ;
-            ViewBag.MatXY = dm.MatXY;
-            ViewBag.MatYZ = dm.MatYZ;
-            ViewBag.MatZX = dm.MatZX;
+            ViewBag.MatP = dm.MatP;
+            ViewBag.MatQ = dm.MatQ;
+            ViewBag.MatR = dm.MatR;
 
 
             ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
@@ -592,7 +612,9 @@ namespace Leucippus.Controllers
             ViewBag.yTrans = ytran;
             ViewBag.zFactor = zfac;
             ViewBag.zTrans = ztran;
-            
+            ViewBag.Reflections = symmetry;
+
+
             return View();
         }
         public async Task<IActionResult> Overlay(

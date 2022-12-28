@@ -27,7 +27,7 @@
         public bool NewMatrix = false;
         private int _fos = 2;
         private int _fcs = -1;
-
+        
         public bool needMatrix(string pdbcode)
         {
             bool calc = false;
@@ -39,10 +39,10 @@
             return calc;
         }
 
-        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp, int fos, int fcs)
+        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp, int fos, int fcs,bool symmetry=true)
         {
             bool calc = false;
-            NewMatrix = false;
+            NewMatrix = false;            
             if (_pdbcode == "" || _dm == null || pdbcode != _pdbcode)
             {
                 calc = true;
@@ -70,13 +70,13 @@
                 _pdbcode = pdbcode;
                 try
                 {
-                    _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs);
+                    _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs,symmetry);
                 }
                 catch (Exception e)
                 {
                     try
                     {
-                        _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs);
+                        _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs, symmetry);
                     }
                     catch (Exception ee)
                     {

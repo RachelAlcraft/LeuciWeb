@@ -63,18 +63,7 @@
             //int y_bit = _a + y;
             //int z_bit = (_a * _b) + x;
             //return x_bit + y_bit + z_bit;
-        }
-        public int[] get3D(int i)
-        {
-            //int div = 5 / 3; //quotient is 1
-            //int mod = 5 % 3; //remainder is 2
-            int x = i / (_b * _c);
-            int newi = i - (x * _b * _c);
-            int y = newi % (_a);
-            int z = newi - (y * _b);
-            return new int[] { x, y, z };
-        }
-
+        }        
         public List<int[]> getCubeCoords3d(int xmin, int xmax, int ymin, int ymax, int zmin, int zmax)
         {
             List<int[]> coords = new List<int[]>();
@@ -90,19 +79,7 @@
                 }
             }
             return coords;
-        }
-
-        public List<int> getPlaneCoords1d(string plane, int layer)
-        {
-            List<int[]> coords = getPlaneCoords3d(plane, layer);
-            List<int> poses = new List<int>();
-            for (int i = 0; i < coords.Count; ++i)
-            {
-                int pos = get1D(coords[i][0], coords[i][1], coords[i][2]);
-                poses.Add(pos);
-            }
-            return poses;
-        }
+        }        
         public List<int[]> getPlaneCoords3d(string plane, int layer)
         {
             List<int[]> coords = new List<int[]>();

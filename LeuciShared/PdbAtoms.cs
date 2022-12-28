@@ -9,6 +9,8 @@ namespace LeuciShared
         private List<string> Residues = new List<string>();
         private Dictionary<string, string> _aas = new Dictionary<string, string>();
         public bool Init = false;
+        public VectorThree LowerCoords = new VectorThree(1000,1000,1000);
+        public VectorThree UpperCoords = new VectorThree(-1000,-1000,-1000);
         public PdbAtoms(string[] lines) //constructor for pdb file
         {
             Atoms.Clear();
@@ -43,6 +45,12 @@ namespace LeuciShared
                     Atoms.Add(chimera, new VectorThree(X, Y, Z));
                     Lines.Add(chimera, line);
                     _aas.Add(chimera, AA);
+                    LowerCoords.A = Math.Min(LowerCoords.A, X);
+                    LowerCoords.B = Math.Min(LowerCoords.B, Y);
+                    LowerCoords.C = Math.Min(LowerCoords.C, Z);
+                    UpperCoords.A = Math.Max(UpperCoords.A, X);
+                    UpperCoords.B = Math.Max(UpperCoords.B, Y);
+                    UpperCoords.C = Math.Max(UpperCoords.C, Z);
 
                     string rid = Chain + ":" + ResidueNo;
                     if (!Residues.Contains(rid))                   

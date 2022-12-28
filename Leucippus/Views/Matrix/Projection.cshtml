@@ -23,15 +23,33 @@
             <td>                    
                 <table>
                 <tr>
-                    <th>Include atoms                        
-                        <input style="display:none;visibility:collapse;" id="incatoms" value='N' name="incatoms" />
+                    <th>Project atoms                        
+                        <input style="display:none;visibility:collapse;" id="incatoms" value='Y' name="incatoms" />
                     </th>
                     <td><input type="radio" id="incon" name="incarr" value="Y" onclick="includeAtoms('Y')" /></td>
-                    <td><label for="con">Y</label></td>
-                        <td><input type="radio" id="incoff" name="incarr" value="N" onclick="includeAtoms('N')" /></td>
-                    <td><label for="coff">N</label></td>                
+                    <td><label for="incon">Y</label></td>
+                    <td><input type="radio" id="incoff" name="incarr" value="N" onclick="includeAtoms('N')" /></td>
+                    <td><label for="incoff">N</label></td>                
                 </tr>
-                    <tr>
+                <tr>
+                    <th>Reflection symmetry
+                       <input style="display:none;visibility:collapse;" id="symmetry" value=@ViewBag.Reflections name="symmetry" />
+                    </th>
+                    <td><input type="radio" id="symon" name="symm" value="Y" onclick="useSymmetry('Y')" /></td>
+                    <td><label for="symon">Y</label></td>
+                            <td><input type="radio" id="symoff" name="symm" value="N" onclick="useSymmetry('N')" /></td>
+                    <td><label for="symoff">N</label></td>                
+                </tr>
+                <!--<tr>
+                    <th>Asymmetric (Y) or given matrix (N)
+                        <input style="display:none;visibility:collapse;" id="asymmetric" value=@ViewBag.Asymmetric name="asymmetric" />
+                    </th>
+                    <td><input type="radio" id="asym" name="cell" value="Y" onclick="asymmetricUnit('Y')" /></td>
+                    <td><label for="asym">Y</label></td>
+                    <td><input type="radio" id="unit" name="cell" value="N" onclick="asymmetricUnit('N')" /></td>
+                    <td><label for="unit">N</label></td>
+                </tr>-->
+                <tr>
                     <th>Show colour bar
                             <input style="display:none;visibility:collapse;" id="cbar" value='N' name="cbar" />
                     </th>
@@ -72,7 +90,7 @@
                 </tr>
                 </table>
             </td>            
-            <td>                
+            <!--<td>                
                 <table>
                 <tr>
                     <td colspan="5" style="background:Gainsboro;color:navy">Symmetry</td>                    
@@ -104,7 +122,10 @@
                 </table>
                 
 
-            </td>
+            </td>-->
+        </tr>
+        <tr>
+                <th colspan="5" style="background-color:DarkSlateGray;color:crimson;border:none;"><input type="submit" value="Update" /></th>
         </tr>
     </table>            
 </div>
@@ -119,15 +140,35 @@
     </tr>
     <tr>
         <td style="width: 450px;">            
-            <div id="myCountourXY" style="width:100%"></div>            
+            <div id="myCountourP" style="width:100%"></div>            
         </td>
         <td style="width: 450px;">            
-            <div id="myCountourYZ" style="width:100%"></div>            
+            <div id="myCountourQ" style="width:100%"></div>            
         </td>
         <td style="width: 450px;">            
-            <div id="myCountourZX" style="width:100%"></div>            
+            <div id="myCountourR" style="width:100%"></div>            
         </td>                
     </tr>      
+</table>
+<hr />
+<h5>Crystal Projection in real space</h5>
+<table>
+    <tr>
+        <th>XY Plane</th>
+        <th>YZ Plane</th>
+        <th>ZX Plane</th>
+    </tr>
+    <tr>
+        <td style="width: 450px;">
+            <div id="myCrystalXY" style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">
+            <div id="myCrystalYZ" style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">
+            <div id="myCrystalZX" style="width:100%"></div>
+        </td>
+    </tr>
 </table>
 <h5>Atoms Projection</h5>
 <table>
@@ -163,9 +204,16 @@
         var jSideX = @Html.Raw(Json.Serialize(@ViewBag.SideX));
         var jSideY = @Html.Raw(Json.Serialize(@ViewBag.SideY));
         var jSideZ = @Html.Raw(Json.Serialize(@ViewBag.SideZ));    
-        var jMatXY = @Html.Raw(Json.Serialize(@ViewBag.MatXY));
-        var jMatYZ = @Html.Raw(Json.Serialize(@ViewBag.MatYZ));
-        var jMatZX = @Html.Raw(Json.Serialize(@ViewBag.MatZX));
+        var jMatP = @Html.Raw(Json.Serialize(@ViewBag.MatP));
+        var jMatQ = @Html.Raw(Json.Serialize(@ViewBag.MatQ));
+        var jMatR = @Html.Raw(Json.Serialize(@ViewBag.MatR));
+        // crystal projection to XYZ
+        var CrysXY = @Html.Raw(Json.Serialize(@ViewBag.CrysXY));
+        var CrysYZ = @Html.Raw(Json.Serialize(@ViewBag.CrysYZ));
+        var CrysZX = @Html.Raw(Json.Serialize(@ViewBag.CrysZX));
+        var CrysX = @Html.Raw(Json.Serialize(@ViewBag.CrysX));
+        var CrysY = @Html.Raw(Json.Serialize(@ViewBag.CrysY));
+        var CrysZ = @Html.Raw(Json.Serialize(@ViewBag.CrysZ));        
         // atoms for scatter projection
         var ScatXY_X = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
         var ScatXY_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
@@ -219,9 +267,8 @@
         
 
     
-        // make the crystal heatmaps
-    
-        var dataXY = {x: jSideX, y: jSideY, z: jMatXY, type: 
+        // make the crystal heatmaps    
+        var dataP = {x: jSideX, y: jSideY, z: jMatP, type: 
             plot,  
             colorscale: cs_scl, 
             line: { width: 0.5, color: 'Gray' },
@@ -232,7 +279,7 @@
             zmax: maxv,
                         };
     
-        var dataYZ = {x: jSideY, y: jSideZ, z: jMatYZ, type: 
+        var dataQ = {x: jSideY, y: jSideZ, z: jMatQ, type: 
             plot,  
             colorscale: cs_scl, 
             line: { width: 0.5, color: 'Gray' },
@@ -241,7 +288,7 @@
                         zmax: maxv,
                         };
     
-        var dataZX = { x: jSideZ, y: jSideX, z: jMatZX, type: 
+        var dataR = { x: jSideZ, y: jSideX, z: jMatR, type: 
             //'heatmap', 
             plot,
             colorscale: cs_scl, 
@@ -265,7 +312,40 @@
             responsive: true,
             toImageButtonOptions: { scale: 6, width: 540, height: 540 }
         };
-        
+
+        // make the crystal projection in XYZ
+        var dataA = {
+            x: CrysY, y: CrysX, z: CrysXY, 
+            type: plot,
+            colorscale: cs_scl,
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar,
+            colorbar: col_bar,
+            name: "XY",
+            zmin: minv,
+            zmax: maxv,
+        };
+
+        var dataB = {
+            x: CrysZ, y: CrysY, z: CrysYZ, 
+            type: plot,
+            colorscale: cs_scl,
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, colorbar: col_bar, name: "YZ",
+            zmin: minv,
+            zmax: maxv,
+        };
+
+        var dataC = {
+            x: CrysX, y: CrysZ, z: CrysZX, 
+            type: plot,
+            colorscale: cs_scl,
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, colorbar: col_bar, name: "ZX",
+            zmin: minv,
+            zmax: maxv,
+        };
+
         // make the atom projections
         var traceXY = {
             x: ScatXY_X,
@@ -370,19 +450,33 @@
         };
 
         if (incatoms){
-            Plotly.newPlot('myCountourXY', [dataXY, traceAXY], layout2, config);
-            Plotly.newPlot('myCountourYZ', [dataYZ, traceAYZ], layout2, config);
-            Plotly.newPlot('myCountourZX', [dataZX, traceAZX], layout2, config);
+            Plotly.newPlot('myCountourP', [dataP, traceAXY], layout2, config);
+            Plotly.newPlot('myCountourQ', [dataQ, traceAYZ], layout2, config);
+            Plotly.newPlot('myCountourR', [dataR, traceAZX], layout2, config);            
         }
         else{
-            Plotly.newPlot('myCountourXY', [dataXY], layout, config);
-            Plotly.newPlot('myCountourYZ', [dataYZ], layout, config);
-            Plotly.newPlot('myCountourZX', [dataZX], layout, config);
+            Plotly.newPlot('myCountourP', [dataP], layout, config);
+            Plotly.newPlot('myCountourQ', [dataQ], layout, config);
+            Plotly.newPlot('myCountourR', [dataR], layout, config);            
         }
+        
+        Plotly.newPlot('myCrystalXY', [dataA], layout, config);
+        Plotly.newPlot('myCrystalYZ', [dataB], layout, config);
+        Plotly.newPlot('myCrystalZX', [dataC], layout, config);
 
-        Plotly.newPlot('myScatterXY', [traceXY], {});
-        Plotly.newPlot('myScatterYZ', [traceYZ], {});
-        Plotly.newPlot('myScatterZX', [traceZX], {});
+         var layoutS = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,
+            xaxis: { showgrid: false, zeroline: true, visible: true, },
+            yaxis: { scaleanchor: 'x', scaleratio: 1, visible: true, },            
+            margin: { l: 20, r: 80, b: 20, t: 20, pad: 4 },
+        };
+
+        Plotly.newPlot('myScatterXY', [traceXY], layoutS);
+        Plotly.newPlot('myScatterYZ', [traceYZ], layoutS);
+        Plotly.newPlot('myScatterZX', [traceZX], layoutS);
                 
         
     }               
@@ -421,6 +515,15 @@
         
         makePlots(-1, outputMax.value, cbar == "Y",val == "Y", hue, "heatmap");
     }
+
+    function useSymmetry(val){
+        document.getElementById("symmetry").value = val;
+
+    }
+
+    function asymmetricUnit(val) {        
+        document.getElementById("asymmetric").value = val;        
+    }
     function changeHue(val){          
         var outputMax = document.getElementById("sdcap");
         var hue = document.getElementById("hue").value;                
@@ -443,17 +546,17 @@
     }
 </script>
 <script>
-    makePlots(-1, -1, false,false,"RedBlueGrey","heatmap")
+    makePlots(-1, -1, false,true,"RedBlueGrey","heatmap")
     document.getElementById("con").checked = false;
     document.getElementById("coff").checked = true;
-    document.getElementById("incon").checked = false;
-    document.getElementById("incoff").checked = true;
+    document.getElementById("incon").checked = true;
+    document.getElementById("incoff").checked = false;
+    
     document.getElementById("cheat").checked = true;
     document.getElementById("ccon").checked = false;
     document.getElementById("rb").checked = true;
     document.getElementById("bw").checked = false;
-    document.getElementById("incatoms").checked = false;
-
+    
     var outputMax = document.getElementById("sdcap");
     var cbar = document.getElementById("cbar").value;
     var hue = document.getElementById("hue").value;                
@@ -462,7 +565,10 @@
     document.getElementById("plot").value = "heatmap";                    
     document.getElementById("cbar").value = "N";                
     document.getElementById("hue").value = "RedBlueGrey";                
-    document.getElementById("incatoms").value = "N";                
+    document.getElementById("incatoms").value = "Y";       
 
+    sym = document.getElementById("symmetry").value;
+    document.getElementById("symcon").checked = sym=="Y";
+    document.getElementById("symoff").checked = sym=="N";
 </script>
 

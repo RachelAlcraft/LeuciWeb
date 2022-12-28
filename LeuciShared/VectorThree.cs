@@ -27,6 +27,16 @@
             C = c;
             Valid = true;
         }
+        public VectorThree(string key)
+        {
+            key = key.Substring(1);
+            key = key.Substring(0,key.Length-1);
+            string[] sk = key.Split(",");
+            A = Convert.ToDouble(sk[0]);
+            B = Convert.ToDouble(sk[1]);
+            C = Convert.ToDouble(sk[2]);
+            Valid = true;
+        }
         public double getByIndex(int idx)
         {
             if (idx == 0)
