@@ -33,48 +33,25 @@ namespace LeuciShared
         public int LayerMax = 0;
         public int Layer = 0;
         // for the projections scatter of atoms
-        public double[] ScatXY_X = new double[0];
-        public double[] ScatXY_Y = new double[0];
-        public double[] ScatXY_V = new double[0];
-        public double[] ScatYZ_X = new double[0];
-        public double[] ScatYZ_Y = new double[0];
-        public double[] ScatYZ_V = new double[0];
-        public double[] ScatZX_X = new double[0];
-        public double[] ScatZX_Y = new double[0];
-        public double[] ScatZX_V = new double[0];
-        
-        // for the projections atoms over crystal        
-        //public double[] CScatXY_X = new double[0];
-        //public double[] CScatXY_Y = new double[0];
-        //public double[] CScatXY_V = new double[0]; 
-        //public double[] CScatYZ_X = new double[0];
-        //public double[] CScatYZ_Y = new double[0];
-        //public double[] CScatYZ_V = new double[0];
-        //public double[] CScatZX_X = new double[0];
-        //public double[] CScatZX_Y = new double[0];
-        //public double[] CScatZX_V = new double[0];
-
+        public double[] ScatA_X = new double[0];
+        public double[] ScatA_Y = new double[0];
+        public double[] ScatA_Z = new double[0];
+        public double[] ScatA_V = new double[0];        
         // for the crs projection of atoms 
-        public double[] AScatXY_X = new double[0];
-        public double[] AScatXY_Y = new double[0];
-        //public double[] AScatXY_V = new double[0];
-        public double[] AScatYZ_X = new double[0];
-        public double[] AScatYZ_Y = new double[0];
-        //public double[] AScatYZ_V = new double[0];
-        public double[] AScatZX_X = new double[0];
-        public double[] AScatZX_Y = new double[0];
-        //public double[] AScatZX_V = new double[0]; v is the same as xyz
-
+        public double[] ScatA_C = new double[0];
+        public double[] ScatA_R = new double[0];
+        public double[] ScatA_S = new double[0];        
+        
         // for the projections heatmap
         public double[][] MatP;
         public double[][] MatQ;
         public double[][] MatR;
-        public double[] SideX = new double[0];
-        public double[] SideY = new double[0];
-        public double[] SideZ = new double[0];
-        public double[][] AMatXY = new double[0][];
-        public double[][] AMatYZ = new double[0][];
-        public double[][] AMatZX = new double[0][];
+        public double[] SideC = new double[0];
+        public double[] SideR = new double[0];
+        public double[] SideS = new double[0];
+        //public double[][] AMatXY = new double[0][];
+        //public double[][] AMatYZ = new double[0][];
+        //public double[][] AMatZX = new double[0][];
 
 
         // for the slider and contours
@@ -320,83 +297,65 @@ namespace LeuciShared
             }                        
         }
 
-        public void unitProjection(bool symmetry)
+        public void unitProjection()
         {                        
             createData();
-            _interpMap.setReflect(symmetry);
-            int[] XY = _cublet.getPlaneDims("XY", 0);
-            int XYMax = _cublet.LayerMax;
-            int[] YZ = _cublet.getPlaneDims("YZ", 0);
-            int YZMax = _cublet.LayerMax;
-            int[] ZX = _cublet.getPlaneDims("ZX", 0);
-            int ZXMax = _cublet.LayerMax;
-
-            List<int[]> coordssXY = _cublet.getPlaneCoords3d("XY", 0);
-            List<int[]> coordssYZ = _cublet.getPlaneCoords3d("YZ", 0);
-            List<int[]> coordssZX = _cublet.getPlaneCoords3d("ZX", 0);
+            _interpMap.setReflect(false);            
+            int sNum = _cublet.getPlaneDims("XY", 0)[0];
+            int rNum = _cublet.getPlaneDims("YZ", 0)[0];
+            int cNum = _cublet.getPlaneDims("ZX", 0)[0];
+            
             DMin = 1000;
             DMax = -1000;
-            
-            int lenXY = XY[0] * YZ[0];
-            int lenYZ = YZ[0] * ZX[0];
-            int lenZX = ZX[0] * XY[0];
 
             // make the sides and dimensions
 
             // init the first dimension of the matrices
-            double[][] MatXY = new double[XY[0]][];
-            double[][] MatYZ = new double[YZ[0]][];
-            double[][] MatZX = new double[ZX[0]][];
-            AMatXY = new double[XY[0]][];
-            AMatYZ = new double[YZ[0]][];
-            AMatZX = new double[ZX[0]][];
-            SideX = new double[XY[0]];
-            SideY = new double[YZ[0]];
-            SideZ = new double[ZX[0]];            
-            for (int i = 0; i < XY[0]; ++i)
-            {
-                SideX[i] = i;
-                MatXY[i] = new double[XY[1]];
-                AMatXY[i] = new double[XY[1]];
-            }
-            for (int i = 0; i < YZ[0]; ++i)
-            {
-                SideY[i] = i;
-                MatYZ[i] = new double[YZ[1]];
-                AMatYZ[i] = new double[YZ[1]];
-            }
-            for (int i = 0; i < ZX[0]; ++i)
-            {
-                SideZ[i] = i;
-                MatZX[i] = new double[ZX[1]];
-                AMatZX[i] = new double[ZX[1]];
-            }
+            Array MatCR = Array.CreateInstance(typeof(double), new int[2] { rNum, cNum });
+            Array MatRS = Array.CreateInstance(typeof(double), new int[2] { sNum, rNum });
+            Array MatSC = Array.CreateInstance(typeof(double), new int[2] { cNum, sNum });
             
-            for (int l = 0; l < YZMax; ++l)
-            {
-                List<int[]> coords = _cublet.getPlaneCoords3d("YZ", l);
-                for (int i = 0; i < coords.Count; ++i)
-                {
-                    int[] coord = coords[i];
-                    double val = _interpMap.getExactValueBinary(coord[0], coord[1], coord[2]);
-                    DMin = Math.Min(DMin, val);
-                    DMax = Math.Max(DMax, val);
-                    try
-                    {
-                        MatXY[coord[2]][coord[1]] = Math.Max(val, MatXY[coord[2]][coord[1]]);
-                        MatYZ[coord[1]][coord[0]] = Math.Max(val, MatYZ[coord[1]][coord[0]]);
-                        MatZX[coord[0]][coord[2]] = Math.Max(val, MatZX[coord[0]][coord[2]]);
-                    }
-                    catch (Exception e)
-                    {
-                        string m = e.Message;
-                    }
+            //AMatXY = new double[XY[0]][];
+            //AMatYZ = new double[YZ[0]][];
+            //AMatZX = new double[ZX[0]][];
+            SideC = new double[cNum];
+            SideR = new double[rNum];
+            SideS = new double[sNum];
+            for (int i = 0; i < cNum; i++)
+                SideC[i] = i;
+            for (int i = 0; i < rNum; i++)
+                SideR[i] = i;
+            for (int i = 0; i < sNum; i++)
+                SideS[i] = i;
 
+            for (int c = 0; c < cNum; ++c)
+            {
+                for (int r = 0; r < rNum; ++r)
+                {
+                    for (int s = 0; s < sNum; ++s)
+                    {
+                        double val = _interpMap.getExactValueBinary(c, r, s);
+                        DMin = Math.Min(DMin, val);
+                        DMax = Math.Max(DMax, val);
+                        try
+                        {
+                            double maxCR = Math.Max(val, (double)MatCR.GetValue(r, c));
+                            double maxRS = Math.Max(val, (double)MatRS.GetValue(s, r));
+                            double maxSC = Math.Max(val, (double)MatSC.GetValue(c, s));
+                            MatCR.SetValue(maxCR, r, c);
+                            MatRS.SetValue(maxRS, s, r);
+                            MatSC.SetValue(maxSC, c, s);
+                        }
+                        catch (Exception e)
+                        {
+                            string m = e.Message;
+                        }
+                    }
                 }
             }
-            MatP = MatXY;
-            MatQ = MatYZ;
-            MatR = MatZX;
+            MatP = Helper.convertArray(MatCR);
+            MatQ = Helper.convertArray(MatRS);
+            MatR = Helper.convertArray(MatSC);
         }
 
         public void asymmetricProjection(PdbAtoms pa,bool symmetry)
@@ -426,27 +385,27 @@ namespace LeuciShared
             Array MatYZ = Array.CreateInstance(typeof(double), new int[2] { YMax, ZMax }, new int[2] { Yoff, Zoff });
             Array MatZX = Array.CreateInstance(typeof(double), new int[2] { ZMax, XMax }, new int[2] { Zoff, Xoff });
                         
-            AMatXY = new double[XMax][];
-            AMatYZ = new double[YMax][];
-            AMatZX = new double[ZMax][];
-            SideX = new double[XMax];
-            SideY = new double[YMax];
-            SideZ = new double[ZMax];
+            //AMatXY = new double[XMax][];
+            //AMatYZ = new double[YMax][];
+            //AMatZX = new double[ZMax][];
+            SideC = new double[XMax];
+            SideR = new double[YMax];
+            SideS = new double[ZMax];
             
             for (int i = 0; i < XMax; ++i)
             {
-                SideX[i] = i + Xoff;
-                AMatXY[i] = new double[YMax];
+                SideC[i] = i + Xoff;
+                //AMatXY[i] = new double[YMax];
             }
             for (int i = 0; i < YMax; ++i)
             {
-                SideY[i] = i + Yoff;
-                AMatYZ[i] = new double[ZMax];
+                SideR[i] = i + Yoff;
+                //AMatYZ[i] = new double[ZMax];
             }
             for (int i = 0; i < ZMax; ++i)
             {
-                SideZ[i] = i + Zoff;
-                AMatZX[i] = new double[XMax];
+                SideS[i] = i + Zoff;
+                //AMatZX[i] = new double[XMax];
             }
                                     
             foreach (var crsmap in au.CrsMapping)
@@ -482,99 +441,53 @@ namespace LeuciShared
 
         public void atomsProjection(PdbAtoms pa, bool symmetry)
         {                        
-            List<double> XY_X = new List<double>();
-            List<double> XY_Y = new List<double>();
-            List<double> XY_V = new List<double>();
-            List<double> AXY_X = new List<double>();
-            List<double> AXY_Y = new List<double>();
-            
-            List<double> YZ_X = new List<double>();
-            List<double> YZ_Y = new List<double>();
-            List<double> YZ_V = new List<double>();
-            List<double> AYZ_X = new List<double>();
-            List<double> AYZ_Y = new List<double>();
-
-            List<double> ZX_X = new List<double>();
-            List<double> ZX_Y = new List<double>();
-            List<double> ZX_V = new List<double>();
-            List<double> AZX_X = new List<double>();
-            List<double> AZX_Y = new List<double>();
+            List<double> A_X = new List<double>();
+            List<double> A_Y = new List<double>();
+            List<double> A_Z = new List<double>();
+            List<double> A_C = new List<double>();
+            List<double> A_R = new List<double>();
+            List<double> A_S = new List<double>();
+            List<double> A_V = new List<double>();
+                        
             createData();
             _interpMap.setReflect(symmetry);
             foreach (var atom in pa.Atoms)
             {
                 VectorThree xyz = atom.Value;
-                VectorThree crs = _densityBinary.getCRSFromXYZ(xyz);
-                VectorThree sym_crs = crs;// sym.applySymmetry(crs, trans_xyz);
+                VectorThree crs = _densityBinary.getCRSFromXYZ(xyz);                
                 double val = _interpMap.getValue(crs.A, crs.B, crs.C);
                 //XY plane
-                var indexXY = XY_V.BinarySearch(val);
-                if (indexXY < 0) indexXY = ~indexXY;
-                XY_V.Insert(indexXY, val);
-                XY_X.Insert(indexXY, xyz.A);
-                XY_Y.Insert(indexXY, xyz.B);
-                AXY_X.Insert(indexXY, sym_crs.B);//B
-                AXY_Y.Insert(indexXY, sym_crs.C);//C
-                //YZ plane
-                var indexYZ = YZ_V.BinarySearch(val);
-                if (indexYZ < 0) indexYZ = ~indexYZ;
-                YZ_V.Insert(indexYZ, val);
-                YZ_X.Insert(indexYZ, xyz.B);
-                YZ_Y.Insert(indexYZ, xyz.C);
-                AYZ_X.Insert(indexYZ, sym_crs.B);//A
-                AYZ_Y.Insert(indexYZ, sym_crs.A);//B
-                //ZX plane
-                var indexZX = ZX_V.BinarySearch(val);
-                if (indexZX < 0) indexZX = ~indexZX;
-                ZX_V.Insert(indexZX, val);
-                ZX_X.Insert(indexZX, xyz.C);
-                ZX_Y.Insert(indexZX, xyz.A);
-                AZX_X.Insert(indexZX, sym_crs.A);//C
-                AZX_Y.Insert(indexZX, sym_crs.B);//A
+                var indexV = A_V.BinarySearch(val);
+                if (indexV < 0) indexV = ~indexV;
+                A_V.Insert(indexV, val);
+                A_X.Insert(indexV, xyz.A);
+                A_Y.Insert(indexV, xyz.B);
+                A_Z.Insert(indexV, xyz.C);
+                A_C.Insert(indexV, crs.A);
+                A_R.Insert(indexV, crs.B);
+                A_S.Insert(indexV, crs.C);
             }
+            
+            ScatA_X = new double[pa.Atoms.Count];
+            ScatA_Y = new double[pa.Atoms.Count];
+            ScatA_Z = new double[pa.Atoms.Count];
+            ScatA_V = new double[pa.Atoms.Count];
+            ScatA_C = new double[pa.Atoms.Count];
+            ScatA_R = new double[pa.Atoms.Count];
+            ScatA_S = new double[pa.Atoms.Count];
 
-            // XY plane
-            ScatXY_X = new double[XY_X.Count];
-            ScatXY_Y = new double[XY_Y.Count];
-            ScatXY_V = new double[XY_V.Count];
-            AScatXY_X = new double[XY_X.Count];
-            AScatXY_Y = new double[XY_Y.Count];
-            for (int i=0; i < XY_V.Count; ++i)
+            for (int i=0; i < pa.Atoms.Count; ++i)
             {
-                ScatXY_X[i] = XY_X[i];
-                ScatXY_Y[i] = XY_Y[i];
-                ScatXY_V[i] = XY_V[i];
-                AScatXY_X[i] = AXY_X[i];
-                AScatXY_Y[i] = AXY_Y[i];
+                ScatA_X[i] = A_X[i];
+                ScatA_Y[i] = A_Y[i];
+                ScatA_Z[i] = A_Z[i];
+                ScatA_V[i] = A_V[i];
+                ScatA_C[i] = A_C[i];
+                ScatA_R[i] = A_R[i];
+                ScatA_S[i] = A_S[i];
+
             }
-            // YZ plane
-            ScatYZ_X = new double[YZ_X.Count];
-            ScatYZ_Y = new double[YZ_Y.Count];
-            ScatYZ_V = new double[YZ_V.Count];
-            AScatYZ_X = new double[YZ_X.Count];
-            AScatYZ_Y = new double[YZ_Y.Count];
-            for (int i = 0; i < YZ_V.Count; ++i)
-            {
-                ScatYZ_X[i] = YZ_X[i];
-                ScatYZ_Y[i] = YZ_Y[i];
-                ScatYZ_V[i] = YZ_V[i];
-                AScatYZ_X[i] = AYZ_X[i];
-                AScatYZ_Y[i] = AYZ_Y[i];
-            }
-            // ZX plane
-            ScatZX_X = new double[ZX_X.Count];
-            ScatZX_Y = new double[ZX_Y.Count];
-            ScatZX_V = new double[ZX_V.Count];
-            AScatZX_X = new double[ZX_X.Count];
-            AScatZX_Y = new double[ZX_Y.Count];
-            for (int i = 0; i < ZX_V.Count; ++i)
-            {
-                ScatZX_X[i] = ZX_X[i];
-                ScatZX_Y[i] = ZX_Y[i];
-                ScatZX_V[i] = ZX_V[i];
-                AScatZX_X[i] = AZX_X[i];
-                AScatZX_Y[i] = AZX_Y[i];
-            }
+            
         }
         public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
                                 VectorThree central, VectorThree linear, VectorThree planar,

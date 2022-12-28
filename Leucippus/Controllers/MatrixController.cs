@@ -502,7 +502,9 @@ namespace Leucippus.Controllers
 
         public async Task<IActionResult> Projection(
             string pdbcode = "",
+            string update = "N",
             string symmetry = "Y",
+            string atoms = "Y",
             double dmin = -1, 
             double dmax = -1,
             int xfac = 1,
@@ -512,106 +514,100 @@ namespace Leucippus.Controllers
             int zfac = 1,
             double ztran = 0)
         {
-            ViewBag.Error = "";                        
-            ViewBagMatrix.Instance.PdbCode = pdbcode;                        
-            DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, "NEAREST", 2, -1,symmetry=="Y");
-            VectorThree dims = dm.getMatrixDims();
-            //Symmetry sym = new Symmetry(xfac, yfac, zfac, xtran, ytran, ztran,(int)dims.A, (int)dims.B, (int)dims.C);
-            /*if (asymmetric == "Y")
+            ViewBag.Error = "";                                    
+            if (update == "Y")
             {
-                //dm.unitProjection();
-                dm.asymmetricProjection(DensitySingleton.Instance.FD.PA);
-                dm.atomsProjection(DensitySingleton.Instance.FD.PA,true);
-            }*/
-            //else
-            {
-                dm.unitProjection(symmetry=="Y");                
-                dm.atomsProjection(DensitySingleton.Instance.FD.PA,symmetry=="Y");
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, "NEAREST", 2, -1, symmetry == "Y");
+                VectorThree dims = dm.getMatrixDims();
+                //Symmetry sym = new Symmetry(xfac, yfac, zfac, xtran, ytran, ztran,(int)dims.A, (int)dims.B, (int)dims.C);
+                /*if (asymmetric == "Y")
+                {
+                    //dm.unitProjection();
+                    dm.asymmetricProjection(DensitySingleton.Instance.FD.PA);
+                    dm.atomsProjection(DensitySingleton.Instance.FD.PA,true);
+                }*/
+                //else
+                
+                dm.unitProjection();
+
+                if (atoms == "Y")
+                {
+                    dm.atomsProjection(DensitySingleton.Instance.FD.PA, symmetry == "Y");
+                    //scatter
+                    ViewBag.ScatA_X = dm.ScatA_X;
+                    ViewBag.ScatA_Y = dm.ScatA_Y;
+                    ViewBag.ScatA_Z = dm.ScatA_Z;
+                    ViewBag.ScatA_V = dm.ScatA_V;
+                    ViewBag.ScatA_C = dm.ScatA_C;
+                    ViewBag.ScatA_R = dm.ScatA_R;
+                    ViewBag.ScatA_S = dm.ScatA_S;
+                }
+                
+
+                List<double> xProjSide;
+                List<double> yProjSide;
+                List<double> zProjSide;
+                Array xyProjMat;
+                Array yzProjMat;
+                Array zxProjMat;
+
+                dm.xyzProjection(
+                    DensitySingleton.Instance.FD.PA,
+                    symmetry == "Y",
+                    out xProjSide, out yProjSide, out zProjSide, out xyProjMat, out yzProjMat, out zxProjMat);
+                
+                ViewBag.CrysXY = Helper.convertArray(xyProjMat);
+                ViewBag.CrysYZ = Helper.convertArray(yzProjMat);
+                ViewBag.CrysZX = Helper.convertArray(zxProjMat);
+                ViewBag.CrysX = Helper.convertList(xProjSide);
+                ViewBag.CrysY = Helper.convertList(yProjSide);
+                ViewBag.CrysZ = Helper.convertList(zProjSide);
+
+                
+
+                //heatmap
+                ViewBag.SideX = dm.SideC;
+                ViewBag.SideY = dm.SideR;
+                ViewBag.SideZ = dm.SideS;
+                ViewBag.MatP = dm.MatP;
+                ViewBag.MatQ = dm.MatQ;
+                ViewBag.MatR = dm.MatR;
+
+                ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
+                ViewBag.Plane = ViewBagMatrix.Instance.Plane;
+                ViewBag.MinV = dm.DMin;
+                ViewBag.MaxV = dm.DMax;
+                if (dmin == -1)
+                {
+                    ViewBag.SdFloor = dm.DMin;
+                    ViewBag.DenMin = dm.DMin;
+                }
+                else
+                {
+                    ViewBag.SdFloor = dmin;
+                    ViewBag.DenMin = dmin;
+                }
+                if (dmax == -1)
+                {
+                    ViewBag.SdCap = Math.Round(dm.DMax, 2);
+                    ViewBag.DenMax = Math.Round(dm.DMax, 2);
+                }
+                else
+                {
+                    ViewBag.SdCap = Math.Round(dmax, 2);
+                    ViewBag.DenMax = Math.Round(dmax, 2);
+                }
+
+                ViewBag.xFactor = xfac;
+                ViewBag.xTrans = xtran;
+                ViewBag.yFactor = yfac;
+                ViewBag.yTrans = ytran;
+                ViewBag.zFactor = zfac;
+                ViewBag.zTrans = ztran;
+                
             }
 
-            List<double> xProjSide;
-            List<double> yProjSide;
-            List<double> zProjSide;
-            Array xyProjMat;
-            Array yzProjMat;
-            Array zxProjMat;
-
-            dm.xyzProjection(
-                DensitySingleton.Instance.FD.PA,
-                symmetry == "Y",
-                out xProjSide, out yProjSide, out zProjSide, out xyProjMat, out yzProjMat, out zxProjMat);
-
-
-            //var jSideX = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
-            //var jSideY = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
-            //var jSideV = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_V));
-
-            //crystal sampling in xyz
-            ViewBag.CrysXY = Helper.convertArray(xyProjMat);
-            ViewBag.CrysYZ = Helper.convertArray(yzProjMat);
-            ViewBag.CrysZX = Helper.convertArray(zxProjMat);
-            ViewBag.CrysX = Helper.convertList(xProjSide);
-            ViewBag.CrysY = Helper.convertList(yProjSide);
-            ViewBag.CrysZ = Helper.convertList(zProjSide);
-
-
-            //scatter
-            ViewBag.ScatXY_X = dm.ScatXY_X;
-            ViewBag.ScatXY_Y = dm.ScatXY_Y;
-            ViewBag.ScatXY_V = dm.ScatXY_V;
-            ViewBag.ScatYZ_X = dm.ScatYZ_X;
-            ViewBag.ScatYZ_Y = dm.ScatYZ_Y;
-            ViewBag.ScatYZ_V = dm.ScatYZ_V;
-            ViewBag.ScatZX_X = dm.ScatZX_X;
-            ViewBag.ScatZX_Y = dm.ScatZX_Y;
-            ViewBag.ScatZX_V = dm.ScatZX_V;            
-            // atoms crs scatter
-            ViewBag.AScatXY_X = dm.AScatXY_X;
-            ViewBag.AScatXY_Y = dm.AScatXY_Y;            
-            ViewBag.AScatYZ_X = dm.AScatYZ_X;
-            ViewBag.AScatYZ_Y = dm.AScatYZ_Y;            
-            ViewBag.AScatZX_X = dm.AScatZX_X;
-            ViewBag.AScatZX_Y = dm.AScatZX_Y;            
-            //heatmap
-            ViewBag.SideX = dm.SideX;
-            ViewBag.SideY = dm.SideY;
-            ViewBag.SideZ = dm.SideZ;
-            ViewBag.MatP = dm.MatP;
-            ViewBag.MatQ = dm.MatQ;
-            ViewBag.MatR = dm.MatR;
-
-
-            ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
-            ViewBag.Plane = ViewBagMatrix.Instance.Plane;            
-            ViewBag.MinV = dm.DMin;
-            ViewBag.MaxV = dm.DMax;
-            if (dmin == -1)
-            {
-                ViewBag.SdFloor = dm.DMin;
-                ViewBag.DenMin = dm.DMin;
-            }
-            else
-            {
-                ViewBag.SdFloor = dmin;
-                ViewBag.DenMin = dmin;
-            }
-            if (dmax == -1)
-            {                
-                ViewBag.SdCap = Math.Round(dm.DMax, 2);
-                ViewBag.DenMax = Math.Round(dm.DMax,2);
-            }
-            else
-            {
-                ViewBag.SdCap = Math.Round(dmax, 2);
-                ViewBag.DenMax = Math.Round(dmax,2);
-            }
-
-            ViewBag.xFactor = xfac;
-            ViewBag.xTrans = xtran;
-            ViewBag.yFactor = yfac;
-            ViewBag.yTrans = ytran;
-            ViewBag.zFactor = zfac;
-            ViewBag.zTrans = ztran;
+            ViewBagMatrix.Instance.PdbCode = pdbcode;
             ViewBag.Reflections = symmetry;
 
 

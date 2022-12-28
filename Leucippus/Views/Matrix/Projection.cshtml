@@ -18,6 +18,7 @@
 {
 <div>                        
         <input style="display:none;visibility:collapse;" id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" />
+        <input style="display:none;visibility:collapse;" id="update" value='Y' name="update" />
     <table>
         <tr>
             <td>                    
@@ -30,16 +31,7 @@
                     <td><label for="incon">Y</label></td>
                     <td><input type="radio" id="incoff" name="incarr" value="N" onclick="includeAtoms('N')" /></td>
                     <td><label for="incoff">N</label></td>                
-                </tr>
-                <tr>
-                    <th>Reflection symmetry
-                       <input style="display:none;visibility:collapse;" id="symmetry" value=@ViewBag.Reflections name="symmetry" />
-                    </th>
-                    <td><input type="radio" id="symon" name="symm" value="Y" onclick="useSymmetry('Y')" /></td>
-                    <td><label for="symon">Y</label></td>
-                            <td><input type="radio" id="symoff" name="symm" value="N" onclick="useSymmetry('N')" /></td>
-                    <td><label for="symoff">N</label></td>                
-                </tr>
+                </tr>                
                 <!--<tr>
                     <th>Asymmetric (Y) or given matrix (N)
                         <input style="display:none;visibility:collapse;" id="asymmetric" value=@ViewBag.Asymmetric name="asymmetric" />
@@ -73,9 +65,9 @@
                             <input style="display:none;visibility:collapse;" id="hue" value='RedBlueGrey' name="hue" />
                         </th>
                         <td><input type="radio" id="rb" name="bue" value="RedBlueGrey" onclick="changeHue('RedBlueGrey')" /></td>
-                        <td><label for="con">RedBlueGrey</label></td>
+                        <td><label for="rb">RedBlueGrey</label></td>
                         <td><input type="radio" id="bw" name="bue" value="BlackWhite" onclick="changeHue('BlackWhite')" /></td>
-                        <td><label for="coff">BlackWhite</label></td>
+                        <td><label for="bw">BlackWhite</label></td>
                     </tr>                
                 </table>
             </td>
@@ -89,7 +81,24 @@
                 <td style="background:LightCyan;"><span>Max=@ViewBag.DenMax</span>: Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
                 </tr>
                 </table>
-            </td>            
+            </td>  
+            <td>
+                <table>
+                        <tr>
+                            <th>
+                                Reflection symmetry
+                                <input style="display:none;visibility:collapse;" id="symmetry" value=@ViewBag.Reflections name="symmetry" />
+                            </th>
+                            <td><input type="radio" id="symon" name="symm" value="Y" onclick="useSymmetry('Y')" /></td>
+                            <td><label for="symon">Y</label></td>
+                            <td><input type="radio" id="symoff" name="symm" value="N" onclick="useSymmetry('N')" /></td>
+                            <td><label for="symoff">N</label></td>
+                        </tr>
+                        <tr>
+                        <th colspan="5" style="background-color:DarkSlateGray;color:crimson;border:none;"><input type="submit" value="Update" /></th>
+                        </tr>
+                </table>
+            </td>
             <!--<td>                
                 <table>
                 <tr>
@@ -124,9 +133,7 @@
 
             </td>-->
         </tr>
-        <tr>
-                <th colspan="5" style="background-color:DarkSlateGray;color:crimson;border:none;"><input type="submit" value="Update" /></th>
-        </tr>
+        
     </table>            
 </div>
 }
@@ -215,22 +222,14 @@
         var CrysY = @Html.Raw(Json.Serialize(@ViewBag.CrysY));
         var CrysZ = @Html.Raw(Json.Serialize(@ViewBag.CrysZ));        
         // atoms for scatter projection
-        var ScatXY_X = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_X));
-        var ScatXY_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_Y));
-        var ScatXY_V = @Html.Raw(Json.Serialize(@ViewBag.ScatXY_V));
-        var ScatYZ_X = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_X));
-        var ScatYZ_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_Y));
-        var ScatYZ_V = @Html.Raw(Json.Serialize(@ViewBag.ScatYZ_V));
-        var ScatZX_X = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_X));
-        var ScatZX_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_Y));
-        var ScatZX_V = @Html.Raw(Json.Serialize(@ViewBag.ScatZX_V));
-        // crs atoms scatter projection
-        var AScatXY_X = @Html.Raw(Json.Serialize(@ViewBag.AScatXY_X));
-        var AScatXY_Y = @Html.Raw(Json.Serialize(@ViewBag.AScatXY_Y));        
-        var AScatYZ_X = @Html.Raw(Json.Serialize(@ViewBag.AScatYZ_X));
-        var AScatYZ_Y = @Html.Raw(Json.Serialize(@ViewBag.AScatYZ_Y));        
-        var AScatZX_X = @Html.Raw(Json.Serialize(@ViewBag.AScatZX_X));
-        var AScatZX_Y = @Html.Raw(Json.Serialize(@ViewBag.AScatZX_Y));
+        var ScatA_X = @Html.Raw(Json.Serialize(@ViewBag.ScatA_X));
+        var ScatA_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatA_Y));
+        var ScatA_Z = @Html.Raw(Json.Serialize(@ViewBag.ScatA_Z));
+        var ScatA_V = @Html.Raw(Json.Serialize(@ViewBag.ScatA_V));
+        var ScatA_C = @Html.Raw(Json.Serialize(@ViewBag.ScatA_C));
+        var ScatA_R = @Html.Raw(Json.Serialize(@ViewBag.ScatA_R));
+        var ScatA_S = @Html.Raw(Json.Serialize(@ViewBag.ScatA_S));
+        
             
         var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
         var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
@@ -263,12 +262,12 @@
             cs_scl = [[0, 'Snow'], [1, 'Black']];
         }
 
-
+        cs_atoms = [[0, 'PaleGoldenrod'],[0.5,'Goldenrod'], [1, 'Black']];
         
 
     
         // make the crystal heatmaps    
-        var dataP = {x: jSideX, y: jSideY, z: jMatP, type: 
+        var dataP = {x: jSideY, y: jSideX, z: jMatP, type: 
             plot,  
             colorscale: cs_scl, 
             line: { width: 0.5, color: 'Gray' },
@@ -279,7 +278,7 @@
             zmax: maxv,
                         };
     
-        var dataQ = {x: jSideY, y: jSideZ, z: jMatQ, type: 
+        var dataQ = {x: jSideZ, y: jSideY, z: jMatQ, type: 
             plot,  
             colorscale: cs_scl, 
             line: { width: 0.5, color: 'Gray' },
@@ -288,7 +287,7 @@
                         zmax: maxv,
                         };
     
-        var dataR = { x: jSideZ, y: jSideX, z: jMatR, type: 
+        var dataR = { x: jSideX, y: jSideZ, z: jMatR, type: 
             //'heatmap', 
             plot,
             colorscale: cs_scl, 
@@ -315,45 +314,45 @@
 
         // make the crystal projection in XYZ
         var dataA = {
-            x: CrysY, y: CrysX, z: CrysXY, 
+            x: CrysX, y: CrysY, z: CrysXY, 
             type: plot,
             colorscale: cs_scl,
             line: { width: 0.5, color: 'Gray' },
             showscale: cbar,
             colorbar: col_bar,
-            name: "XY",
+            name: "cXY",
             zmin: minv,
             zmax: maxv,
         };
 
         var dataB = {
-            x: CrysZ, y: CrysY, z: CrysYZ, 
+            x: CrysY, y: CrysZ, z: CrysYZ, 
             type: plot,
             colorscale: cs_scl,
             line: { width: 0.5, color: 'Gray' },
-            showscale: cbar, colorbar: col_bar, name: "YZ",
+            showscale: cbar, colorbar: col_bar, name: "cYZ",
             zmin: minv,
             zmax: maxv,
         };
 
         var dataC = {
-            x: CrysX, y: CrysZ, z: CrysZX, 
+            x: CrysZ, y: CrysX, z: CrysZX, 
             type: plot,
             colorscale: cs_scl,
             line: { width: 0.5, color: 'Gray' },
-            showscale: cbar, colorbar: col_bar, name: "ZX",
+            showscale: cbar, colorbar: col_bar, name: "cZX",
             zmin: minv,
             zmax: maxv,
         };
 
         // make the atom projections
         var traceXY = {
-            x: ScatXY_X,
-            y: ScatXY_Y,
+            x: ScatA_X,
+            y: ScatA_Y,
             mode: 'markers',
             marker: {
                 colorscale: cs_scl,
-                color: ScatXY_V,
+                color: ScatA_V,
                 size: 5,
                 showscale: cbar,
                 colorbar: col_bar,
@@ -362,12 +361,12 @@
             },
         };    
         var traceYZ = {
-            x: ScatYZ_X,
-            y: ScatYZ_Y,
+            x: ScatA_Y,
+            y: ScatA_Z,
             mode: 'markers',
             marker: {
                 colorscale: cs_scl,
-                color: ScatYZ_V,
+                color: ScatA_V,
                 size: 5,
                 showscale: cbar,
                 colorbar: col_bar,
@@ -377,12 +376,12 @@
         
         };
         var traceZX = {
-            x: ScatZX_X,
-            y: ScatZX_Y,
+            x: ScatA_Z,
+            y: ScatA_X,
             mode: 'markers',
             marker: {
                 colorscale: cs_scl,
-                color: ScatZX_V,
+                color: ScatA_V,
                 size: 5,
                 showscale: cbar,
                 colorbar: col_bar,
@@ -393,13 +392,13 @@
 
         // make the atom projections in CRS
         var traceAXY = {
-            x: AScatXY_X,
-            y: AScatXY_Y,            
+            x: ScatA_C,
+            y: ScatA_R,            
             mode: 'markers',
             marker: {
-                colorscale: [[0, "PaleGoldenrod"], [0.5, "GreenYellow"],[1, "Black"]],
-                color: ScatYZ_V,
-                size: 9,
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
                 opacity:0.7,
                 showscale: false,                
                 cmin: minv,
@@ -407,13 +406,13 @@
             },
         };
         var traceAYZ = {
-            x: AScatYZ_X,
-            y: AScatYZ_Y,
+            x: ScatA_R,
+            y: ScatA_S,
             mode: 'markers',
             marker: {
-                colorscale: [[0, "PaleGoldenrod"], [0.5, "GreenYellow"],[1, "Black"]],
-                color: ScatYZ_V,
-                size: 9,
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
                 opacity:0.7,
                 showscale: false,                
                 cmin: minv,
@@ -422,13 +421,13 @@
 
         };
         var traceAZX = {
-            x: AScatZX_X,
-            y: AScatZX_Y,
+            x: ScatA_S,
+            y: ScatA_C,
             mode: 'markers',
             marker: {
-                colorscale: [[0, "PaleGoldenrod"], [0.5, "GreenYellow"],[1, "Black"]],
-                color: ScatYZ_V,
-                size: 9,
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
                 opacity:0.7,
                 showscale: false,                
                 cmin: minv,
@@ -436,7 +435,52 @@
             },
         };
         
-        
+        // make the atom projections in XYZ for overlay
+        var traceoXY = {
+            x: ScatA_X,
+            y: ScatA_Y,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity: 0.7,
+                showscale: false,
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+        var traceoYZ = {
+            x: ScatA_Y,
+            y: ScatA_Z,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity: 0.7,
+                showscale: false,
+                cmin: minv,
+                cmax: maxv,
+            },
+
+        };
+        var traceoZX = {
+            x: ScatA_Z,
+            y: ScatA_X,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity: 0.7,
+                showscale: false,
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+
+
         var layout2 = {
             grid: { rows: 1, columns: 1, pattern: 'independent' },
             autosize: true,
@@ -453,16 +497,22 @@
             Plotly.newPlot('myCountourP', [dataP, traceAXY], layout2, config);
             Plotly.newPlot('myCountourQ', [dataQ, traceAYZ], layout2, config);
             Plotly.newPlot('myCountourR', [dataR, traceAZX], layout2, config);            
+
+            Plotly.newPlot('myCrystalXY', [dataA, traceoXY], layout2, config);
+            Plotly.newPlot('myCrystalYZ', [dataB, traceoYZ], layout2, config);
+            Plotly.newPlot('myCrystalZX', [dataC, traceoZX], layout2, config);
         }
         else{
             Plotly.newPlot('myCountourP', [dataP], layout, config);
             Plotly.newPlot('myCountourQ', [dataQ], layout, config);
             Plotly.newPlot('myCountourR', [dataR], layout, config);            
+
+            Plotly.newPlot('myCrystalXY', [dataA], layout, config);
+            Plotly.newPlot('myCrystalYZ', [dataB], layout, config);
+            Plotly.newPlot('myCrystalZX', [dataC], layout, config);
         }
         
-        Plotly.newPlot('myCrystalXY', [dataA], layout, config);
-        Plotly.newPlot('myCrystalYZ', [dataB], layout, config);
-        Plotly.newPlot('myCrystalZX', [dataC], layout, config);
+        
 
          var layoutS = {
             grid: { rows: 1, columns: 1, pattern: 'independent' },
@@ -551,12 +601,16 @@
     document.getElementById("coff").checked = true;
     document.getElementById("incon").checked = true;
     document.getElementById("incoff").checked = false;
-    
-    document.getElementById("cheat").checked = true;
-    document.getElementById("ccon").checked = false;
     document.getElementById("rb").checked = true;
     document.getElementById("bw").checked = false;
     
+    //document.getElementById("cheat").checked = true;
+    //document.getElementById("ccon").checked = false;
+
+    sym = document.getElementById("symmetry").value;    
+    document.getElementById("symon").checked = sym=="Y";
+    document.getElementById("symoff").checked = sym=="N";
+        
     var outputMax = document.getElementById("sdcap");
     var cbar = document.getElementById("cbar").value;
     var hue = document.getElementById("hue").value;                
@@ -567,8 +621,6 @@
     document.getElementById("hue").value = "RedBlueGrey";                
     document.getElementById("incatoms").value = "Y";       
 
-    sym = document.getElementById("symmetry").value;
-    document.getElementById("symcon").checked = sym=="Y";
-    document.getElementById("symoff").checked = sym=="N";
+    
 </script>
 
