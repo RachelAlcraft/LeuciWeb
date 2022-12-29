@@ -204,11 +204,11 @@ namespace LeuciShared
                 if (k < 0)
                     k = ZLen + k - 1;
 
-                if (i > XLen)
+                if (i >= XLen)
                     i = i - XLen + 1;
-                if (j > YLen)
+                if (j >= YLen)
                     j = j - YLen + 1;
-                if (k > ZLen)
+                if (k >= ZLen)
                     k = k - ZLen + 1;
             }
 
