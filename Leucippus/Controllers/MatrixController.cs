@@ -1,6 +1,7 @@
 ﻿using Leucippus.Models;
 using LeuciShared;
 using Microsoft.AspNetCore.Mvc;
+using Plotly.NET;
 
 
 namespace Leucippus.Controllers
@@ -95,7 +96,7 @@ namespace Leucippus.Controllers
 
         }
         public async Task<IActionResult> Slice(
-            string tabview = "A", // A=atoms,S=settgins,N=neighbour X=advanced
+            string tabview = "S", // A=atoms,S=settgins,N=neighbour X=advanced
             string refresh_mode = "R", //V= viewbag only F = force
             string pdbcode = "",
             string c_xyz = "", string l_xyz = "", string p_xyz = "",
@@ -108,7 +109,7 @@ namespace Leucippus.Controllers
             int Fos = 2, int Fcs = -1, string ydots = "N", string gdots = "N",
             int t1 = 0, int t2 = 0, int t3 = 0, int t4 = 0,
             string nav = "", double nav_distance = 0.1,
-            double hover_min = 0, double hover_max = 0)
+            double hover_min = 0, double hover_max = 0,string force_slow="N")
         {
             bool view_change = false;
 
@@ -122,7 +123,7 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.T2Display = "none";
             ViewBagMatrix.Instance.T3Display = "none";
             ViewBagMatrix.Instance.T4Display = "none";
-            ViewBag.TabName = "Atoms";
+            ViewBag.TabName = "Navigate";
             ViewBag.TabAClick = "inherit";
             ViewBag.TabSClick = "inherit";
             ViewBag.TabNClick = "inherit";
@@ -137,13 +138,13 @@ namespace Leucippus.Controllers
                 if (t1 == 1) //atoms
                 {
                     ViewBag.TabView = "A";
-                    ViewBag.TabName = "Atoms";
+                    ViewBag.TabName = "Navigate";
                     refresh_mode = "F";
                 }
                 if (t2 == 1) //settings
                 {
                     ViewBag.TabView = "S";
-                    ViewBag.TabName = "Settings";
+                    ViewBag.TabName = "Display";
                 }
                 if (t3 == 1) //neighbours
                 {
@@ -180,7 +181,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.T2Display = "block";
                 ViewBag.TabSClick = "none";
                 ViewBag.TabSName = "contents";
-                ViewBag.TabName = "Settings";
+                ViewBag.TabName = "Display";
             }
             else if (tabview == "X")
             {
@@ -246,12 +247,11 @@ namespace Leucippus.Controllers
                     hov_max = -1;
                 }
 
-                if (tabview == "N")
+                if (tabview != "S" && force_slow == "N") //for any tabview other than display we want to force a change to linear
                 {
                     nav_space = ViewBagMatrix.Instance.Width / 15; //we reduce dramatically for nearest neighbor as how often do we need to look?
-                    if (use_interp == "BSPLINE3")
-                    {
-                        ViewBagMatrix.Instance.Interp = "LINEAR";
+                    if (use_interp != "NEAREST")
+                    {                        
                         use_interp = "LINEAR";
                     }
 
@@ -268,6 +268,14 @@ namespace Leucippus.Controllers
                     hov_max = -1;
                 }
 
+                if (nav != "" && nav != null)
+                {
+                    if (use_interp != "NEAREST")
+                    {
+                        use_interp = "LINEAR";
+                    }
+                }
+
                 DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, use_interp, ViewBagMatrix.Instance.Fos, ViewBagMatrix.Instance.Fcs);
 
                 ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.FD.PA, atom_offset);
@@ -276,13 +284,7 @@ namespace Leucippus.Controllers
 
 
                 if (nav != "" && nav != null)
-                {
-                    if (use_interp == "BSPLINE3")
-                    {
-                        ViewBagMatrix.Instance.Interp = "LINEAR";
-                        use_interp = "LINEAR";
-                    }
-
+                {                    
                     if (nav == "plus")
                     {
                         double ratio = ViewBagMatrix.Instance.Width / ViewBagMatrix.Instance.Gap;
@@ -407,6 +409,10 @@ namespace Leucippus.Controllers
                 ViewBag.NavDistance = ViewBagMatrix.Instance.NavDistance;
                 ViewBag.RefreshMode = "R";
                 ViewBag.AtomOffset = 0;
+                ViewBag.ForceSlow = force_slow;
+
+                // visual
+                ViewBag.TabBackClr = "Gainsboro";
 
 
                 ViewBagMatrix.Instance.Reset();
@@ -459,8 +465,10 @@ namespace Leucippus.Controllers
         {
             ViewBag.SmallPdbs = new List<DataFile>();
             ViewBag.HighPdbs = new List<DataFile>();
+            ViewBag.UltraHighEmPdbs = new List<DataFile>();
             ViewBag.SmallEmPdbs = new List<DataFile>();
             ViewBag.HighEmPdbs = new List<DataFile>();
+            
             try
             {
                 ViewBag.Error = "";
@@ -470,6 +478,7 @@ namespace Leucippus.Controllers
                 ViewBag.BbkPdbs = dfs.BbkPdbs;
                 ViewBag.SmallPdbs = dfs.SmallPdbs;
                 ViewBag.HighPdbs = dfs.HighPdbs;
+                ViewBag.UltraHighEmPdbs = dfs.UltraHighEmPdbs;
                 ViewBag.SmallEmPdbs = dfs.SmallEmPdbs;
                 ViewBag.HighEmPdbs = dfs.HighEmPdbs;
                 //Load the density matrix
@@ -489,6 +498,215 @@ namespace Leucippus.Controllers
                 ViewBag.Error = "Error from server:" + e.Message;
                 return View();
             }
+        }
+
+        public async Task<IActionResult> Projection(
+            string pdbcode = "",
+            string update = "N",
+            string symmetry = "Y",
+            string atoms = "Y",
+            double dmin = -1, 
+            double dmax = -1,
+            int xfac = 1,
+            double xtran = 0,
+            int yfac = 1,
+            double ytran = 0,
+            int zfac = 1,
+            double ztran = 0)
+        {
+            ViewBag.Error = "";                                    
+            if (update == "Y")
+            {
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, "NEAREST", 2, -1, symmetry == "Y");
+                VectorThree dims = dm.getMatrixDims();
+                //Symmetry sym = new Symmetry(xfac, yfac, zfac, xtran, ytran, ztran,(int)dims.A, (int)dims.B, (int)dims.C);
+                /*if (asymmetric == "Y")
+                {
+                    //dm.unitProjection();
+                    dm.asymmetricProjection(DensitySingleton.Instance.FD.PA);
+                    dm.atomsProjection(DensitySingleton.Instance.FD.PA,true);
+                }*/
+                //else
+                
+                dm.unitProjection();
+
+                if (atoms == "Y")
+                {
+                    dm.atomsProjection(DensitySingleton.Instance.FD.PA, symmetry == "Y");
+                    //scatter
+                    ViewBag.ScatA_X = dm.ScatA_X;
+                    ViewBag.ScatA_Y = dm.ScatA_Y;
+                    ViewBag.ScatA_Z = dm.ScatA_Z;
+                    ViewBag.ScatA_V = dm.ScatA_V;
+                    ViewBag.ScatA_C = dm.ScatA_C;
+                    ViewBag.ScatA_R = dm.ScatA_R;
+                    ViewBag.ScatA_S = dm.ScatA_S;
+                }
+                
+
+                List<double> xProjSide;
+                List<double> yProjSide;
+                List<double> zProjSide;
+                Array xyProjMat;
+                Array yzProjMat;
+                Array zxProjMat;
+
+                dm.xyzProjection(
+                    DensitySingleton.Instance.FD.PA,
+                    symmetry == "Y",
+                    out xProjSide, out yProjSide, out zProjSide, out xyProjMat, out yzProjMat, out zxProjMat);
+                
+                ViewBag.CrysXY = Helper.convertArray(xyProjMat);
+                ViewBag.CrysYZ = Helper.convertArray(yzProjMat);
+                ViewBag.CrysZX = Helper.convertArray(zxProjMat);
+                ViewBag.CrysX = Helper.convertList(xProjSide);
+                ViewBag.CrysY = Helper.convertList(yProjSide);
+                ViewBag.CrysZ = Helper.convertList(zProjSide);
+
+                
+
+                //heatmap
+                ViewBag.SideX = dm.SideC;
+                ViewBag.SideY = dm.SideR;
+                ViewBag.SideZ = dm.SideS;
+                ViewBag.MatP = dm.MatP;
+                ViewBag.MatQ = dm.MatQ;
+                ViewBag.MatR = dm.MatR;
+
+                ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
+                ViewBag.Plane = ViewBagMatrix.Instance.Plane;
+                ViewBag.MinV = dm.DMin;
+                ViewBag.MaxV = dm.DMax;
+                if (dmin == -1)
+                {
+                    ViewBag.SdFloor = dm.DMin;
+                    ViewBag.DenMin = dm.DMin;
+                }
+                else
+                {
+                    ViewBag.SdFloor = dmin;
+                    ViewBag.DenMin = dmin;
+                }
+                if (dmax == -1)
+                {
+                    ViewBag.SdCap = Math.Round(dm.DMax, 2);
+                    ViewBag.DenMax = Math.Round(dm.DMax, 2);
+                }
+                else
+                {
+                    ViewBag.SdCap = Math.Round(dmax, 2);
+                    ViewBag.DenMax = Math.Round(dmax, 2);
+                }
+
+                ViewBag.xFactor = xfac;
+                ViewBag.xTrans = xtran;
+                ViewBag.yFactor = yfac;
+                ViewBag.yTrans = ytran;
+                ViewBag.zFactor = zfac;
+                ViewBag.zTrans = ztran;
+                
+            }
+
+            ViewBagMatrix.Instance.PdbCode = pdbcode;
+            ViewBag.Reflections = symmetry;
+
+
+            return View();
+        }
+        public async Task<IActionResult> Overlay(
+            string pdbcode = "", 
+            string update = "N",
+            int fos = 2,
+            int fcs = -1,
+            string interp = "LINEAR",
+            string motif= "C:CA:O",
+            string exclusions="A:1,A:2",
+            string inclusions = null)
+        {
+            ViewBag.Error = "";
+            ViewBag.Matches = new List<string>();
+            ViewBag.Lines = "";
+            if (update == "Y")
+            {                
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs);
+                List<VectorThree[]> match_coords = new List<VectorThree[]>();
+                List<string> lines = new List<string>();
+                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchMotif(motif, exclusions, inclusions, out match_coords, out lines);
+
+                double[][]? sliceDensity = null;
+                double[][]? sliceRadient = null;
+                double[][]? sliceLaplacian = null;
+
+                double minV = 1000;
+                double maxV = -1000;
+                double minL = 1000;
+                double maxL = -1000;
+
+                // create each matrix
+                foreach (VectorThree[] coord in match_coords)
+                {
+                    dm.create_scratch_slice(5, 0.1,
+                        true, -1, -1,
+                        coord[0], coord[1], coord[2],
+                        coord[0], coord[1], coord[2],
+                        DensitySingleton.Instance.FD.PA, -1, -1);
+
+                    if (sliceDensity == null)
+                    {
+                        sliceDensity = dm.SliceDensity;
+                        sliceRadient = dm.SliceRadient;
+                        sliceLaplacian = dm.SliceLaplacian;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < sliceDensity.Length; i++)
+                        {
+                            for (int j = 0; j < sliceDensity[i].Length; j++)
+                            {
+                                sliceDensity[i][j] += dm.SliceDensity[i][j];
+                                maxV = Math.Max(maxV, sliceDensity[i][j]);
+                                minV = Math.Min(minV, sliceDensity[i][j]);
+
+                                if (sliceRadient.Length == sliceDensity.Length)
+                                    sliceRadient[i][j] += dm.SliceRadient[i][j];
+
+                                if (sliceLaplacian.Length == sliceDensity.Length)
+                                {
+                                    sliceLaplacian[i][j] += dm.SliceLaplacian[i][j];
+                                    maxL = Math.Max(maxL, sliceLaplacian[i][j]);
+                                    minL = Math.Min(minL, sliceLaplacian[i][j]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // matrix
+                ViewBag.SliceDensity = sliceDensity;
+                ViewBag.SliceRadient = sliceRadient;
+                ViewBag.SliceLaplacian = sliceLaplacian;
+                ViewBag.MinV = minV;
+                ViewBag.MaxV = maxV;
+                ViewBag.MinL = minL;
+                ViewBag.MaxL = maxL;
+                ViewBag.Matches = match_motif;
+                foreach (var ln in lines)
+                {
+                    ViewBag.Lines += ln + "\n";
+                }
+            }
+
+            // View items
+            ViewBag.PdbCode = pdbcode;
+            ViewBag.Motif = motif;
+            ViewBag.Exclusions = exclusions;
+            ViewBag.Inclusions = inclusions;
+            ViewBag.Fos = fos;
+            ViewBag.Fcs = fcs;
+            ViewBag.Interp = interp;
+
+            return View();
+
         }
 
     }

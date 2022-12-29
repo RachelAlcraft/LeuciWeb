@@ -1,4 +1,6 @@
-﻿namespace LeuciShared
+﻿using System.Reflection;
+
+namespace LeuciShared
 {
     // ****** ABSTRACT CLASS ****************************************
     public abstract class Interpolator
@@ -11,6 +13,7 @@
         protected int YLen;
         protected int ZLen;
         protected double h;
+        protected bool _reflect;
 
         // ABSTRACT INTERFACE ------------------------------------------------
         public abstract double getValue(double x, double y, double z);
@@ -29,6 +32,12 @@
             //_binary = binary;
             _bStart = bstart;
             _bLength = blength;
+            _reflect = true;
+        }
+
+        public void setReflect(bool reflect)
+        {
+            _reflect = reflect;
         }
         public int getExactPos(int x, int y, int z)
         {
@@ -49,7 +58,7 @@
             //    return pos;
             //else
             //    return 0;//what should this return? -1, throw an error? TODO
-        }
+        }                      
         public Single getExactValueBinary(int x, int y, int z)
         {
             int sliceSize = XLen * YLen;
@@ -71,6 +80,7 @@
                 return 0;
             }
         }
+
         public double getRadient(double x, double y, double z)
         {
             double val = getValue(x, y, z);
@@ -181,14 +191,31 @@
         }
 
         public bool isValid(double x, double y, double z)
-        {
+        {            
             int i = Convert.ToInt32(Math.Round(x));
             int j = Convert.ToInt32(Math.Round(y));
             int k = Convert.ToInt32(Math.Round(z));
+            if (_reflect)
+            {// If we allow reflections that we can adjust the values to a new matrix
+                if (i < 0)
+                    i = XLen + i - 1;
+                if (j < 0)
+                    j = YLen + j - 1;
+                if (k < 0)
+                    k = ZLen + k - 1;
+
+                if (i >= XLen)
+                    i = i - XLen + 1;
+                if (j >= YLen)
+                    j = j - YLen + 1;
+                if (k >= ZLen)
+                    k = k - ZLen + 1;
+            }
+
             if (i < 0 || j < 0 || k < 0)
                 return false;
 
-            if (i > XLen || j > YLen || k > ZLen)
+            if (i >= XLen || j >= YLen || k >= ZLen)
                 return false;
 
             //int sliceSize = XLen * YLen;
@@ -199,6 +226,24 @@
             //    return false;
             //else
             return true;
+        }
+
+        public double[] adjustReflection(double x, double y, double z)
+        {            
+            if (x < 0)
+                x = XLen + x - 1;
+            if (y < 0)
+                y = YLen + y - 1;
+            if (z < 0)
+                z = ZLen + z - 1;
+
+            if (x >= XLen)
+                x = x - XLen + 1;
+            if (y >= YLen)
+                y = y - YLen + 1;
+            if (z >= ZLen)
+                z = z - ZLen + 1;
+            return new double[3] { x, y, z };            
         }
     }
 
@@ -213,10 +258,15 @@
         {
 
         }
-        public override double getValue(double x, double y, double z)
+        public override double getValue(double xx, double yy, double zz)
         {
-            if (!isValid(x, y, z))
+            if (!isValid(xx, yy, zz))
                 return 0;
+
+            double[] xyz = adjustReflection(xx, yy, zz);
+            double x = xyz[0];
+            double y = xyz[1];
+            double z = xyz[2];
             int i = Convert.ToInt32(Math.Round(x));
             int j = Convert.ToInt32(Math.Round(y));
             int k = Convert.ToInt32(Math.Round(z));
@@ -248,14 +298,19 @@
             _dimsize = (int)Math.Pow(_points, 3);
 
         }
-        public override double getValue(double x, double y, double z)
+        public override double getValue(double xx, double yy, double zz)
         {
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
 
-            if (!isValid(x, y, z))
+            if (!isValid(xx, yy, zz)) //RSA TODO
                 return 0;
+
+            double[] xyz = adjustReflection(xx, yy, zz);
+            double x = xyz[0];
+            double y = xyz[1];
+            double z = xyz[2];
 
             bool recalc = _neednewVals;
 
@@ -381,10 +436,14 @@
             _dimsize = (int)Math.Pow(_points, 3);
             _bsp = null;
         }
-        public override double getValue(double x, double y, double z)
+        public override double getValue(double xx, double yy, double zz)
         {
-            if (!isValid(x, y, z))
+            if (!isValid(xx, yy, zz))
                 return 0;
+            double[] xyz = adjustReflection(xx, yy, zz);
+            double x = xyz[0];
+            double y = xyz[1];
+            double z = xyz[2];
 
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
@@ -519,10 +578,14 @@
             else
                 return 0;
         }*/
-        public override double getValue(double x, double y, double z)
+        public override double getValue(double xx, double yy, double zz)
         {
-            if (!isValid(x, y, z))
+            if (!isValid(xx, yy, zz))
                 return 0;
+            double[] xyz = adjustReflection(xx, yy, zz);
+            double x = xyz[0];
+            double y = xyz[1];
+            double z = xyz[2];
 
             int weight_length = _degree + 1;
             List<int> xIndex = new List<int>();

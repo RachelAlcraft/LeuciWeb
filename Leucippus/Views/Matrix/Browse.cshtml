@@ -7,9 +7,14 @@
         @Html.ActionLink(linkText: "Choose",actionName: "Browse",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
         @Html.ActionLink(linkText: "Slice",actionName: "Slice",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
         @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Overlay",actionName: "Overlay",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
     </span>
 </div>
 <h3>Choose Electron Density to browse</h3>
+<div>
+    </p>@ViewBag.Error<p>
+</div>
 <hr />
 <div class="browse">
     <table class="browse" width="95%">        
@@ -126,6 +131,31 @@
                         </td>
                     </tr>
                     <tr>
+                        <th>Electron crystallography</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @foreach (var item in ViewBag.UltraHighEmPdbs)
+                            {
+                                <span>
+                                    @item.PdbCode
+
+                                    @Html.ActionLink(
+                                linkText: "select",
+                                actionName: "Browse",
+                                controllerName: "Matrix",
+                                routeValues: new {
+                                pdbcode = @item.PdbCode,
+                                },
+                                htmlAttributes: null
+                                )
+
+                                </span>
+                                <br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
                         <th>Small cryo-em</th>
                     </tr>
                     <tr>
@@ -192,8 +222,10 @@
                 <br />
                 Resolution: @ViewBag.Resolution
                 <br />
-                        <a href="https://www.ccpem.ac.uk/mrc_format/mrc2014.php" target="_blank">Info on ED Maps</a>
-                    </span>
+                    <a href="https://www.ccp4.ac.uk/html/maplib.html#description" target="_blank">Info on ED Maps - xray</a>
+                <br />
+                    <a href="https://www.ccpem.ac.uk/mrc_format/mrc2014.php" target="_blank">Info on ED Maps - EM</a>
+                </span>
                 
             </div>
             <hr />
@@ -209,9 +241,7 @@
 </table>
 </div>
 
-<div>
-    </p>@ViewBag.Error<p>
-</div>
+
 
 
 

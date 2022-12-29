@@ -6,6 +6,7 @@
         public List<DataFile> BbkPdbs { get; set; } = new List<DataFile>();
         public List<DataFile> SmallPdbs { get; set; } = new List<DataFile>();
         public List<DataFile> HighPdbs { get; set; } = new List<DataFile>();
+        public List<DataFile> UltraHighEmPdbs { get; set; } = new List<DataFile>();
         public List<DataFile> SmallEmPdbs { get; set; } = new List<DataFile>();
         public List<DataFile> HighEmPdbs { get; set; } = new List<DataFile>();
         public DataFiles(string filepath)
@@ -25,10 +26,18 @@
             SmallPdbs.Add(new DataFile("6eex"));
             SmallPdbs.Add(new DataFile("6efg"));
             SmallPdbs.Add(new DataFile("6fgz"));
+            SmallPdbs.Add(new DataFile("6q53"));
 
             HighPdbs.Add(new DataFile("1ejg"));
             HighPdbs.Add(new DataFile("3nir"));
             HighPdbs.Add(new DataFile("5d8v"));
+
+            UltraHighEmPdbs.Add(new DataFile("6kj3"));
+            UltraHighEmPdbs.Add(new DataFile("6kj1"));
+            UltraHighEmPdbs.Add(new DataFile("6axz"));
+            //UltraHighEmPdbs.Add(new DataFile("6cf4"));
+           
+          
 
             SmallEmPdbs.Add(new DataFile("3j9e"));
 

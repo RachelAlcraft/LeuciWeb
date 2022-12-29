@@ -1,0 +1,626 @@
+﻿
+@{
+    ViewData["Title"] = "Matrix";
+    Layout = "~/Views/Shared/_LayoutDensity.cshtml";
+}
+<div class="subheader">
+    <span>
+        @Html.ActionLink(linkText: "Choose",actionName: "Browse",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Slice",actionName: "Slice",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Overlay",actionName: "Overlay",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+    </span>
+</div>
+<h3>Projection of Density Matrix - @ViewBag.PdbCode</h3>
+<hr />
+@using (Html.BeginForm("Projection", "Matrix", FormMethod.Post))
+{
+<div>                        
+        <input style="display:none;visibility:collapse;" id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" />
+        <input style="display:none;visibility:collapse;" id="update" value='Y' name="update" />
+    <table>
+        <tr>
+            <td>                    
+                <table>
+                <tr>
+                    <th>Project atoms                        
+                        <input style="display:none;visibility:collapse;" id="incatoms" value='Y' name="incatoms" />
+                    </th>
+                    <td><input type="radio" id="incon" name="incarr" value="Y" onclick="includeAtoms('Y')" /></td>
+                    <td><label for="incon">Y</label></td>
+                    <td><input type="radio" id="incoff" name="incarr" value="N" onclick="includeAtoms('N')" /></td>
+                    <td><label for="incoff">N</label></td>                
+                </tr>                
+                <!--<tr>
+                    <th>Asymmetric (Y) or given matrix (N)
+                        <input style="display:none;visibility:collapse;" id="asymmetric" value=@ViewBag.Asymmetric name="asymmetric" />
+                    </th>
+                    <td><input type="radio" id="asym" name="cell" value="Y" onclick="asymmetricUnit('Y')" /></td>
+                    <td><label for="asym">Y</label></td>
+                    <td><input type="radio" id="unit" name="cell" value="N" onclick="asymmetricUnit('N')" /></td>
+                    <td><label for="unit">N</label></td>
+                </tr>-->
+                <tr>
+                    <th>Show colour bar
+                            <input style="display:none;visibility:collapse;" id="cbar" value='N' name="cbar" />
+                    </th>
+                    <td><input type="radio" id="con" name="barr" value="Y" onclick="showBar('Y')" /></td>
+                    <td><label for="con">Y</label></td>
+                    <td><input type="radio" id="coff" name="barr" value="N" onclick="showBar('N')" /></td>
+                    <td><label for="coff">N</label></td>                
+                </tr>
+                <!--<tr>
+                    <th>Toggle plot
+                            <input style="display:none;visibility:collapse;" id="plot" value='heatmap' name="plot" />
+                    </th>
+                    <td><input type="radio" id="cheat" name="blot" value="heatmap" onclick="changePlot('heatmap')" /></td>
+                    <td><label for="con">heatmap</label></td>
+                    <td><input type="radio" id="ccon" name="blot" value="contour" onclick="changePlot('contour')" /></td>
+                    <td><label for="coff">contour</label></td>                
+                </tr>-->
+                    <tr>
+                        <th>
+                            Toggle plot
+                            <input style="display:none;visibility:collapse;" id="hue" value='RedBlueGrey' name="hue" />
+                        </th>
+                        <td><input type="radio" id="rb" name="bue" value="RedBlueGrey" onclick="changeHue('RedBlueGrey')" /></td>
+                        <td><label for="rb">RedBlueGrey</label></td>
+                        <td><input type="radio" id="bw" name="bue" value="BlackWhite" onclick="changeHue('BlackWhite')" /></td>
+                        <td><label for="bw">BlackWhite</label></td>
+                    </tr>                
+                </table>
+            </td>
+            <td>
+                <table>
+                <tr>
+                <td colspan="4" style="background:Gainsboro;color:navy">Density Cap</td>
+                </tr>
+                <tr>                        
+                <td style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMax value=@ViewBag.SdCap step="0.1" style="direction:ltr" id="rangeValueMax"></td>
+                <td style="background:LightCyan;"><span>Max=@ViewBag.DenMax</span>: Cap=<span><input style="width:50px" type="text" id="sdcap" name="sdcap" value=@ViewBag.SdCap></span></td>
+                </tr>
+                </table>
+            </td>  
+            <td>
+                <table>
+                        <tr>
+                            <th>
+                                Reflection symmetry
+                                <input style="display:none;visibility:collapse;" id="symmetry" value=@ViewBag.Reflections name="symmetry" />
+                            </th>
+                            <td><input type="radio" id="symon" name="symm" value="Y" onclick="useSymmetry('Y')" /></td>
+                            <td><label for="symon">Y</label></td>
+                            <td><input type="radio" id="symoff" name="symm" value="N" onclick="useSymmetry('N')" /></td>
+                            <td><label for="symoff">N</label></td>
+                        </tr>
+                        <tr>
+                        <th colspan="5" style="background-color:DarkSlateGray;color:crimson;border:none;"><input type="submit" value="Update" /></th>
+                        </tr>
+                </table>
+            </td>
+            <!--<td>                
+                <table>
+                <tr>
+                    <td colspan="5" style="background:Gainsboro;color:navy">Symmetry</td>                    
+                </tr>
+                <tr>                    
+                    <td style="background:LightCyan;">(</td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="xfac" name="xfac" value=@ViewBag.xFactor></td>
+                    <td style="background:LightCyan;">* X + </td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="xtran" name="xtran" value=@ViewBag.xTrans></td>
+                    <td style="background:LightCyan;">)</td>                                        
+                </tr>
+                <tr>                    
+                    <td style="background:LightCyan;">(</td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="yfac" name="yfac" value=@ViewBag.yFactor></td>
+                    <td style="background:LightCyan;">* Y + </td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="ytran" name="ytran" value=@ViewBag.yTrans></td>
+                    <td style="background:LightCyan;">)</td>
+                </tr>
+                <tr>                    
+                    <td style="background:LightCyan;">(</td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="zfac" name="zfac" value=@ViewBag.zFactor></td>
+                    <td style="background:LightCyan;">* Z + </td>
+                    <td style="background:LightCyan;"><input style="width:30px" type="text" id="ztran" name="ztran" value=@ViewBag.zTrans></td>
+                    <td style="background:LightCyan;">)</td>
+                </tr>
+                <tr>
+                     <th colspan="5" style="background-color:DarkSlateGray;color:crimson;border:none;"><input type="submit" value="Update" /></th>
+                </tr>
+                </table>
+                
+
+            </td>-->
+        </tr>
+        
+    </table>            
+</div>
+}
+<hr/>
+<h5>Crystal Projection</h5>
+<table>
+    <tr>
+        <th>CR Plane</th>
+        <th>RS Plane</th>
+        <th>SC Plane</th>
+    </tr>
+    <tr>
+        <td style="width: 450px;">            
+            <div id="myCountourP" style="width:100%"></div>            
+        </td>
+        <td style="width: 450px;">            
+            <div id="myCountourQ" style="width:100%"></div>            
+        </td>
+        <td style="width: 450px;">            
+            <div id="myCountourR" style="width:100%"></div>            
+        </td>                
+    </tr>      
+</table>
+<hr />
+<h5>Crystal Projection in real space</h5>
+<table>
+    <tr>
+        <th>XY Plane</th>
+        <th>YZ Plane</th>
+        <th>ZX Plane</th>
+    </tr>
+    <tr>
+        <td style="width: 450px;">
+            <div id="myCrystalXY" style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">
+            <div id="myCrystalYZ" style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">
+            <div id="myCrystalZX" style="width:100%"></div>
+        </td>
+    </tr>
+</table>
+<h5>Atoms Projection</h5>
+<table>
+    <tr>
+        <th>XY Plane</th>
+        <th>YZ Plane</th>
+        <th>ZX Plane</th>
+    </tr>    
+    <tr>
+        <td style="width: 450px;">
+            <div id="myScatterXY" style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">
+            <div id="myScatterYZ" style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">
+            <div id="myScatterZX" style="width:100%"></div>
+        </td>
+    </tr>
+    
+</table>
+
+    
+
+<div>
+    </p>@ViewBag.Error<p>
+</div>
+<script>
+    function makePlots(dfloor,dcap,cbar,incatoms,hue,plot){
+        //cbar=true;
+        //alert(hue)
+        //heatmap for crystal projection
+        var jSideX = @Html.Raw(Json.Serialize(@ViewBag.SideX));
+        var jSideY = @Html.Raw(Json.Serialize(@ViewBag.SideY));
+        var jSideZ = @Html.Raw(Json.Serialize(@ViewBag.SideZ));    
+        var jMatP = @Html.Raw(Json.Serialize(@ViewBag.MatP));
+        var jMatQ = @Html.Raw(Json.Serialize(@ViewBag.MatQ));
+        var jMatR = @Html.Raw(Json.Serialize(@ViewBag.MatR));
+        // crystal projection to XYZ
+        var CrysXY = @Html.Raw(Json.Serialize(@ViewBag.CrysXY));
+        var CrysYZ = @Html.Raw(Json.Serialize(@ViewBag.CrysYZ));
+        var CrysZX = @Html.Raw(Json.Serialize(@ViewBag.CrysZX));
+        var CrysX = @Html.Raw(Json.Serialize(@ViewBag.CrysX));
+        var CrysY = @Html.Raw(Json.Serialize(@ViewBag.CrysY));
+        var CrysZ = @Html.Raw(Json.Serialize(@ViewBag.CrysZ));        
+        // atoms for scatter projection
+        var ScatA_X = @Html.Raw(Json.Serialize(@ViewBag.ScatA_X));
+        var ScatA_Y = @Html.Raw(Json.Serialize(@ViewBag.ScatA_Y));
+        var ScatA_Z = @Html.Raw(Json.Serialize(@ViewBag.ScatA_Z));
+        var ScatA_V = @Html.Raw(Json.Serialize(@ViewBag.ScatA_V));
+        var ScatA_C = @Html.Raw(Json.Serialize(@ViewBag.ScatA_C));
+        var ScatA_R = @Html.Raw(Json.Serialize(@ViewBag.ScatA_R));
+        var ScatA_S = @Html.Raw(Json.Serialize(@ViewBag.ScatA_S));
+        
+            
+        var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
+        var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
+
+        if (dfloor != -1){
+            minv = dfloor
+        }
+        if (dcap != -1){
+            maxv = dcap
+        }
+
+        var size = (maxv - minv) / 10
+        var zero_frac = 0.001
+        zero_frac = (0 - minv) / (maxv - minv)
+        
+        col_bar = {
+            title: "",
+            thickness: 15,
+            len: 0.85,
+            x: +.95
+        }
+        
+        if (hue == "RedBlueGrey"){
+            if (minv < 0) {
+                cs_scl = [[0, 'Snow'], [zero_frac, 'AliceBlue'], [zero_frac + 0.01, 'LightBlue'], [zero_frac + 0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            } else {
+                cs_scl = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            }
+        }else{
+            cs_scl = [[0, 'Snow'], [1, 'Black']];
+        }
+
+        cs_atoms = [[0, 'PaleGoldenrod'],[0.5,'Goldenrod'], [1, 'Black']];
+        
+
+    
+        // make the crystal heatmaps    
+        var dataP = {x: jSideY, y: jSideX, z: jMatP, type: 
+            plot,  
+            colorscale: cs_scl, 
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar,
+            colorbar: col_bar, 
+            name: "XY",
+            zmin: minv,
+            zmax: maxv,
+                        };
+    
+        var dataQ = {x: jSideZ, y: jSideY, z: jMatQ, type: 
+            plot,  
+            colorscale: cs_scl, 
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, colorbar: col_bar, name: "YZ",
+            zmin: minv,
+                        zmax: maxv,
+                        };
+    
+        var dataR = { x: jSideX, y: jSideZ, z: jMatR, type: 
+            //'heatmap', 
+            plot,
+            colorscale: cs_scl, 
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, colorbar: col_bar, name: "ZX",
+                        zmin: minv,
+                        zmax: maxv,
+                        };
+    
+        var layout = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,
+            xaxis: {showgrid: false,zeroline: false,visible: false,},        
+            yaxis: {scaleanchor: 'x',scaleratio: 1,visible: false,},      
+            margin: {l: 20,r: 80,b: 20,t: 20,pad: 4},
+        };
+
+        var config = {
+            responsive: true,
+            toImageButtonOptions: { scale: 6, width: 540, height: 540 }
+        };
+
+        // make the crystal projection in XYZ
+        var dataA = {
+            x: CrysX, y: CrysY, z: CrysXY, 
+            type: plot,
+            colorscale: cs_scl,
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar,
+            colorbar: col_bar,
+            name: "cXY",
+            zmin: minv,
+            zmax: maxv,
+        };
+
+        var dataB = {
+            x: CrysY, y: CrysZ, z: CrysYZ, 
+            type: plot,
+            colorscale: cs_scl,
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, colorbar: col_bar, name: "cYZ",
+            zmin: minv,
+            zmax: maxv,
+        };
+
+        var dataC = {
+            x: CrysZ, y: CrysX, z: CrysZX, 
+            type: plot,
+            colorscale: cs_scl,
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar, colorbar: col_bar, name: "cZX",
+            zmin: minv,
+            zmax: maxv,
+        };
+
+        // make the atom projections
+        var traceXY = {
+            x: ScatA_X,
+            y: ScatA_Y,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_scl,
+                color: ScatA_V,
+                size: 5,
+                showscale: cbar,
+                colorbar: col_bar,
+                cmin: minv,
+                cmax: maxv,
+            },
+        };    
+        var traceYZ = {
+            x: ScatA_Y,
+            y: ScatA_Z,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_scl,
+                color: ScatA_V,
+                size: 5,
+                showscale: cbar,
+                colorbar: col_bar,
+                cmin: minv,
+                cmax: maxv,
+            },
+        
+        };
+        var traceZX = {
+            x: ScatA_Z,
+            y: ScatA_X,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_scl,
+                color: ScatA_V,
+                size: 5,
+                showscale: cbar,
+                colorbar: col_bar,
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+
+        // make the atom projections in CRS
+        var traceAXY = {
+            x: ScatA_C,
+            y: ScatA_R,            
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity:0.7,
+                showscale: false,                
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+        var traceAYZ = {
+            x: ScatA_R,
+            y: ScatA_S,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity:0.7,
+                showscale: false,                
+                cmin: minv,
+                cmax: maxv,
+            },
+
+        };
+        var traceAZX = {
+            x: ScatA_S,
+            y: ScatA_C,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity:0.7,
+                showscale: false,                
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+        
+        // make the atom projections in XYZ for overlay
+        var traceoXY = {
+            x: ScatA_X,
+            y: ScatA_Y,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity: 0.7,
+                showscale: false,
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+        var traceoYZ = {
+            x: ScatA_Y,
+            y: ScatA_Z,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity: 0.7,
+                showscale: false,
+                cmin: minv,
+                cmax: maxv,
+            },
+
+        };
+        var traceoZX = {
+            x: ScatA_Z,
+            y: ScatA_X,
+            mode: 'markers',
+            marker: {
+                colorscale: cs_atoms,
+                color: ScatA_V,
+                size: 7,
+                opacity: 0.7,
+                showscale: false,
+                cmin: minv,
+                cmax: maxv,
+            },
+        };
+
+
+        var layout2 = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,
+            xaxis: { showgrid: false, zeroline: false, visible: false, },
+            yaxis: { scaleanchor: 'x', scaleratio: 1, visible: false, },
+            xaxis2: { showgrid: false, zeroline: false, visible: false, },
+            yaxis2: { scaleanchor: 'x', scaleratio: 1, visible: false, },
+            margin: { l: 20, r: 80, b: 20, t: 20, pad: 4 },
+        };
+
+        if (incatoms){
+            Plotly.newPlot('myCountourP', [dataP, traceAXY], layout2, config);
+            Plotly.newPlot('myCountourQ', [dataQ, traceAYZ], layout2, config);
+            Plotly.newPlot('myCountourR', [dataR, traceAZX], layout2, config);            
+
+            Plotly.newPlot('myCrystalXY', [dataA, traceoXY], layout2, config);
+            Plotly.newPlot('myCrystalYZ', [dataB, traceoYZ], layout2, config);
+            Plotly.newPlot('myCrystalZX', [dataC, traceoZX], layout2, config);
+        }
+        else{
+            Plotly.newPlot('myCountourP', [dataP], layout, config);
+            Plotly.newPlot('myCountourQ', [dataQ], layout, config);
+            Plotly.newPlot('myCountourR', [dataR], layout, config);            
+
+            Plotly.newPlot('myCrystalXY', [dataA], layout, config);
+            Plotly.newPlot('myCrystalYZ', [dataB], layout, config);
+            Plotly.newPlot('myCrystalZX', [dataC], layout, config);
+        }
+        
+        
+
+         var layoutS = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,
+            xaxis: { showgrid: false, zeroline: true, visible: true, },
+            yaxis: { scaleanchor: 'x', scaleratio: 1, visible: true, },            
+            margin: { l: 20, r: 80, b: 20, t: 20, pad: 4 },
+        };
+
+        Plotly.newPlot('myScatterXY', [traceXY], layoutS);
+        Plotly.newPlot('myScatterYZ', [traceYZ], layoutS);
+        Plotly.newPlot('myScatterZX', [traceZX], layoutS);
+                
+        
+    }               
+</script>
+
+<script>
+    var sliderMax = document.getElementById("rangeValueMax");
+    var outputMax = document.getElementById("sdcap");
+    
+    sliderMax.oninput = function () {
+        outputMax.value = this.value;        
+        var cbar = document.getElementById("cbar").value;
+        var hue = document.getElementById("hue").value.trim();        
+        var atoms = document.getElementById("incatoms").value;
+        makePlots(-1, outputMax.value, cbar=="Y", atoms == "Y",hue,"heatmap");
+    }
+</script>
+<script>
+    function showBar(val) {                        
+        var outputMax = document.getElementById("sdcap");        
+        var hue = document.getElementById("hue").value;                
+        var cbar = document.getElementById("cbar").value;
+        var atoms = document.getElementById("incatoms").value;
+          
+        document.getElementById("cbar").value = val;                
+            
+        makePlots(-1, outputMax.value, val == "Y",atoms == "Y", hue,"heatmap");
+    }
+    function includeAtoms(val) {
+        var outputMax = document.getElementById("sdcap");
+        var hue = document.getElementById("hue").value;
+        var cbar = document.getElementById("cbar").value;
+        var atoms = document.getElementById("incatoms").value;
+        
+        document.getElementById("incatoms").value = val;                
+        
+        makePlots(-1, outputMax.value, cbar == "Y",val == "Y", hue, "heatmap");
+    }
+
+    function useSymmetry(val){
+        document.getElementById("symmetry").value = val;
+
+    }
+
+    function asymmetricUnit(val) {        
+        document.getElementById("asymmetric").value = val;        
+    }
+    function changeHue(val){          
+        var outputMax = document.getElementById("sdcap");
+        var hue = document.getElementById("hue").value;                
+        var cbar = document.getElementById("cbar").value;             
+        var atoms = document.getElementById("incatoms").value;
+        
+        document.getElementById("hue").value = val;
+
+        makePlots(-1, outputMax.value,cbar== "Y",atoms == "Y",val,"heatmap");
+    }
+    function changePlot(plot) {             
+        var outputMax = document.getElementById("sdcap");
+        var cbar = document.getElementById("cbar").value;
+        var hue = document.getElementById("hue").value;                
+        var atoms = document.getElementById("incatoms").value;
+
+        document.getElementById("plot").value = plot;                
+        
+        makePlots(-1, outputMax.value, cbar == "Y",atoms == "Y", hue,"heatmap");
+    }
+</script>
+<script>
+    makePlots(-1, -1, false,true,"RedBlueGrey","heatmap")
+    document.getElementById("con").checked = false;
+    document.getElementById("coff").checked = true;
+    document.getElementById("incon").checked = true;
+    document.getElementById("incoff").checked = false;
+    document.getElementById("rb").checked = true;
+    document.getElementById("bw").checked = false;
+    
+    //document.getElementById("cheat").checked = true;
+    //document.getElementById("ccon").checked = false;
+
+    sym = document.getElementById("symmetry").value;    
+    document.getElementById("symon").checked = sym=="Y";
+    document.getElementById("symoff").checked = sym=="N";
+        
+    var outputMax = document.getElementById("sdcap");
+    var cbar = document.getElementById("cbar").value;
+    var hue = document.getElementById("hue").value;                
+    var atoms = document.getElementById("incatoms").value;
+
+    document.getElementById("plot").value = "heatmap";                    
+    document.getElementById("cbar").value = "N";                
+    document.getElementById("hue").value = "RedBlueGrey";                
+    document.getElementById("incatoms").value = "Y";       
+
+    
+</script>
+

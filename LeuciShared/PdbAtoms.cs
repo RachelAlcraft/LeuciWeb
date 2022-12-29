@@ -1,13 +1,19 @@
-﻿namespace LeuciShared
+﻿using System.Numerics;
+
+namespace LeuciShared
 {
     public class PdbAtoms
     {
-        private Dictionary<string, VectorThree> _atoms = new Dictionary<string, VectorThree>();
+        public Dictionary<string, VectorThree> Atoms = new Dictionary<string, VectorThree>();
+        public Dictionary<string, string> Lines = new Dictionary<string, string>();
+        private List<string> Residues = new List<string>();
         private Dictionary<string, string> _aas = new Dictionary<string, string>();
         public bool Init = false;
+        public VectorThree LowerCoords = new VectorThree(1000,1000,1000);
+        public VectorThree UpperCoords = new VectorThree(-1000,-1000,-1000);
         public PdbAtoms(string[] lines) //constructor for pdb file
         {
-            _atoms.Clear();
+            Atoms.Clear();
             Init = true;
             foreach (string line in lines)
             {
@@ -36,8 +42,19 @@
                     if (occupant == "")
                         occupant = "A";
                     string chimera = Chain + ":" + ResidueNo + "@" + AtomType + "." + occupant;
-                    _atoms.Add(chimera, new VectorThree(X, Y, Z));
+                    Atoms.Add(chimera, new VectorThree(X, Y, Z));
+                    Lines.Add(chimera, line);
                     _aas.Add(chimera, AA);
+                    LowerCoords.A = Math.Min(LowerCoords.A, X);
+                    LowerCoords.B = Math.Min(LowerCoords.B, Y);
+                    LowerCoords.C = Math.Min(LowerCoords.C, Z);
+                    UpperCoords.A = Math.Max(UpperCoords.A, X);
+                    UpperCoords.B = Math.Max(UpperCoords.B, Y);
+                    UpperCoords.C = Math.Max(UpperCoords.C, Z);
+
+                    string rid = Chain + ":" + ResidueNo;
+                    if (!Residues.Contains(rid))                   
+                        Residues.Add(rid);                    
                 }
 
             }
@@ -52,20 +69,29 @@
             int atm = Convert.ToInt32(pst[0]);
             atm += offset;
             string newatom = beg[0] + ":" + Convert.ToString(atm) + "@" + pst[1];
-            if (_atoms.ContainsKey(newatom))
+            if (Atoms.ContainsKey(newatom))
                 return newatom;
-            if (_atoms.ContainsKey(newatom + ".A"))
+            if (Atoms.ContainsKey(newatom + ".A"))
                 return newatom;
 
             return atom;
         }
         public VectorThree getCoords(string atom)
         {
-            if (_atoms.ContainsKey(atom))
-                return _atoms[atom];
-            if (_atoms.ContainsKey(atom + ".A"))
-                return _atoms[atom + ".A"];
+            if (Atoms.ContainsKey(atom))
+                return Atoms[atom];
+            if (Atoms.ContainsKey(atom + ".A"))
+                return Atoms[atom + ".A"];
             return new VectorThree(0, 0, 0);
+        }
+
+        public string getLine(string atom)
+        {
+            if (Lines.ContainsKey(atom))
+                return Lines[atom];
+            if (Lines.ContainsKey(atom + ".A"))
+                return Lines[atom + ".A"];
+            return "";
         }
 
         public string[] getFirstThreeCoords()
@@ -74,7 +100,7 @@
             string[] v3 = new string[3];
             int count = 0;
             int found_ca = 0;
-            foreach (var atm in _atoms)
+            foreach (var atm in Atoms)
             {
                 if (atm.Key.IndexOf("@C.A") > 0)
                 {
@@ -106,7 +132,7 @@
             }
             //if we get here then it didin;t work, it could be a CA only pdb structure.
             count = 0;
-            foreach (var atm in _atoms)
+            foreach (var atm in Atoms)
             {
                 v3[count] = atm.Key;
                 count++;
@@ -128,7 +154,7 @@
             {
                 if (hover_max > -1) // none
                 {
-                    foreach (var atm in _atoms)
+                    foreach (var atm in Atoms)
                     {
                         double distance = near.distance(atm.Value);
                         if (Math.Abs(distance) <= hover_max || hover_max == 0)
@@ -165,6 +191,81 @@
             }
             return ats;
 
+        }        
+        public List<string[]> getMatchMotif(string motif, string exclusions, string inclusions, out List<VectorThree[]> coords, out List<string> lines)
+        {
+            // out init
+            lines = new List<string>();
+            coords = new List<VectorThree[]>();
+            //the very first can be nont very string ED so get the... 3rd?
+            List<string[]> motifs = new List<string[]>();            
+            string[] mtf = motif.Split(":");
+            int[] offs = new int[3];
+            for (int i = 0; i < mtf.Length; ++i)
+            {
+                string mf = mtf[i];
+                int offset = 0;
+                if (mf.Contains("+"))
+                {
+                    string[] mm = mf.Split("+");
+                    mf = mm[0];
+                    offset = Convert.ToInt32(mm[1]);
+                    mtf[i] = mf;
+                }
+                else if (mf.Contains("-"))
+                {
+                    string[] mm = mf.Split("-");
+                    mf = mm[0];
+                    offset = -1 * Convert.ToInt32(mm[1]);
+                    mtf[i] = mf;
+                }
+                offs[i] = offset;
+            }
+
+            int current_rid = -1;
+            int found = -1;
+            if (exclusions == null)
+                exclusions = "";
+            exclusions += ",";
+            if (inclusions == null)
+                inclusions = "";
+            inclusions += ",";
+            foreach (var ridx in Residues)
+            {
+                if (!exclusions.Contains(ridx + ","))
+                {
+                    if (inclusions == "," || inclusions.Contains(ridx + ","))
+                    {
+                        string[] spl = ridx.Split(":");
+                        string ch = spl[0];
+                        int rida = Convert.ToInt32(spl[1]);
+                        int rid0 = rida + offs[0];
+                        int rid1 = rida + offs[1];
+                        int rid2 = rida + offs[2];
+                        string candiate0 = ch + ":" + rid0 + "@" + mtf[0] + ".A";
+                        string candiate1 = ch + ":" + rid1 + "@" + mtf[1] + ".A";
+                        string candiate2 = ch + ":" + rid2 + "@" + mtf[2] + ".A";
+                        if (Atoms.ContainsKey(candiate0) && Atoms.ContainsKey(candiate1) && Atoms.ContainsKey(candiate2))
+                        {
+                            string[] match = new string[3];
+                            match[0] = candiate0;
+                            match[1] = candiate1;
+                            match[2] = candiate2;
+                            motifs.Add(match);
+                            VectorThree[] v3 = new VectorThree[3];
+                            v3[0] = getCoords(candiate0);
+                            v3[1] = getCoords(candiate1);
+                            v3[2] = getCoords(candiate2);
+                            coords.Add(v3);
+                            lines.Add(getLine(candiate0));
+                            lines.Add(getLine(candiate1));
+                            lines.Add(getLine(candiate2));
+                            lines.Add(getLine(""));
+                        }
+                    }
+                }                                
+            }
+            return motifs;            
         }
     }
 }
