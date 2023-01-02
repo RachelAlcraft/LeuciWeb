@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LeuciShared
@@ -94,6 +95,63 @@ namespace LeuciShared
             return matches;
         }
 
-        
+        public bool distanceSearch(Atom a, List<Atom> atoms, List<string> keys, List<string> lines, out string mkey, out string mline)
+        {
+            List<string> newkeys = new List<string>();
+            List<string> newlines = new List<string>();
+            List<double> disses = new List<double>();
+            List<Atom> newatms = new List<Atom>();
+            mkey = "";
+            mline = "";
+            int number_list = 0;
+            for (int i = 0; i < atoms.Count; ++i)
+            {
+                Atom atm = atoms[i];
+                double distance = a.distance(atm);
+
+                string[] mtfs = _motif.Split(",");
+
+                bool can_use = true;
+                foreach (string mtf in mtfs)
+                {
+                    string[] kv = mtf.Split(":");
+                    
+                    if (kv[0].ToLower() == "lower")
+                    {
+                        double lower_dis = Convert.ToDouble(kv[1]);
+                        if (lower_dis <= distance)
+                            can_use = false;
+                    }
+                    else if (kv[0].ToLower() == "upper")
+                    {
+                        double upper_dis = Convert.ToDouble(kv[1]);
+                        if (upper_dis >= distance)
+                            can_use = false;
+                    }
+                    else if (kv[0].ToLower() == "position")
+                    {
+                        number_list = Convert.ToInt32(kv[1]);
+                        
+                    }
+                }
+
+                if (can_use)
+                {
+                    var index = disses.BinarySearch(distance);
+                    if (index < 0) index = ~index;
+                    disses.Insert(index, distance);
+                    newkeys.Insert(index, keys[i]);
+                    newlines.Insert(index, lines[i]);
+                    newatms.Insert(index, atoms[i]);
+                }
+            }
+            if (number_list < newkeys.Count)
+            {
+                mkey = newkeys[number_list];
+                mline = newlines[number_list];
+                return true;
+            }
+            return false;
+        }        
     }
 }

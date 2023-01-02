@@ -43,5 +43,12 @@ namespace LeuciShared
             BFactor = Convert.ToDouble(line.Substring(60, 6).Trim());
             Element = line.Substring(66).Trim();            
         }
+
+        public double distance(Atom atm2)
+        {
+            VectorThree v1 = new VectorThree(X, Y, X);
+            VectorThree v2 = new VectorThree(atm2.X, atm2.Y, atm2.X);
+            return v1.distance(v2);
+        }
     }
 }

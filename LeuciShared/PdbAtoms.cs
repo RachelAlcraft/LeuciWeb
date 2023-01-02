@@ -261,6 +261,7 @@ namespace LeuciShared
                 {
                     List<string> atoms_for_motif = new List<string>();
                     List<string> lines_for_motif = new List<string>();
+                    List<Atom> atms_for_motif = new List<Atom>();
 
                     foreach (var atm2 in Atoms)
                     {
@@ -270,19 +271,31 @@ namespace LeuciShared
                         {
                             atoms_for_motif.Add(atm2.Key);
                             lines_for_motif.Add(line2);
+                            atms_for_motif.Add(a2);
                         }
                     }                    
                     if (atoms_for_motif.Count > 0)
                     {// at this point we need to do the distance check
-                        key_matches.Add(atoms_for_motif[0]);
-                        line_matches.Add(lines_for_motif[0]);
-
+                        string mkey = atoms_for_motif[0];
+                        string mline = lines_for_motif[0];
+                        if (atoms_for_motif.Count > 1)
+                        {
+                            if (mm.distanceSearch(a, atms_for_motif, atoms_for_motif, lines_for_motif, out mkey, out mline))
+                            {
+                                key_matches.Add(mkey);
+                                line_matches.Add(mline);
+                            }
+                        }
+                        else
+                        {
+                            key_matches.Add(mkey);
+                            line_matches.Add(mline);
+                        }
                     }
                                         
                 }
                 if (key_matches.Count == motif_matches.Count+1)
-                {
-                    // now we want to check the nearest if they had distance constraints or nearest constraints
+                {                    
                     string[] a_motif = new string[key_matches.Count];
                     string[] a_line = new string[key_matches.Count];
                     for (int i = 0; i < key_matches.Count; ++i)
