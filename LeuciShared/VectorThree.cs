@@ -153,8 +153,9 @@
         public VectorThree getPointPosition(double in_gap, double in_width)
         {
             int nums = Convert.ToInt32(in_width / in_gap);
-            double real_width = in_gap * nums;
-            double real_gap = in_gap;
+            double real_gap = in_width/nums;
+            double real_width = real_gap * nums;
+            
 
             VectorThree PP = new VectorThree(A, B, C);
             double gap_nums = real_gap / real_width;

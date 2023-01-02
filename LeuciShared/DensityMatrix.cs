@@ -489,7 +489,7 @@ namespace LeuciShared
             }
             
         }
-        public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
+        public void create_scratch_slice(double width, int samples, bool sd, double sdcap, double sdfloor,
                                 VectorThree central, VectorThree linear, VectorThree planar,
                                 VectorThree acentral, VectorThree alinear, VectorThree aplanar,
                                 PdbAtoms PA, double hover_min, double hover_max)
@@ -503,6 +503,7 @@ namespace LeuciShared
                 DenMin = (_combMin - _combMean) / _combSd;
                 DenMax = (_combMax - _combMean) / _combSd;
             }
+            double gap = width / samples;
             ////////////////////////////////////////////////////////////////////
 
             // we want to first build a smaller cube around the centre
@@ -528,7 +529,7 @@ namespace LeuciShared
 
 
 
-            int nums = Convert.ToInt32(width / gap);
+            int nums = samples;// Convert.ToInt32(width / gap);
             int halfLength = Convert.ToInt32((nums) / 2);
             DMin = 100;
             LMin = 100;

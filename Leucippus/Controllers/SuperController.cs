@@ -37,7 +37,7 @@ namespace Leucippus.Controllers
                 // create each matrix
                 foreach (VectorThree[] coord in match_coords)
                 {
-                    dm.create_scratch_slice(5, 0.1,
+                    dm.create_scratch_slice(5, 20,
                         true, -1, -1,
                         coord[0], coord[1], coord[2],
                         coord[0], coord[1], coord[2],
