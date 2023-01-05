@@ -142,10 +142,8 @@ namespace LeuciShared
                     yp = Convert.ToInt32(Math.Floor(y + j));
                     for (int k = (-1 * width / 2) + 1; k < (width / 2) + 1; ++k)
                     {
-                        zp = Convert.ToInt32(Math.Floor(z + k));
-                        double p = -1;
-                        if (xp >= 0 && yp >= 0 && zp >= 0 && xp < XLen && yp < YLen && zp < ZLen)
-                            p = getExactValueBinary(xp, yp, zp);
+                        zp = Convert.ToInt32(Math.Floor(z + k));                        
+                        double p = getExactValueBinary(xp, yp, zp);
                         vals[count] = Convert.ToSingle(p);
                         ++count;
                     }
@@ -211,7 +209,7 @@ namespace LeuciShared
             if (i < 0 || j < 0 || k < 0)
                 return false;
 
-            if (i > XLen || j > YLen || k > ZLen)
+            if (i >= XLen || j >= YLen || k >= ZLen)
                 return false;
             
             return true;
@@ -234,11 +232,11 @@ namespace LeuciShared
             if (k < 0)
                 z = ZLen + zz;
 
-            if (i > XLen)
+            if (i >= XLen)
                 x = xx - XLen;
-            if (j > YLen)
+            if (j >= YLen)
                 y = yy - YLen;
-            if (k > ZLen)
+            if (k >= ZLen)
                 z = zz - ZLen;
             return new double[3] { x, y, z };            
         }
