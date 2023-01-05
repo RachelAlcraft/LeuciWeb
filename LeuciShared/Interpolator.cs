@@ -59,8 +59,13 @@ namespace LeuciShared
             //else
             //    return 0;//what should this return? -1, throw an error? TODO
         }                      
-        public Single getExactValueBinary(int x, int y, int z)
+        public Single getExactValueBinary(int xx, int yy, int zz)
         {
+            double[] xyz = adjustReflection(xx, yy, zz);
+            int x = (int)Math.Round(xyz[0]);
+            int y = (int)Math.Round(xyz[1]);
+            int z = (int)Math.Round(xyz[2]);
+
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
             pos += XLen * y;
@@ -191,58 +196,50 @@ namespace LeuciShared
         }
 
         public bool isValid(double x, double y, double z)
-        {            
-            int i = Convert.ToInt32(Math.Round(x));
-            int j = Convert.ToInt32(Math.Round(y));
-            int k = Convert.ToInt32(Math.Round(z));
+        {
+            int i = (int)Math.Round(x);
+            int j = (int)Math.Round(y);
+            int k = (int)Math.Round(z);
             if (_reflect)
             {// If we allow reflections that we can adjust the values to a new matrix
-                if (i < 0)
-                    i = XLen + i - 1;
-                if (j < 0)
-                    j = YLen + j - 1;
-                if (k < 0)
-                    k = ZLen + k - 1;
-
-                if (i >= XLen)
-                    i = i - XLen + 1;
-                if (j >= YLen)
-                    j = j - YLen + 1;
-                if (k >= ZLen)
-                    k = k - ZLen + 1;
+                double[] xyz = adjustReflection(x, y, z);
+                i = (int)Math.Round(xyz[0]);
+                j = (int)Math.Round(xyz[1]);
+                k = (int)Math.Round(xyz[2]);
             }
 
             if (i < 0 || j < 0 || k < 0)
                 return false;
 
-            if (i >= XLen || j >= YLen || k >= ZLen)
+            if (i > XLen || j > YLen || k > ZLen)
                 return false;
-
-            //int sliceSize = XLen * YLen;
-            //int pos = k * sliceSize;
-            //pos += XLen * j;
-            //pos += i;
-            //if (pos >= _singles.Length)
-            //    return false;
-            //else
+            
             return true;
         }
 
-        public double[] adjustReflection(double x, double y, double z)
-        {            
-            if (x < 0)
-                x = XLen + x - 1;
-            if (y < 0)
-                y = YLen + y - 1;
-            if (z < 0)
-                z = ZLen + z - 1;
+        public double[] adjustReflection(double xx, double yy, double zz)
+        {
+            int i = (int)Math.Round(xx);
+            int j = (int)Math.Round(yy);
+            int k = (int)Math.Round(zz);
 
-            if (x >= XLen)
-                x = x - XLen + 1;
-            if (y >= YLen)
-                y = y - YLen + 1;
-            if (z >= ZLen)
-                z = z - ZLen + 1;
+            double x = xx;
+            double y = yy;
+            double z = zz;
+
+            if (i < 0)
+                x = XLen + xx;
+            if (j < 0)
+                y = YLen + yy;
+            if (k < 0)
+                z = ZLen + zz;
+
+            if (i > XLen)
+                x = xx - XLen;
+            if (j > YLen)
+                y = yy - YLen;
+            if (k > ZLen)
+                z = zz - ZLen;
             return new double[3] { x, y, z };            
         }
     }
@@ -269,11 +266,9 @@ namespace LeuciShared
             double z = xyz[2];
             int i = Convert.ToInt32(Math.Round(x));
             int j = Convert.ToInt32(Math.Round(y));
-            int k = Convert.ToInt32(Math.Round(z));
-            if (i >= 0 && j >= 0 && k >= 0)
-                return getExactValueBinary(i, j, k);
-            else
-                return 0;
+            int k = Convert.ToInt32(Math.Round(z));            
+            return getExactValueBinary(i, j, k);
+            
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
