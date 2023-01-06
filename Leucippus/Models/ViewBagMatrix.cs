@@ -120,7 +120,22 @@ namespace Leucippus.Models
                 incRefresh();
             Fcs = fcs;
         }
-
+        int _copies = 2;
+        public int Copies 
+        { 
+            get
+            {
+                return _copies;
+            } 
+            set
+            {
+                if (value != _copies)
+                {
+                    _copies = value;
+                    incRefresh();
+                }
+            }
+        }
         public string YellowDots { get; set; } = "checked";
         public string GreenDots { get; set; } = "checked";
 

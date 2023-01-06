@@ -16,7 +16,7 @@ namespace Leucippus.Controllers
                 ViewBag.Error = "";
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1,2);
                 if (DensitySingleton.Instance.NewMatrix)
                 {
                     string[] first_three = DensitySingleton.Instance.FD.PA.getFirstThreeCoords();
@@ -65,7 +65,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.Layer = layer;
                 ViewBagMatrix.Instance.PlanePlot = planeplot;
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1,2);
                 dm.calculatePlane(ViewBagMatrix.Instance.Plane, ViewBagMatrix.Instance.Layer);
 
                 if (ViewBagMatrix.Instance.EmCode == "" && layer == -1 && plane == "")
@@ -107,7 +107,7 @@ namespace Leucippus.Controllers
             string denbar = "", string radbar = "", string lapbar = "",
             double width = -1, int samples = -1, string interp = "",
             string valsd = "", double sdcap = -100, double sdfloor = -100,
-            int Fos = 2, int Fcs = -1, string ydots = "N", string gdots = "N",
+            int Fos = 2, int Fcs = -1, int copies=2,string ydots = "N", string gdots = "N",
             int t1 = 0, int t2 = 0, int t3 = 0, int t4 = 0,
             string nav = "", double nav_distance = 0.1,
             double hover_min = 0, double hover_max = 0)
@@ -210,6 +210,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
                 ViewBagMatrix.Instance.Interp = interp;
                 ViewBagMatrix.Instance.setFoFc(Fos, Fcs);
+                ViewBagMatrix.Instance.Copies = copies;
                 ViewBagMatrix.Instance.DenPlot = denplot;
                 ViewBagMatrix.Instance.RadPlot = radplot;
                 ViewBagMatrix.Instance.LapPlot = lapplot;
@@ -286,7 +287,7 @@ namespace Leucippus.Controllers
                 //    }
                 //}
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, use_interp, ViewBagMatrix.Instance.Fos, ViewBagMatrix.Instance.Fcs);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, use_interp, ViewBagMatrix.Instance.Fos, ViewBagMatrix.Instance.Fcs, ViewBagMatrix.Instance.Copies);
 
                 ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.FD.PA, atom_offset);
                 ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.FD.PA, atom_offset);
@@ -380,6 +381,7 @@ namespace Leucippus.Controllers
                 ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
                 ViewBag.Fos = ViewBagMatrix.Instance.Fos;
                 ViewBag.Fcs = ViewBagMatrix.Instance.Fcs;
+                ViewBag.Copies = ViewBagMatrix.Instance.Copies;
                 ViewBag.YellowDots = ViewBagMatrix.Instance.YellowDots;
                 ViewBag.GreenDots = ViewBagMatrix.Instance.GreenDots;
                 ViewBag.HoverMin = hover_min;
@@ -455,7 +457,7 @@ namespace Leucippus.Controllers
                 if (ccp4Status == "Y")
                 {
 
-                    DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, "LINEAR", 2, -1);
+                    DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, "LINEAR", 2, -1,2);
 
                     ViewBagMatrix.Instance.EmCode = DensitySingleton.Instance.FD.EmCode;
                     ViewBagMatrix.Instance.DensityType = DensitySingleton.Instance.FD.DensityType;
@@ -534,7 +536,7 @@ namespace Leucippus.Controllers
             ViewBag.Error = "";                                    
             if (update == "Y")
             {
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, "NEAREST", 2, -1, symmetry == "Y");
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, "NEAREST", 2, -1, 2,symmetry == "Y");
                 VectorThree dims = dm.getMatrixDims();
                 //Symmetry sym = new Symmetry(xfac, yfac, zfac, xtran, ytran, ztran,(int)dims.A, (int)dims.B, (int)dims.C);
                 /*if (asymmetric == "Y")
@@ -645,7 +647,7 @@ namespace Leucippus.Controllers
             ViewBag.Lines = "";
             if (update == "Y")
             {                
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs,2);
                 List<VectorThree[]> match_coords = new List<VectorThree[]>();
                 List<string> lines = new List<string>();
                 List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchMotif(motif, exclusions, inclusions, out match_coords, out lines);

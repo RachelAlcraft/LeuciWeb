@@ -20,7 +20,7 @@ namespace Leucippus.Controllers
             ViewBag.Lines = "";
             if (update == "Y")
             {
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs,2);
                 List<VectorThree[]> match_coords = new List<VectorThree[]>();
                 List<string> lines = new List<string>();
                 List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchMotif(motif, exclusions, inclusions, out match_coords, out lines);

@@ -27,7 +27,8 @@
         public bool NewMatrix = false;
         private int _fos = 2;
         private int _fcs = -1;
-        
+        private int _copies = 2;
+
         public bool needMatrix(string pdbcode)
         {
             bool calc = false;
@@ -39,7 +40,7 @@
             return calc;
         }
 
-        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp, int fos, int fcs,bool symmetry=true)
+        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp, int fos, int fcs,int copies,bool symmetry=true)
         {
             bool calc = false;
             NewMatrix = false;            
@@ -53,13 +54,14 @@
                 _fos = fos;
                 _fcs = fcs;
             }
-            else if (interp != _interp && interp != "")
+            else if (interp != _interp && interp != "" || copies != _copies)
             {
                 _interp = interp;
+                _copies = copies;
+                NewMatrix = true;
                 if (_dm != null)
-                    _dm.changeInterp(_interp);
-            }
-
+                    _dm.changeInterp(_interp,_copies);
+            }            
             if (!calc)
             {
                 NewMatrix = false;
@@ -70,13 +72,13 @@
                 _pdbcode = pdbcode;
                 try
                 {
-                    _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs,symmetry);
+                    _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs,symmetry,copies);
                 }
                 catch (Exception e)
                 {
                     try
                     {
-                        _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs, symmetry);
+                        _dm = await DensityMatrix.CreateAsync(pdbcode, FD.EmFilePath, FD.DiffFilePath, interp, fos, fcs, symmetry,copies);
                     }
                     catch (Exception ee)
                     {

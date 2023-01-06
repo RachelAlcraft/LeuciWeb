@@ -79,6 +79,7 @@ namespace LeuciShared
         public double[]? SliceAxis;
         private Interpolator _interpMap;
         private string _interp;
+        private int _copies;
         private bool ok_for_whole_spline = true;
         private int _fos;
         private int _fcs;
@@ -87,15 +88,16 @@ namespace LeuciShared
         private double _combSd;
         private double _combMin;
         private double _combMax;
+        
 
-        public static async Task<DensityMatrix> CreateAsync(string pdbcode, string empath, string diffpath, string interp, int fos, int fcs,bool symmetry)
+        public static async Task<DensityMatrix> CreateAsync(string pdbcode, string empath, string diffpath, string interp, int fos, int fcs,bool symmetry, int copies)
         {
             DensityMatrix x = new DensityMatrix();
-            x.InitializeAsync(empath, diffpath, interp, fos, fcs,symmetry);
+            x.InitializeAsync(empath, diffpath, interp, fos, fcs,symmetry,copies);
             return x;
         }
         private DensityMatrix() { }
-        private void InitializeAsync(string edFile, string difFile, string interp, int fos, int fcs, bool symmetry)
+        private void InitializeAsync(string edFile, string difFile, string interp, int fos, int fcs, bool symmetry, int copies)
         {
             //_emcode = emcode;
             //string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
@@ -103,6 +105,7 @@ namespace LeuciShared
             _fos = fos;
             _fcs = fcs;
             _symmetry = symmetry;
+            _copies = copies;
 
             _densityBinary = new DensityBinary(edFile);
             if (difFile != "")
@@ -123,7 +126,7 @@ namespace LeuciShared
             Info = _densityBinary.Info;
             ok_for_whole_spline = (_A * _B * _C) < (150 * 150 * 150);
             _cublet = new Cubelet(_A, _B, _C);
-            changeInterp(interp);
+            changeInterp(interp, _copies);
             
         }
 
@@ -142,10 +145,11 @@ namespace LeuciShared
             return _densityBinary.getCRSFromXYZ(XYZ);
         }
 
-        public void changeInterp(string interp)
+        public void changeInterp(string interp,int copies)
         {
             // main density is 2Fo-Fc
             // diff density is Fo-Fc
+            _copies = copies;
             int m = 0;
             int d = 0;
             m = _fos;
@@ -189,22 +193,22 @@ namespace LeuciShared
             }
             
             if (_interp == "BSPLINEWHOLE")
-                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3);
+                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3,_copies);
             else if (_interp == "LINEAR")
-                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 1);
+                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 1,_copies);
             else if (_interp == "CUBIC")
-                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3);
+                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, _copies);
             else if (_interp == "BSPLINE3")
-                _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64);
+                _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64, _copies);
             else
-                _interpMap = new Nearest(fofc, 0, _densityBinary.Blength, _C, _B, _A);
-            
+                _interpMap = new Nearest(fofc, 0, _densityBinary.Blength, _C, _B, _A, _copies);
+
         }
         private void createData()
         {
             if (!_densityBinary.INIT)
             {
-                changeInterp(_interp);
+                changeInterp(_interp,_copies);
                 //projection();
             }
         }        

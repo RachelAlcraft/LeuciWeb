@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 namespace LeuciShared
 {
@@ -14,6 +15,7 @@ namespace LeuciShared
         protected int ZLen;
         protected double h;
         protected bool _reflect;
+        protected int _copies;
 
         // ABSTRACT INTERFACE ------------------------------------------------
         public abstract double getValue(double x, double y, double z);
@@ -21,7 +23,7 @@ namespace LeuciShared
         //--------------------------------------------------------------------
 
         //public Interpolator(byte[] binary,int bstart,int blength,int x, int y, int z)
-        public Interpolator(Single[] binary, int bstart, int blength, int x, int y, int z)
+        public Interpolator(Single[] binary, int bstart, int blength, int x, int y, int z, int copies)
         {//init without data for conversions
             //x = slowest, y = middle, z = fastest changing axis         
             XLen = x;
@@ -33,6 +35,7 @@ namespace LeuciShared
             _bStart = bstart;
             _bLength = blength;
             _reflect = true;
+            _copies = copies;
         }
 
         public void setReflect(bool reflect)
@@ -48,11 +51,12 @@ namespace LeuciShared
             return pos;
         }
         public int getPosition(int xx, int yy, int zz)
-        {
-            double[] xyz = adjustReflection(xx, yy, zz);
-            int x = (int)Math.Round(xyz[0]);
-            int y = (int)Math.Round(xyz[1]);
-            int z = (int)Math.Round(xyz[2]);
+        {                                    
+            int[] xyz = adjustReflection(xx, yy, zz);
+            int x = xyz[0];
+            int y = xyz[1];
+            int z = xyz[2];
+            
 
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
@@ -66,10 +70,10 @@ namespace LeuciShared
         }                      
         public Single getExactValueBinary(int xx, int yy, int zz)
         {
-            double[] xyz = adjustReflection(xx, yy, zz);
-            int x = (int)Math.Round(xyz[0]);
-            int y = (int)Math.Round(xyz[1]);
-            int z = (int)Math.Round(xyz[2]);
+            int[] xyz = adjustReflection(xx, yy, zz);
+            int x = xyz[0];
+            int y = xyz[1];
+            int z = xyz[2];
 
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
@@ -82,8 +86,15 @@ namespace LeuciShared
             try
             {
                 //Single value = BitConverter.ToSingle(_binary, _bStart + pos * 4);
-                Single value = _singles[pos];
-                return value;
+                if (pos >= 0 && _singles.Length > pos)
+                {
+                    Single value = _singles[pos];
+                    return value;
+                }
+                else
+                {
+                    return 0;
+                }
             }
             catch (Exception e)
             {
@@ -204,50 +215,86 @@ namespace LeuciShared
 
         public bool isValid(double x, double y, double z)
         {
-            int i = (int)Math.Round(x);
-            int j = (int)Math.Round(y);
-            int k = (int)Math.Round(z);
-            if (_reflect)
-            {// If we allow reflections that we can adjust the values to a new matrix
-                double[] xyz = adjustReflection(x, y, z);
-                i = (int)Math.Round(xyz[0]);
-                j = (int)Math.Round(xyz[1]);
-                k = (int)Math.Round(xyz[2]);
+            double xx = x;
+            double yy = y;
+            double zz = z;
+            for (int t=0; t <= _copies; ++t) // 1 more than copies as first check is without a change
+            {
+                if (isUnit(xx, yy, zz))
+                    return true;
+                else
+                    adjustReflectionOnce(ref xx, ref yy, ref zz);
             }
+            return false;
 
-            if (i < 0 || j < 0 || k < 0)
+        }        
+        public bool isUnit(double x, double y, double z)
+        {
+            //int i = (int)Math.Round(x);
+            //int j = (int)Math.Round(y);
+            //int k = (int)Math.Round(z);
+
+            //if (i < 0 || j < 0 || k < 0)
+            if (x < 0 || y < 0 || z < 0)
                 return false;
 
-            if (i >= XLen || j >= YLen || k >= ZLen)
+            //if (i >= XLen || j >= YLen || k >= ZLen)
+            if (x >= XLen || y >= YLen || z >= ZLen)
                 return false;
-            
+
             return true;
         }
 
+        public int[] adjustReflection(int i, int j, int k)
+        {
+            double xx = i;
+            double yy = j;
+            double zz = k;
+            for (int t = 0; t < _copies; ++t)
+            {
+                if (!isUnit(xx, yy, zz))
+                    adjustReflectionOnce(ref xx, ref yy, ref zz);
+            }
+            return new int[3] { (int)xx, (int)yy, (int)zz };
+
+        }
         public double[] adjustReflection(double xx, double yy, double zz)
         {
-            int i = (int)Math.Round(xx);
-            int j = (int)Math.Round(yy);
-            int k = (int)Math.Round(zz);
+            for (int t=0; t < _copies; ++t)
+            {
+                if (!isUnit(xx, yy, zz))
+                    adjustReflectionOnce(ref xx, ref yy, ref zz);
+            }
+            return new double[3] { xx, yy, zz };
 
+        }
+        public void adjustReflectionOnce(ref double xx, ref double yy, ref double zz)
+        {
+            //int i = (int)Math.Round(xx);
+            //int j = (int)Math.Round(yy);
+            //int k = (int)Math.Round(zz);
+            
             double x = xx;
             double y = yy;
             double z = zz;
 
-            if (i < 0)
+            if (xx < 0)
                 x = XLen + xx;
-            if (j < 0)
+            if (yy < 0)
                 y = YLen + yy;
-            if (k < 0)
+            if (zz < 0)
                 z = ZLen + zz;
 
-            if (i >= XLen)
+            if (xx >= XLen)
                 x = xx - XLen;
-            if (j >= YLen)
+            if (yy >= YLen)
                 y = yy - YLen;
-            if (k >= ZLen)
+            if (zz >= ZLen)
                 z = zz - ZLen;
-            return new double[3] { x, y, z };            
+
+            xx = x;
+            yy = y;
+            zz = z;            
         }
     }
 
@@ -258,7 +305,7 @@ namespace LeuciShared
     public class Nearest : Interpolator
     {
         // ****** Nearest Neighbour Implementation ****************************************
-        public Nearest(Single[] bytes, int start, int length, int x, int y, int z) : base(bytes, start, length, x, y, z)
+        public Nearest(Single[] bytes, int start, int length, int x, int y, int z,int copies) : base(bytes, start, length, x, y, z,copies)
         {
 
         }
@@ -292,7 +339,7 @@ namespace LeuciShared
         protected int _zFloor = 0;
         protected double[,,] _polyCoeffs = new double[0, 0, 0];
         // ****** Linear Implementation ****************************************
-        public Multivariate(Single[] bytes, int start, int length, int x, int y, int z, int degree) : base(bytes, start, length, x, y, z)
+        public Multivariate(Single[] bytes, int start, int length, int x, int y, int z, int degree, int copies) : base(bytes, start, length, x, y, z,copies)
         {
             // the degree must be an odd number
             _degree = degree;
@@ -423,7 +470,7 @@ namespace LeuciShared
         protected int _zFloor = 0;
 
         // ****** Linear Implementation ****************************************
-        public OptBSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree, int points) : base(bytes, start, length, x, y, z)
+        public OptBSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree, int points, int copies) : base(bytes, start, length, x, y, z,copies)
         {
             // the degree must be an odd number
             _degree = degree;
@@ -446,7 +493,10 @@ namespace LeuciShared
             double x = xyz[0];
             double y = xyz[1];
             double z = xyz[2];
-            
+            //double x = xx;
+            //double y = yy;
+            //double z = zz; 
+
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
@@ -478,7 +528,7 @@ namespace LeuciShared
                 _xFloor = (int)Math.Floor(x + (-1 * _points / 2) + 1);
                 _yFloor = (int)Math.Floor(y + (-1 * _points / 2) + 1);
                 _zFloor = (int)Math.Floor(z + (-1 * _points / 2) + 1);
-                if (_xFloor < 0)
+                /*if (_xFloor < 0)
                     _xFloor = 0;
                 if (_yFloor < 0)
                     _yFloor = 0;
@@ -489,13 +539,13 @@ namespace LeuciShared
                 if (_yFloor + _points > YLen)
                     _yFloor = YLen - _points;
                 if (_zFloor + _points > ZLen)
-                    _zFloor = ZLen - _points;
+                    _zFloor = ZLen - _points;*/
 
                 // 1. Build the points around the centre as a cube - x*x*x points                
 
                 Single[] vals = getSmallerCubeThevenaz(_xFloor, _yFloor, _zFloor, _points);
                 //3. Kind of recursive, make a smaller BSlipe interpolator out of this.                             
-                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree, true);
+                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree, true,_copies);
 
 
 
@@ -533,13 +583,13 @@ namespace LeuciShared
         //   http://bigwww.epfl.ch/thevenaz/interpolation/
         // *******************************************************************************
         private double TOLERANCE;
-        private int _degree;
+        private int _degree;        
         //private Dictionary<int,double> _coefficients = new Dictionary<int,double>();
         private Single[] _coefficients;
         //protected Dictionary<int, double> Matrix;
         //protected Single[] Matrix;
 
-        public BetaSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree) : base(bytes, start, length, x, y, z)
+        public BetaSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree, int copies) : base(bytes, start, length, x, y, z,copies)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = degree;
@@ -547,7 +597,7 @@ namespace LeuciShared
             //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
             createCoefficients();
         }
-        public BetaSpline(Single[] vals, int start, int length, int x, int y, int z, int degree, bool smaller) : base(vals, start, length, x, y, z)
+        public BetaSpline(Single[] vals, int start, int length, int x, int y, int z, int degree, bool smaller,int copies) : base(vals, start, length, x, y, z,copies)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = degree;
@@ -607,7 +657,7 @@ namespace LeuciShared
             }
 
 
-            //Compte the interpolation indices
+            //Compute the interpolation indices
             int i = Convert.ToInt32(Math.Floor(x) - _degree / 2);
             int j = Convert.ToInt32(Math.Floor(y) - _degree / 2);
             int k = Convert.ToInt32(Math.Floor(z) - _degree / 2);
@@ -651,7 +701,7 @@ namespace LeuciShared
             int Width2 = 2 * XLen - 2;
             int Height2 = 2 * YLen - 2;
             int Depth2 = 2 * ZLen - 2;
-            for (k = 0; k <= _degree; k++)
+            /*for (k = 0; k <= _degree; k++)
             {
                 xIndex[k] = (XLen == 1) ? (0) :
                     ((xIndex[k] < 0) ?
@@ -659,8 +709,7 @@ namespace LeuciShared
                         (xIndex[k] - Width2 * (xIndex[k] / Width2)));
                 if (XLen <= xIndex[k])
                 {
-                    xIndex[k] = Width2 - xIndex[k];
-                    //xIndex[k] = xIndex[k] - Width2;
+                    xIndex[k] = Width2 - xIndex[k];                    
                 }
 
                 yIndex[k] = (YLen == 1) ? (0) :
@@ -669,8 +718,7 @@ namespace LeuciShared
                         (yIndex[k] - Height2 * (yIndex[k] / Height2)));
                 if (YLen <= yIndex[k])
                 {
-                    yIndex[k] = Height2 - yIndex[k];
-                    //yIndex[k] = yIndex[k]- Height2;
+                    yIndex[k] = Height2 - yIndex[k];                    
                 }
 
                 zIndex[k] = (ZLen == 1) ? (0) :
@@ -679,10 +727,9 @@ namespace LeuciShared
                         (zIndex[k] - Depth2 * (zIndex[k] / Depth2)));
                 if (ZLen <= zIndex[k])
                 {
-                    zIndex[k] = Depth2 - zIndex[k];
-                    //zIndex[k] = zIndex[k]- Depth2;
+                    zIndex[k] = Depth2 - zIndex[k];                    
                 }
-            }
+            }*/
 
             //Perform interolation
             /* perform interpolation */
@@ -710,18 +757,21 @@ namespace LeuciShared
             int pos = getPosition(x, y, z);
             try
             {
-                //Single value = BitConverter.ToSingle(_coefficients, _bStart + pos * 4);
-                Single value = _coefficients[pos];
-                return value;
+                if (pos >=0 && _coefficients.Length > pos)
+                {
+                    Single value = _coefficients[pos];
+                    return value;
+                }
+                else
+                {
+                    return 0;
+                }
             }
             catch (Exception e)
             {
                 return 0;
             }
-            //if (_coefficients.ContainsKey(pos))
-            //    return _coefficients[pos];
-            //else            
-            //return 0;
+            
         }
         private void putCoef(int x, int y, int z, double v)
         {
