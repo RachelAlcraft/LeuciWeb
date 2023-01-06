@@ -734,10 +734,12 @@ namespace Leucippus.Controllers
             ViewBag.Error = "";
             ViewBag.Matches = "";
             ViewBag.Lines = "";
+            ViewBag.Distances = "";
             if (update == "Y")
             {
                 List<string[]> lines_motif;
-                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif,out lines_motif);
+                List<double[]> dis_motif;
+                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif,out lines_motif, out dis_motif);
                 foreach (var mm in match_motif)
                 {
                     foreach (var m in mm)
@@ -750,6 +752,13 @@ namespace Leucippus.Controllers
                     foreach (var l in ll)
                         ViewBag.Lines += l + "\n";
                     ViewBag.Lines += "\n";
+                }
+
+                foreach (var dd in dis_motif)
+                {
+                    foreach (var d in dd)
+                        ViewBag.Distances += Convert.ToString(Math.Round(d,4)) + "\n";
+                    ViewBag.Distances += "\n";
                 }
             }
             // View items

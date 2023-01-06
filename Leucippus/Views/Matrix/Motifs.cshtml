@@ -20,6 +20,7 @@
     @using (Html.BeginForm("Motifs", "Matrix", FormMethod.Post))
     {
         <input style="display:none;visibility:collapse;" id="update" value='Y' name="update" />
+        <input style="display:none;visibility:collapse;" id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" />
         <table style="width:90%">
             <tr>
                 <th style="width:10%">Motif finder</th>
@@ -31,8 +32,13 @@
 </div>
 <hr />
 <div id="detls">
-    <textarea rows="20" cols="80" style="float:left">@Html.Raw(@ViewBag.Lines)</textarea>
-    <textarea rows="20" cols="30" style="float:left">@Html.Raw(@ViewBag.Matches)</textarea>
+    <span style="width:650px;float:left">Pdb Line</span>
+    <span style="width:150px;float:left">Distance</span>
+    <span style="width:300px;float:left">Key</span>
+    <br/>
+    <textarea rows="15" cols="80" style="float:left">@Html.Raw(@ViewBag.Lines)</textarea>
+    <textarea rows="15" cols="15" style="float:left">@Html.Raw(@ViewBag.Distances)</textarea>
+    <textarea rows="15" cols="30" style="float:left">@Html.Raw(@ViewBag.Matches)</textarea>
 </div>
 <hr />
 

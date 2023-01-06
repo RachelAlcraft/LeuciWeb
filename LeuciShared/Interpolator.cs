@@ -47,8 +47,13 @@ namespace LeuciShared
             pos += x;
             return pos;
         }
-        public int getPosition(int x, int y, int z)
+        public int getPosition(int xx, int yy, int zz)
         {
+            double[] xyz = adjustReflection(xx, yy, zz);
+            int x = (int)Math.Round(xyz[0]);
+            int y = (int)Math.Round(xyz[1]);
+            int z = (int)Math.Round(xyz[2]);
+
             int sliceSize = XLen * YLen;
             int pos = z * sliceSize;
             pos += XLen * y;
@@ -128,8 +133,7 @@ namespace LeuciShared
         protected Single[] getSmallerCubeMultivariate(double x, double y, double z, int width)
         {
             // 1. Build the points around the centre as a cube - 8 points
-            Single[] vals = new Single[width * width * width];
-
+            Single[] vals = new Single[width * width * width];            
             int count = 0;
             int xp = 0;
             int yp = 0;
@@ -154,6 +158,11 @@ namespace LeuciShared
 
         protected Single[] getSmallerCubeThevenaz(int x, int y, int z, int width)
         {
+            if (x < 0 || y < 0 || z < 0)
+            {
+                int bp = 0;
+            }
+
             // 1. Build the points around the centre as a cube - 8 points
             Single[] vals = new Single[width * width * width];
 
@@ -437,7 +446,7 @@ namespace LeuciShared
             double x = xyz[0];
             double y = xyz[1];
             double z = xyz[2];
-
+            
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
             // Document is here: https://rachelalcraft.github.io/Papers/MultivariateInterpolation/MultivariateInterpolation.pdf
@@ -572,14 +581,14 @@ namespace LeuciShared
                 return 0;
         }*/
         public override double getValue(double xx, double yy, double zz)
-        {
+        {            
             if (!isValid(xx, yy, zz))
                 return 0;
             double[] xyz = adjustReflection(xx, yy, zz);
             double x = xyz[0];
             double y = xyz[1];
             double z = xyz[2];
-
+                        
             int weight_length = _degree + 1;
             List<int> xIndex = new List<int>();
             List<int> yIndex = new List<int>();
@@ -638,6 +647,7 @@ namespace LeuciShared
             }
 
             //applying the mirror boundary condition becaue I am only interpolating within values??
+            // RSA edit actually I want to wrap
             int Width2 = 2 * XLen - 2;
             int Height2 = 2 * YLen - 2;
             int Depth2 = 2 * ZLen - 2;
@@ -650,6 +660,7 @@ namespace LeuciShared
                 if (XLen <= xIndex[k])
                 {
                     xIndex[k] = Width2 - xIndex[k];
+                    //xIndex[k] = xIndex[k] - Width2;
                 }
 
                 yIndex[k] = (YLen == 1) ? (0) :
@@ -659,6 +670,7 @@ namespace LeuciShared
                 if (YLen <= yIndex[k])
                 {
                     yIndex[k] = Height2 - yIndex[k];
+                    //yIndex[k] = yIndex[k]- Height2;
                 }
 
                 zIndex[k] = (ZLen == 1) ? (0) :
@@ -668,6 +680,7 @@ namespace LeuciShared
                 if (ZLen <= zIndex[k])
                 {
                     zIndex[k] = Depth2 - zIndex[k];
+                    //zIndex[k] = zIndex[k]- Depth2;
                 }
             }
 

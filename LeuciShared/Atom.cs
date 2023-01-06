@@ -46,8 +46,8 @@ namespace LeuciShared
 
         public double distance(Atom atm2)
         {
-            VectorThree v1 = new VectorThree(X, Y, X);
-            VectorThree v2 = new VectorThree(atm2.X, atm2.Y, atm2.X);
+            VectorThree v1 = new VectorThree(X, Y, Z);
+            VectorThree v2 = new VectorThree(atm2.X, atm2.Y, atm2.Z);
             return v1.distance(v2);
         }
     }

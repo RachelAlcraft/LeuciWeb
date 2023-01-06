@@ -79,6 +79,7 @@ namespace LeuciShared
         public double[]? SliceAxis;
         private Interpolator _interpMap;
         private string _interp;
+        private bool ok_for_whole_spline = true;
         private int _fos;
         private int _fcs;
         private bool _symmetry = true;
@@ -120,6 +121,7 @@ namespace LeuciShared
             _B = _densityBinary.Y2_cap;
             _C = _densityBinary.X1_cap;
             Info = _densityBinary.Info;
+            ok_for_whole_spline = (_A * _B * _C) < (150 * 150 * 150);
             _cublet = new Cubelet(_A, _B, _C);
             changeInterp(interp);
             
@@ -178,6 +180,14 @@ namespace LeuciShared
             _combSd = Math.Sqrt((sum) / (fofc.Count() - 1));
 
             _interp = interp;
+            if (_interp == "BSPLINE")
+            {
+                if (ok_for_whole_spline)
+                    _interp = "BSPLINEWHOLE";
+                else
+                    _interp = "BSPLINE3";
+            }
+            
             if (_interp == "BSPLINEWHOLE")
                 _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3);
             else if (_interp == "LINEAR")
@@ -188,6 +198,7 @@ namespace LeuciShared
                 _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64);
             else
                 _interpMap = new Nearest(fofc, 0, _densityBinary.Blength, _C, _B, _A);
+            
         }
         private void createData()
         {
