@@ -741,7 +741,8 @@ namespace Leucippus.Controllers
             {
                 List<string[]> lines_motif;
                 List<double[]> dis_motif;
-                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif,out lines_motif, out dis_motif);
+                List<VectorThree[]> coords_motif;
+                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif,out lines_motif, out dis_motif,out coords_motif);
                 foreach (var mm in match_motif)
                 {
                     foreach (var m in mm)

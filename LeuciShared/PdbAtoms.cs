@@ -202,7 +202,7 @@ namespace LeuciShared
             return ats;
 
         }                
-        public List<string[]> getMatchesMotif(string motif, out List<string[]> lines,out List<double[]> disses)
+        public List<string[]> getMatchesMotif(string motif, out List<string[]> lines,out List<double[]> disses, out List<VectorThree[]> coords)
         {/*This tries to do something similar to my python library and follow some rules to get matches
           * How I wish I had documented it!!!!
           * 
@@ -229,6 +229,7 @@ namespace LeuciShared
             List<string[]> motifs = new List<string[]>();
             lines = new List<string[]>();
             disses = new List<double[]>();
+            coords = new List<VectorThree[]>();
             List<MotifMatch> motif_matches = new List<MotifMatch>(); //these are all the criteria to apply to first atoms
             for (int m = 1; m < mtfs.Length; ++m)
             {
@@ -255,11 +256,14 @@ namespace LeuciShared
                 List<string> key_matches = new List<string>();
                 List<string> line_matches = new List<string>();
                 List<double> distance_matches = new List<double>();
+                List<VectorThree> coord_matches = new List<VectorThree>();
+
                 string line = Lines[a_key];
                 Atom a = new Atom(line);
                 key_matches.Add(a_key);
                 line_matches.Add(line);
                 distance_matches.Add(0);
+                coord_matches.Add(a.coords());
                 foreach (MotifMatch mm in motif_matches)
                 {
                     List<string> atoms_for_motif = new List<string>();
@@ -291,6 +295,7 @@ namespace LeuciShared
                                 key_matches.Add(mkey);
                                 line_matches.Add(mline);
                                 distance_matches.Add(distance);
+                                coord_matches.Add(a.coords());
                             }
                         }
                         else
@@ -298,6 +303,7 @@ namespace LeuciShared
                             key_matches.Add(mkey);
                             line_matches.Add(mline);
                             distance_matches.Add(distance);
+                            coord_matches.Add(a.coords());
                         }
                     }
                                         
@@ -307,15 +313,18 @@ namespace LeuciShared
                     string[] a_motif = new string[key_matches.Count];
                     string[] a_line = new string[key_matches.Count];
                     double[] a_dis = new double[key_matches.Count];
+                    VectorThree[] a_coord = new VectorThree[key_matches.Count];
                     for (int i = 0; i < key_matches.Count; ++i)
                     {
                         a_motif[i] = key_matches[i];
                         a_line[i] = line_matches[i];
                         a_dis[i] = distance_matches[i];
+                        a_coord[i] = coord_matches[i];
                     }
                     motifs.Add(a_motif);
                     lines.Add(a_line);
                     disses.Add(a_dis);
+                    coords.Add(a_coord);
                 }
                 else
                 {

@@ -50,5 +50,10 @@ namespace LeuciShared
             VectorThree v2 = new VectorThree(atm2.X, atm2.Y, atm2.Z);
             return v1.distance(v2);
         }
+
+        public VectorThree coords()
+        {            
+            return new VectorThree(X, Y, Z);
+        }
     }
 }

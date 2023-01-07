@@ -3,44 +3,70 @@
     ViewData["Title"] = "Matrix";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h3>Superposition of Electron Density</h3>
+<h2>Superposition of Electron Density</h2>
+<p>
+    Across multiple structures
+</p>
 <hr />
+<h3>Identify motif matches</h3>
 <div>
-    @using (Html.BeginForm("Overlay", "Matrix", FormMethod.Post))
-    {
-        <input style="display:none;visibility:collapse;" id="update" value='Y' name="update" />
-        <table>
-            <tr>
-                <th>Overlay motif</th>
-                <td><input type="text" id="motif" name="motif" value=@ViewBag.Motif style="height:30px;" /></td>
-                <td style="color:crimson">atoms configured in central-linear-planar, eg CA:C:N+1 will show the peptide bond</td>
-            </tr>
-            <tr>
-                <th>Exclusions</th>
-                <td><input type="text" id="exclusions" name="exclusions" value=@ViewBag.Exclusions style="height:30px;" /></td>
-                <td style="color:crimson">any residue numbers to exclude, comma delim</td>
-            </tr>
-            <tr>
-                <th>Inclusions</th>
-                <td><input type="text" id="inclusions" name="inclusions" value=@ViewBag.Inclusions style="height:30px;" /></td>
-                <td style="color:crimson">only this comma delim list (ignores the exclusions)</td>
-            </tr>
-            <tr>
-                <th>Fos</th>
-                <td><input type="text" id="fos" name="fos" value=@ViewBag.Fos style="height:30px;" /></td>
-                <th>Fos</th>
-                <td><input type="text" id="fcs" name="fcs" value=@ViewBag.Fcs style="height:30px;" /></td>                
-            </tr>
-            <tr>
-                <th>Interp</th>
-                <td><input type="text" id="interp" name="interp" value=@ViewBag.Interp style="height:30px;" /></td>                
-            </tr>
-        </table>
-        <input type="submit" value="Create overlay" />
-    }        
-</div>
-<div id="detls">
-    <textarea rows="10" cols="200">@Html.Raw(@ViewBag.Lines)</textarea>
+    <div>
+        @using (Html.BeginForm("Index", "Super", FormMethod.Post))
+        {
+            <input style="display:none;visibility:collapse;" id="update" value='N' name="update" />            
+            <table style="width:90%">
+                <tr>
+                    <th style="width:20%">Pdb codes (comma delim)</th>
+                    <td><input type="text" id="motif" name="pdbcodes" value=@ViewBag.PdbCodes style="height:30px;text-align:left;background-color:palegoldenrod" /></td>                    
+                </tr>
+                <tr>
+                    <th style="width:20%">Motif (see help)</th>                    
+                    <td><input type="text" id="motif" name="motif" value=@ViewBag.Motif style="height:30px;text-align:left;background-color:palegoldenrod" /></td>
+                </tr>
+            </table>
+            <input type="submit" value="find motif" onclick="changeUpdate('Y')" />
+            
+        <hr />
+        <div id="detls">
+            <span style="width:650px;float:left">Pdb Line</span>
+            <span style="width:150px;float:left">Distance</span>
+            <span style="width:300px;float:left">Key</span>
+            <br />
+            <textarea rows="10" cols="80" style="float:left">@Html.Raw(@ViewBag.Lines)</textarea>
+            <textarea rows="10" cols="15" style="float:left">@Html.Raw(@ViewBag.Distances)</textarea>
+            <textarea rows="10" cols="30" style="float:left">@Html.Raw(@ViewBag.Matches)</textarea>
+        </div>
+        <br/>
+        <hr style="clear:both"/>                
+        <hr/>
+        <h3>Calculate Superposition </h3>
+        <table>        
+        <tr>
+            <th>Exclusions</th>
+            <td><input type="text" id="exclusions" name="exclusions" value=@ViewBag.Exclusions style="height:30px;" /></td>
+            <td style="color:crimson">any residue numbers to exclude, comma delim</td>
+        </tr>
+        <tr>
+            <th>Inclusions</th>
+            <td><input type="text" id="inclusions" name="inclusions" value=@ViewBag.Inclusions style="height:30px;" /></td>
+            <td style="color:crimson">only this comma delim list (ignores the exclusions)</td>
+        </tr>
+        <tr>
+            <th>Fos</th>
+            <td><input type="text" id="fos" name="fos" value=@ViewBag.Fos style="height:30px;" /></td>            
+        </tr>
+        <tr>            
+            <th>Fcs</th>
+            <td><input type="text" id="fcs" name="fcs" value=@ViewBag.Fcs style="height:30px;" /></td>                
+        </tr>
+        <tr>
+            <th>Interp</th>
+            <td><input type="text" id="interp" name="interp" value=@ViewBag.Interp style="height:30px;" /></td>                
+        </tr>
+    </table>
+    <input type="submit" value="Create overlay"  onclick="changeUpdate('YC')" />
+    }
+    </div>
 </div>
 <hr />
 <div>
@@ -134,26 +160,30 @@
         </td>                
     </tr>      
 </table>
+   
 <div>
-    @foreach (var item in ViewBag.Matches)
+    </p>@ViewBag.Error<p>
+</div>
+
+<hr/>
+<hr/>
+<hr/>
+
+<div>
+    @foreach (var item in @ViewBag.DensityNames)
     {
         <span>
-            @item[0]            
-        </span>
-        <span>
-            @item[1]            
-        </span>
-        <span>
-            @item[2]            
+            @item
         </span>
         <br />
     }
 </div>
 
-   
-<div>
-    </p>@ViewBag.Error<p>
-</div>
+
+<hr/>
+<hr/>
+<hr />
+
 <script>
     function makePlots(dfloor,dcap,cbar,hue,plot){
         //cbar=true;
@@ -296,6 +326,9 @@
 </script>
 
 <script>
+    function changeUpdate(update) {        
+        document.getElementById("update").value = update;        
+    }
     function showBar(val) {                        
         var hue = document.getElementById("hue").value.trim();
         var plot = document.getElementById("plot").value;      
