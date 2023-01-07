@@ -9,7 +9,7 @@ namespace Leucippus.Controllers
         public async Task<IActionResult> Index(            
             string update = "N",
             string motif = "{atom:C}{atom:CA,offset:0}{atom:O,offset:0}",
-            string pdbcodes = "1ejg,3nir",            
+            string pdbcodes = "6eex",            
             int fos = 2,
             int fcs = -1,
             string interp = "LINEAR",            
@@ -24,6 +24,7 @@ namespace Leucippus.Controllers
             ViewBag.DensitySlices = new List<double[][]>();
             ViewBag.DensityNames = new List<string>();
 
+            SinglePosition superP = new SinglePosition();
 
             string[] pdbcodelist = pdbcodes.Split(",");
             List<string[]> match_motif = new List<string[]>();
@@ -93,7 +94,9 @@ namespace Leucippus.Controllers
                             DensitySingleton.Instance.FD.PA, -1, -1);
 
                         ViewBag.DensitySlices.Add(dm.SliceDensity);
-                        ViewBag.DensityNames.Add("Density" + Convert.ToString(ViewBag.DensitySlices.Count));
+                        ViewBag.DensityNames.Add("Density" + Convert.ToString(ViewBag.DensitySlices.Count));                        
+                        superP.xAxis = dm.SliceAxis;
+                        superP.yAxis = dm.SliceAxis;
 
                         if (sliceDensity == null)
                         {
@@ -126,13 +129,23 @@ namespace Leucippus.Controllers
                     }                    
                 }
                 // matrix
-                ViewBag.SliceDensity = sliceDensity;
-                ViewBag.SliceRadient = sliceRadient;
-                ViewBag.SliceLaplacian = sliceLaplacian;
-                ViewBag.MinV = minV;
-                ViewBag.MaxV = maxV;
-                ViewBag.MinL = minL;
-                ViewBag.MaxL = maxL;                                
+                //ViewBag.SliceDensity = sliceDensity;
+                //ViewBag.SliceRadient = sliceRadient;
+                //ViewBag.SliceLaplacian = sliceLaplacian;
+
+                //ViewBag.MinV = minV;
+                //ViewBag.MaxV = maxV;
+                //ViewBag.MinL = minL;
+                //ViewBag.MaxL = maxL;
+                superP.densityMatrix = sliceDensity;
+                superP.radientMatrix = sliceRadient;
+                superP.laplacianMatrix = sliceLaplacian;
+                superP.minD = minV;
+                superP.maxD = maxV;
+                superP.minL = minL;
+                superP.maxL = maxL;
+                superP.name = "Super Position of Density Planes";
+                ViewBag.SuperPosition = superP;
             }
 
             // View items            

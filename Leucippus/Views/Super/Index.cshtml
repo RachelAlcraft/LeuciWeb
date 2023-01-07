@@ -184,8 +184,8 @@
 <hr/>
 <hr />
 
-<script>
-    function makePlots(dfloor,dcap,cbar,hue,plot){
+<script>    
+    function makePlot(dfloor,dcap,cbar,hue,plot){
         //cbar=true;
         //alert(plot)
         //heatmap for overlay
@@ -198,17 +198,27 @@
             hueL = "RedBlue";
         }
 
-        var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
-        var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
-        var jd = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
-        var jr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
-        var jl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
+        var superpos = @Html.Raw(Json.Serialize(@ViewBag.SuperPosition));        
+        var jx = superpos["xAxis"];
+        var jy = superpos["yAxis"];
+        var jd = superpos["densityMatrix"];
+        var jr = superpos["radientMatrix"];
+        var jl = superpos["laplacianMatrix"];
+        var minv = superpos["minD"];
+        var maxv = superpos["maxD"];
+        var minl = superpos["minL"];
+        var maxl = superpos["maxL"];
+                        
+        //var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
+        //var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
+        //var jd = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
+        //var jr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
+        //var jl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
 
-        var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
-        var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
-
-        var minl = @Html.Raw(Json.Serialize(@ViewBag.MinL));    
-        var maxl = @Html.Raw(Json.Serialize(@ViewBag.MaxL));  
+        //var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
+        //var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
+        //var minl = @Html.Raw(Json.Serialize(@ViewBag.MinL));    
+        //var maxl = @Html.Raw(Json.Serialize(@ViewBag.MaxL));  
 
         if (dfloor != -1){
             minv = dfloor;
@@ -322,7 +332,10 @@
         Plotly.newPlot('myCountourRAD', dataRAD, layout,config);
         Plotly.newPlot('myCountourLAP', dataLAP, layout, config);
         
-    }               
+    }
+    function makePlots(dfloor, dcap, cbar, hue, plot) {
+        makePlot(dfloor, dcap, cbar, hue, plot);
+    }
 </script>
 
 <script>
