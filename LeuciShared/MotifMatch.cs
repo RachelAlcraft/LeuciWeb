@@ -95,7 +95,7 @@ namespace LeuciShared
             return matches;
         }
 
-        public bool distanceSearch(Atom a, List<Atom> atoms, List<string> keys, List<string> lines, out string mkey, out string mline, out double mdistance)
+        public bool distanceSearch(Atom a, List<Atom> atoms, List<string> keys, List<string> lines, out string mkey, out string mline, out double mdistance, out Atom matom)
         {
             List<string> newkeys = new List<string>();
             List<string> newlines = new List<string>();
@@ -104,6 +104,7 @@ namespace LeuciShared
             mkey = "";
             mline = "";
             mdistance = 0;
+            matom = a;
             int number_list = 0;
             for (int i = 0; i < atoms.Count; ++i)
             {
@@ -143,7 +144,7 @@ namespace LeuciShared
                     disses.Insert(index, distance);
                     newkeys.Insert(index, keys[i]);
                     newlines.Insert(index, lines[i]);
-                    newatms.Insert(index, atoms[i]);
+                    newatms.Insert(index, atoms[i]);                    
                 }
             }
             if (number_list < newkeys.Count)
@@ -151,6 +152,7 @@ namespace LeuciShared
                 mkey = newkeys[number_list];
                 mline = newlines[number_list];
                 mdistance = disses[number_list];
+                matom = newatms[number_list];
                 return true;
             }
             return false;

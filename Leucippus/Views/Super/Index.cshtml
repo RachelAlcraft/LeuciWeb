@@ -150,13 +150,13 @@
     </tr>
     <tr>
         <td style="width: 450px;">            
-            <div id="myCountourDEN" style="width:100%"></div>            
+            <div id="SuperPositionDEN" style="width:100%"></div>
         </td>
         <td style="width: 450px;">            
-            <div id="myCountourRAD" style="width:100%"></div>            
+            <div id="SuperPositionRAD" style="width:100%"></div>
         </td>
         <td style="width: 450px;">            
-            <div id="myCountourLAP" style="width:100%"></div>            
+            <div id="SuperPositionLAP" style="width:100%"></div>
         </td>                
     </tr>      
 </table>
@@ -166,30 +166,41 @@
 </div>
 
 <hr/>
-<hr/>
-<hr/>
+<p>Single Positions</p>
 
-<div>
-    @foreach (var item in @ViewBag.DensityNames)
+
+<table>
+    <tr>
+        <th>Match</th>
+        <th>Density</th>
+        <th>Radient</th>
+        <th>Laplacian</th>
+    </tr>
+    
+    @foreach (var item in @ViewBag.SinglePositions)
     {
-        <span>
-            @item
-        </span>
-        <br />
+    
+     <tr>
+        <td>
+                @item.description
+        </td>
+        <td style="width: 450px;">
+            <div id=@item.contourDen style="width:100%"></div>                
+        </td>
+        <td style="width: 450px;">            
+            <div id=@item.contourRad style="width:100%"></div>
+        </td>
+        <td style="width: 450px;">            
+            <div id=@item.contourLap style="width:100%"></div>
+        </td>                
+    </tr>      
     }
-</div>
-
+</table>
 
 <hr/>
-<hr/>
-<hr />
 
 <script>    
-    function makePlot(dfloor,dcap,cbar,hue,plot){
-        //cbar=true;
-        //alert(plot)
-        //heatmap for overlay
-
+    function makePlot(dfloor,dcap,cbar,hue,plot,superpos){        
         hueL = hue
         hueR = hue
         if (hue == "Best"){
@@ -198,7 +209,7 @@
             hueL = "RedBlue";
         }
 
-        var superpos = @Html.Raw(Json.Serialize(@ViewBag.SuperPosition));        
+        //var superpos = @Html.Raw(Json.Serialize(@ViewBag.SuperPosition));        
         var jx = superpos["xAxis"];
         var jy = superpos["yAxis"];
         var jd = superpos["densityMatrix"];
@@ -208,18 +219,10 @@
         var maxv = superpos["maxD"];
         var minl = superpos["minL"];
         var maxl = superpos["maxL"];
-                        
-        //var jx = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));
-        //var jy = @Html.Raw(Json.Serialize(@ViewBag.SliceAxis));    
-        //var jd = @Html.Raw(Json.Serialize(@ViewBag.SliceDensity));
-        //var jr = @Html.Raw(Json.Serialize(@ViewBag.SliceRadient));
-        //var jl = @Html.Raw(Json.Serialize(@ViewBag.SliceLaplacian));
-
-        //var minv = @Html.Raw(Json.Serialize(@ViewBag.MinV));    
-        //var maxv = @Html.Raw(Json.Serialize(@ViewBag.MaxV));  
-        //var minl = @Html.Raw(Json.Serialize(@ViewBag.MinL));    
-        //var maxl = @Html.Raw(Json.Serialize(@ViewBag.MaxL));  
-
+        var contournameden = superpos["contourDen"];
+        var contournamerad = superpos["contourRad"];
+        var contournamelap = superpos["contourLap"];
+                                
         if (dfloor != -1){
             minv = dfloor;
         }
@@ -328,13 +331,28 @@
             toImageButtonOptions: { scale: 6, width: 540, height: 540 }
         };
 
-        Plotly.newPlot('myCountourDEN', dataDEN, layout,config);
-        Plotly.newPlot('myCountourRAD', dataRAD, layout,config);
-        Plotly.newPlot('myCountourLAP', dataLAP, layout, config);
+        var dnam = contournameden;
+        var rnam = contournamerad;
+        var lnam = contournamelap;
+
+        Plotly.newPlot(dnam, dataDEN, layout,config);
+        Plotly.newPlot(rnam, dataRAD, layout,config);
+        Plotly.newPlot(lnam, dataLAP, layout, config);
         
     }
     function makePlots(dfloor, dcap, cbar, hue, plot) {
-        makePlot(dfloor, dcap, cbar, hue, plot);
+        
+        var superpos = @Html.Raw(Json.Serialize(@ViewBag.SuperPosition));        
+        makePlot(dfloor, dcap, cbar, hue, plot,superpos);
+
+        var singleposes = @Html.Raw(Json.Serialize(@ViewBag.SinglePositions));        
+        var arrayLength = singleposes.length;
+        for (var i = 0; i < arrayLength; i++) {
+            var singlepos = singleposes[i];
+            //alert(i)
+            makePlot(dfloor, dcap, cbar, hue, plot, singlepos);
+        }
+
     }
 </script>
 

@@ -288,14 +288,15 @@ namespace LeuciShared
                         string mkey = atoms_for_motif[0];
                         string mline = lines_for_motif[0];
                         double distance = distances_for_motif[0];
+                        Atom matom = atms_for_motif[0];
                         if (atoms_for_motif.Count > 1)
                         {
-                            if (mm.distanceSearch(a, atms_for_motif, atoms_for_motif, lines_for_motif, out mkey, out mline, out distance))
+                            if (mm.distanceSearch(a, atms_for_motif, atoms_for_motif, lines_for_motif, out mkey, out mline, out distance, out matom))
                             {
                                 key_matches.Add(mkey);
                                 line_matches.Add(mline);
                                 distance_matches.Add(distance);
-                                coord_matches.Add(a.coords());
+                                coord_matches.Add(matom.coords());
                             }
                         }
                         else
@@ -303,7 +304,7 @@ namespace LeuciShared
                             key_matches.Add(mkey);
                             line_matches.Add(mline);
                             distance_matches.Add(distance);
-                            coord_matches.Add(a.coords());
+                            coord_matches.Add(matom.coords());
                         }
                     }
                                         

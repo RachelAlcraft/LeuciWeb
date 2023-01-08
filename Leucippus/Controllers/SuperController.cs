@@ -1,6 +1,8 @@
 ﻿using Leucippus.Models;
 using LeuciShared;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Reflection.PortableExecutable;
 
 namespace Leucippus.Controllers
 {
@@ -23,9 +25,10 @@ namespace Leucippus.Controllers
 
             ViewBag.DensitySlices = new List<double[][]>();
             ViewBag.DensityNames = new List<string>();
+            ViewBag.SinglePositions = new List<SinglePosition>();
 
             SinglePosition superP = new SinglePosition();
-
+            
             string[] pdbcodelist = pdbcodes.Split(",");
             List<string[]> match_motif = new List<string[]>();
             if (update.Contains("Y"))
@@ -87,6 +90,7 @@ namespace Leucippus.Controllers
                     // create each matrix
                     foreach (VectorThree[] coord in match_coords) //we are taking the first 3 as being central linear planar
                     {
+                        SinglePosition singleP = new SinglePosition();
                         dm.create_scratch_slice(5, 20,
                             true, -1, -1,
                             coord[0], coord[1], coord[2],
@@ -95,14 +99,35 @@ namespace Leucippus.Controllers
 
                         ViewBag.DensitySlices.Add(dm.SliceDensity);
                         ViewBag.DensityNames.Add("Density" + Convert.ToString(ViewBag.DensitySlices.Count));                        
+                        // The superpositions have the same axis
                         superP.xAxis = dm.SliceAxis;
                         superP.yAxis = dm.SliceAxis;
+
+                        // the single positions are saved individually
+                        singleP.description = pdbcode + Convert.ToString(ViewBag.SinglePositions.Count + 1);
+                        singleP.xAxis = dm.SliceAxis;
+                        singleP.yAxis = dm.SliceAxis;
+                        singleP.copyDensity(dm.SliceDensity);
+                        singleP.copyRadient(dm.SliceRadient);
+                        singleP.copyLaplacian(dm.SliceLaplacian);                        
+                        singleP.minD = dm.DMin;
+                        singleP.maxD = dm.DMax;
+                        singleP.minL = dm.LMin;
+                        singleP.maxL = dm.LMax;
+                        singleP.contourDen = "SinglePosition" + Convert.ToString(ViewBag.SinglePositions.Count+1) + "DEN";
+                        singleP.contourRad = "SinglePosition" + Convert.ToString(ViewBag.SinglePositions.Count + 1) + "RAD";
+                        singleP.contourLap = "SinglePosition" + Convert.ToString(ViewBag.SinglePositions.Count + 1) + "LAP";
+                        ViewBag.SinglePositions.Add(singleP);
 
                         if (sliceDensity == null)
                         {
                             sliceDensity = dm.SliceDensity;
                             sliceRadient = dm.SliceRadient;
                             sliceLaplacian = dm.SliceLaplacian;
+                            minV = dm.DMin;
+                            maxV = dm.DMax;
+                            minL = dm.LMin;
+                            maxL = dm.LMax;
                         }
                         else
                         {
@@ -144,7 +169,9 @@ namespace Leucippus.Controllers
                 superP.maxD = maxV;
                 superP.minL = minL;
                 superP.maxL = maxL;
-                superP.name = "Super Position of Density Planes";
+                superP.contourDen = "SuperPositionDEN";
+                superP.contourRad = "SuperPositionRAD";
+                superP.contourLap = "SuperPositionLAP";
                 ViewBag.SuperPosition = superP;
             }
 
