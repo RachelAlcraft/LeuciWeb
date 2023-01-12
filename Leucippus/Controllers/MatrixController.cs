@@ -739,10 +739,10 @@ namespace Leucippus.Controllers
             ViewBag.Distances = "";
             if (update == "Y")
             {
-                List<string[]> lines_motif;
+                //List<string[]> lines_motif;
                 List<double[]> dis_motif;
-                List<VectorThree[]> coords_motif;
-                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif,out lines_motif, out dis_motif,out coords_motif);
+                List<Atom[]> atoms_motif;
+                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif,out dis_motif,out atoms_motif);
                 foreach (var mm in match_motif)
                 {
                     foreach (var m in mm)
@@ -750,10 +750,10 @@ namespace Leucippus.Controllers
                     ViewBag.Matches += "\n";
                 }
 
-                foreach (var ll in lines_motif)
+                foreach (var al in atoms_motif)
                 {
-                    foreach (var l in ll)
-                        ViewBag.Lines += l + "\n";
+                    foreach (var a in al)
+                        ViewBag.Lines += a.Line + "\n";
                     ViewBag.Lines += "\n";
                 }
 

@@ -21,6 +21,7 @@ namespace LeuciShared
         public double Occupancy;
         public double BFactor;
         public string Element;
+        public string Summary;
         public Atom(string line)
         {            
             Line = line;            
@@ -42,6 +43,7 @@ namespace LeuciShared
             Occupancy = Convert.ToDouble(line.Substring(54, 6).Trim());
             BFactor = Convert.ToDouble(line.Substring(60, 6).Trim());
             Element = line.Substring(66).Trim();            
+            Summary = Chain + ":" + ResidueNo + ":" + AA + ":" + AtomType;
         }
 
         public double distance(Atom atm2)
