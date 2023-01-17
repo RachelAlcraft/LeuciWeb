@@ -107,7 +107,7 @@ namespace Leucippus.Controllers
             string denbar = "", string radbar = "", string lapbar = "",
             double width = -1, int samples = -1, string interp = "",
             string valsd = "", double sdcap = -100, double sdfloor = -100,
-            int Fos = 2, int Fcs = -1, int copies=2,string ydots = "N", string gdots = "N",
+            int Fos = 2, int Fcs = -1, int copies=3,string ydots = "N", string gdots = "N",
             int t1 = 0, int t2 = 0, int t3 = 0, int t4 = 0,
             string nav = "", double nav_distance = 0.1,
             double hover_min = 0, double hover_max = 0)

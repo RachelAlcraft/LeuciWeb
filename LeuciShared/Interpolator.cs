@@ -16,6 +16,7 @@ namespace LeuciShared
         protected double h;
         protected bool _reflect;
         protected int _copies;
+        protected int _buffer = 28;
 
         // ABSTRACT INTERFACE ------------------------------------------------
         public abstract double getValue(double x, double y, double z);
@@ -192,6 +193,10 @@ namespace LeuciShared
             }
             return vals;
         }
+        protected Single[] getCubeEmpty(int buffer)
+        {
+            return new Single[(XLen+(buffer*2)) * (YLen+(buffer*2)) * (ZLen+(buffer*2))];
+        }
         protected Single[] getCubeWhole()
         {
             // 1. Build the points around the centre as a cube - 8 points
@@ -212,7 +217,46 @@ namespace LeuciShared
             }
             return vals;
         }
+        protected Single[] getCubePeriodicShift(int buffer)
+        {
+            // 1. Build the points around the centre as a cube - 8 points
+            int Xtra = XLen + (buffer * 2);
+            int Ytra = YLen + (buffer * 2);
+            int Ztra = ZLen + (buffer * 2);
 
+            Single[] vals = new Single[Xtra * Ytra * Ztra];
+
+            int count = 0;
+            for (int i = 0 - buffer; i < ZLen + buffer; ++i)
+            {                
+                for (int j = 0 - buffer; j < YLen + buffer; ++j)
+                {                    
+                    for (int k = 0 - buffer; k < XLen + buffer; ++k)
+                    {
+                        Single p = 0;
+                        try
+                        {
+                            p = getExactValueBinary(k, j, i);
+                        }
+                        catch(Exception e)
+                        {
+
+                        }
+                        try
+                        {
+                            vals[count] = p;
+                            ++count;
+                        }
+                        catch(Exception ee)
+                        {
+
+                        }
+
+                    }
+                }
+            }
+            return vals;
+        }
         public bool isValid(double x, double y, double z)
         {
             double xx = x;
@@ -294,7 +338,11 @@ namespace LeuciShared
 
             xx = x;
             yy = y;
-            zz = z;            
+            zz = z;
+
+            //xx = xx - (int)(xx / XLen) * XLen;
+            //yy = yy - (int)(yy / YLen) * YLen;
+            //zz = zz - (int)(zz / ZLen) * ZLen;
         }
     }
 
@@ -541,21 +589,14 @@ namespace LeuciShared
                 if (_zFloor + _points > ZLen)
                     _zFloor = ZLen - _points;*/
 
-                // 1. Build the points around the centre as a cube - x*x*x points                
+                // 1. Build the points around the centre as a cube - x*x*x points
+                // 
 
-                Single[] vals = getSmallerCubeThevenaz(_xFloor, _yFloor, _zFloor, _points);
+                int buffered_points = _points + (_buffer * 2);
+
+                Single[] vals = getSmallerCubeThevenaz(_xFloor, _yFloor, _zFloor, buffered_points);
                 //3. Kind of recursive, make a smaller BSlipe interpolator out of this.                             
-                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree, true,_copies);
-
-
-
-                //3. alt test it all                
-                /*Single[] vals = getSmallerCubeThevenaz(0, 0, 0, _points);
-                _xFloor = 0;
-                _yFloor = 0;
-                _zFloor = 0;
-                _bsp = new BetaSpline(vals, 0, _points * _points * _points, _points, _points, _points, _degree);*/
-
+                _bsp = new BetaSpline(vals, 0, buffered_points * buffered_points * buffered_points, buffered_points, buffered_points, buffered_points, _degree, _copies,false,true);         
             }
             else
             {
@@ -582,54 +623,33 @@ namespace LeuciShared
         // Th?venaz, Philippe, Thierry Blu, and Michael Unser. ?Image Interpolation and Resampling?, n.d., 39.
         //   http://bigwww.epfl.ch/thevenaz/interpolation/
         // *******************************************************************************
-        private double TOLERANCE;
-        private int _degree;        
-        //private Dictionary<int,double> _coefficients = new Dictionary<int,double>();
-        private Single[] _coefficients;
-        //protected Dictionary<int, double> Matrix;
-        //protected Single[] Matrix;
 
-        public BetaSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree, int copies) : base(bytes, start, length, x, y, z,copies)
+        private bool _mirror = false;
+        private bool _sample = false;
+        private double TOLERANCE;        
+        private int _degree;                
+        private Single[] _coefficients;
+        
+        public BetaSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree, int copies,bool mirror, bool sample) : base(bytes, start, length, x, y, z,copies)
         {
             TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
             _degree = degree;
-            _coefficients = getCubeWhole();
-            //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
-            createCoefficients();
-        }
-        public BetaSpline(Single[] vals, int start, int length, int x, int y, int z, int degree, bool smaller,int copies) : base(vals, start, length, x, y, z,copies)
-        {
-            TOLERANCE = 2.2204460492503131e-016; // smallest such that 1.0+DBL_EPSILON != 1.0
-            _degree = degree;
-            _coefficients = vals;
-            //makeSubMatrix(0, 0, 0, 0, 0, 0);//dummy for now
-            createCoefficients();
-        }
-        /*public void makeSubMatrix(int minx, int miny, int minz, int maxx, int maxy, int maxz)
-        {
-            //int count = 0;
-            //Matrix = new Dictionary<int, double>();
-            Matrix = new float[_binary.Length - _bStart];
-            for (int i = _bStart; i < _binary.Length; i += 4)
+            _mirror = mirror;
+            
+            if (_mirror)
             {
-                Single value = BitConverter.ToSingle(_binary, i);
-                //Matrix[count] = value;
-                Matrix[i-_bStart] = value;
-                //count++;
-            }            
-        }*/
-        /*public double getExactValueMat(int x, int y, int z)
-        {
-            int sliceSize = XLen * YLen;
-            int pos = z * sliceSize;
-            pos += XLen * y;
-            pos += x;            
-            //if (Matrix.ContainsKey(pos))
-            if (pos < Matrix.Length)
-                return Matrix[pos];
+                _coefficients = getCubeWhole();
+                createCoefficients();
+            }
+            else if (_sample)
+            {
+                createSampledCoefficients();
+            }
             else
-                return 0;
-        }*/
+            {
+                createPeriodicCoefficients();
+            }
+        }        
         public override double getValue(double xx, double yy, double zz)
         {            
             if (!isValid(xx, yy, zz))
@@ -701,38 +721,40 @@ namespace LeuciShared
             int Width2 = 2 * XLen - 2;
             int Height2 = 2 * YLen - 2;
             int Depth2 = 2 * ZLen - 2;
-            /*for (k = 0; k <= _degree; k++)
+            if (_mirror)
             {
-                xIndex[k] = (XLen == 1) ? (0) :
-                    ((xIndex[k] < 0) ?
-                        (-xIndex[k] - Width2 * ((-xIndex[k]) / Width2)) :
-                        (xIndex[k] - Width2 * (xIndex[k] / Width2)));
-                if (XLen <= xIndex[k])
+                for (k = 0; k <= _degree; k++)
                 {
-                    xIndex[k] = Width2 - xIndex[k];                    
-                }
+                    xIndex[k] = (XLen == 1) ? (0) :
+                        ((xIndex[k] < 0) ?
+                            (-xIndex[k] - Width2 * ((-xIndex[k]) / Width2)) :
+                            (xIndex[k] - Width2 * (xIndex[k] / Width2)));
+                    if (XLen <= xIndex[k])
+                    {
+                        xIndex[k] = Width2 - xIndex[k];                    
+                    }
 
-                yIndex[k] = (YLen == 1) ? (0) :
-                    ((yIndex[k] < 0) ?
-                        (-yIndex[k] - Height2 * ((-yIndex[k]) / Height2)) :
-                        (yIndex[k] - Height2 * (yIndex[k] / Height2)));
-                if (YLen <= yIndex[k])
-                {
-                    yIndex[k] = Height2 - yIndex[k];                    
-                }
+                    yIndex[k] = (YLen == 1) ? (0) :
+                        ((yIndex[k] < 0) ?
+                            (-yIndex[k] - Height2 * ((-yIndex[k]) / Height2)) :
+                            (yIndex[k] - Height2 * (yIndex[k] / Height2)));
+                    if (YLen <= yIndex[k])
+                    {
+                        yIndex[k] = Height2 - yIndex[k];                    
+                    }
 
-                zIndex[k] = (ZLen == 1) ? (0) :
-                    ((zIndex[k] < 0) ?
-                        (-zIndex[k] - Depth2 * ((-zIndex[k]) / Depth2)) :
-                        (zIndex[k] - Depth2 * (zIndex[k] / Depth2)));
-                if (ZLen <= zIndex[k])
-                {
-                    zIndex[k] = Depth2 - zIndex[k];                    
+                    zIndex[k] = (ZLen == 1) ? (0) :
+                        ((zIndex[k] < 0) ?
+                            (-zIndex[k] - Depth2 * ((-zIndex[k]) / Depth2)) :
+                            (zIndex[k] - Depth2 * (zIndex[k] / Depth2)));
+                    if (ZLen <= zIndex[k])
+                    {
+                        zIndex[k] = Depth2 - zIndex[k];                    
+                    }
                 }
-            }*/
+            }
 
-            //Perform interolation
-            /* perform interpolation */
+            //Perform interolation            
             int splineDegree = _degree;
             double w3 = 0.0;
             for (k = 0; k <= splineDegree; k++)
@@ -751,7 +773,37 @@ namespace LeuciShared
             }
             return w3;
         }
+        private Single[] copyCoef(int buffer, Single[] copyFromCoeffs)
+        {
+            Single[] copyToCoeffs = new Single[(XLen - (buffer * 2)) * (YLen - (buffer * 2)) * (ZLen - (buffer * 2))];
+            int fromCount = 0;
+            int toCount = 0;
 
+            for (int k = 0; k < ZLen; k++)
+            {                
+                for (int j = 0; j < YLen; j++)
+                {                    
+                    for (int i = 0; i < XLen; i++)
+                    {
+                        if (i >= buffer && i < XLen - buffer)
+                        {
+                            if (j >= buffer && j < YLen - buffer)
+                            {
+                                if (k >= buffer && k < ZLen - buffer)
+                                {
+                                    copyToCoeffs[toCount] = copyFromCoeffs[fromCount];
+                                    ++toCount;
+                                }
+
+                            }
+
+                        }
+                        ++fromCount;                        
+                    }
+                }
+            }
+            return copyToCoeffs;
+        }
         private double getCoef(int x, int y, int z)
         {
             int pos = getPosition(x, y, z);
@@ -787,15 +839,35 @@ namespace LeuciShared
             //if (_coefficients.ContainsKey(pos))
             //    _coefficients[pos] = v;            
         }
-        private void createCoefficients()
+        private void createPeriodicCoefficients()
         {
-            //foreach (var v in Matrix)
-            //{
-            //    _coefficients.Add(v.Key,v.Value);                
-            //}
-            //for (int b = 0; b < _binary.Length; ++b)
-            //    _coefficients[b] = _binary[b];
-
+            
+            Single[] copyCoeffs = getCubeEmpty(0);
+            Single[] bufferCoeffs = getCubeEmpty(_buffer);
+            _coefficients = getCubePeriodicShift(_buffer);
+            XLen += (2 * _buffer);
+            YLen += (2 * _buffer);
+            ZLen += (2 * _buffer);
+            createCoefficients();
+            copyCoeffs = copyCoef(_buffer, _coefficients);
+            _coefficients = copyCoeffs;
+            XLen -= (2 * _buffer);
+            YLen -= (2 * _buffer);
+            ZLen -= (2 * _buffer);
+        }
+        private void createSampledCoefficients()
+        {
+            // we have been given a cube with a buffer, so create as usual then cut
+            createCoefficients();
+            Single[] copyCoeffs = getCubeEmpty(-1*_buffer);
+            copyCoeffs = copyCoef(_buffer, _coefficients);
+            _coefficients = copyCoeffs;
+            XLen -= (2 * _buffer);
+            YLen -= (2 * _buffer);
+            ZLen -= (2 * _buffer);
+        }
+        private void createCoefficients()
+        {            
             List<double> pole = getPole(_degree);
             int numPoles = Convert.ToInt32(pole.Count);
 
@@ -903,7 +975,11 @@ namespace LeuciShared
         {
             /* special case required by mirror boundaries */
             if (width == 1)
-                return row; ;
+            {                
+                //mirror filter and periodic filter
+                // not much can be done if it is only 1 thivk, it is both mirror and periodic at the same time
+                return row; ;                                
+            }
 
             double lambda = 1;
             int n = 0;
@@ -922,14 +998,24 @@ namespace LeuciShared
             for (k = 0; k < numPoles; k++)
             {
                 /* causal initialization */
-                row[0] = InitialCausalCoefficient(row, width, pole[k]);
+                if (_mirror)
+                {
+                    row[0] = InitialCausalCoefficient(row, width, pole[k]);
+                }
+                else //TODO
+                {                    
+                    row[0] = InitialCausalCoefficient(row, width, pole[k]);
+                }
                 /* causal recursion */
                 for (n = 1; n < width; n++)
                 {
                     row[n] += (double)pole[k] * row[n - 1];
                 }
                 /* anticausal initialization */
-                row[width - 1] = InitialAntiCausalCoefficient(row, width, pole[k]);
+                if (_mirror)
+                    row[width - 1] = InitialAntiCausalCoefficient(row, width, pole[k]);
+                else //TODO
+                    row[width - 1] = InitialAntiCausalCoefficient(row, width, pole[k]);
                 /* anticausal recursion */
                 for (n = width - 2; 0 <= n; n--)
                 {
@@ -964,13 +1050,13 @@ namespace LeuciShared
                 }
                 return (Sum);
             }
-            else
-            {
+            else// if (_mirror)
+            {// RSA notes this is the mirror condition, when the horizon - how far you need to look ahead for good data - is not as far the data you have
                 /* full loop */
                 zn = pole;
                 iz = 1.0 / pole;
-                z2n = Math.Pow(pole, (double)(dataLength - 1));
-                Sum = c[0] + z2n * (double)c[dataLength - 1];
+                z2n = Math.Pow(pole, dataLength - 1);
+                Sum = c[0] + z2n * c[dataLength - 1];
                 z2n *= z2n * iz; //is this a mistake, should it be just *=??? Checked it is how it is in their code. NO TRIED IT.                
                 for (n = 1; n <= dataLength - 2; n++)
                 {
@@ -981,14 +1067,28 @@ namespace LeuciShared
                 }
                 return (Sum / (1.0 - zn * zn));
             }
+            /*else
+            {// RSA notes speculative attempt to make it periodic                
+                zn = pole;
+                Sum = c[0];
+                for (n = 1; n < Horizon; n++)
+                {
+                    int m = n % dataLength;
+                    Sum += zn * c[m];
+                    zn *= pole;
+                }
+                return (Sum);
+            }*/
         }
         private double InitialAntiCausalCoefficient(List<double> c, int dataLength, double pole)
         {
             /* this initialization corresponds to mirror boundaries */
             if (dataLength < 2)
                 return 0;
-            else
+            else// if (_mirror)
                 return ((pole / (pole * pole - 1.0)) * (pole * c[dataLength - 2] + c[dataLength - 1]));
+            //else //wrap to beginning instead
+            //    return ((pole / (pole * pole - 1.0)) * (pole * c[1] + c[0]));
         }
         private List<double> applyValue3(double val, List<int> idc, int weight_length)
         {

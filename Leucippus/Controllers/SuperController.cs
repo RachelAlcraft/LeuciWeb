@@ -2,6 +2,7 @@
 using LeuciShared;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq.Expressions;
 using System.Reflection.PortableExecutable;
 
 namespace Leucippus.Controllers
@@ -34,34 +35,45 @@ namespace Leucippus.Controllers
                         
             string[] pdbcodelist = pdbcodes.Split(",");
             List<string[]> match_motif = new List<string[]>();
+            List<string> pdbcodesgood = new List<string>();
             if (update.Contains("Y"))
             {                
-                foreach (var pdbcode in pdbcodelist)
+                foreach (var pdbcod in pdbcodelist)
                 {
-                    bool ok = await DensitySingleton.Instance.loadFDFiles(pdbcode);
-                    DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs, 2,true);
-                    List<Atom[]> atoms_motif;
-                    List<double[]> dis_motif;
-                    List<VectorThree[]> coords_motif;
-                    match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif, out dis_motif,out atoms_motif);
-                    for (int i = 0; i < match_motif.Count; ++i)
+                    try
                     {
-                        string[] mms = match_motif[i];
-                        Atom[] ats = atoms_motif[i];
-                        double[] diss = dis_motif[i];
-                        SingleMatches sms = new SingleMatches();
-                        for (int j = 0; j < ats.Length; ++j)
+                        string pdbcode = pdbcod.ToLower();
+                        bool ok = await DensitySingleton.Instance.loadFDFiles(pdbcode);
+                        DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs, 2, true);
+                        List<Atom[]> atoms_motif;
+                        List<double[]> dis_motif;
+                        List<VectorThree[]> coords_motif;
+                        match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif, out dis_motif, out atoms_motif);
+                        for (int i = 0; i < match_motif.Count; ++i)
                         {
-                            SingleMatch sm = new SingleMatch(pdbcode, ats[j].Line, Convert.ToString(Math.Round(diss[j],4)), mms[j]);
-                            sms.singleMatches.Add(sm);
-                        }
-                        ViewBag.SingleMatches.Add(sms);
+                            string[] mms = match_motif[i];
+                            Atom[] ats = atoms_motif[i];
+                            double[] diss = dis_motif[i];
+                            SingleMatches sms = new SingleMatches();
+                            for (int j = 0; j < ats.Length; ++j)
+                            {
+                                SingleMatch sm = new SingleMatch(pdbcode, ats[j].Line, Convert.ToString(Math.Round(diss[j], 4)), mms[j]);
+                                sms.singleMatches.Add(sm);
+                            }
+                            ViewBag.SingleMatches.Add(sms);
 
-                        
-                        //foreach (var m in mm)
-                        //    ViewBag.Matches += m + "\n";
-                        //ViewBag.Matches += "\n";
+
+                            //foreach (var m in mm)
+                            //    ViewBag.Matches += m + "\n";
+                            //ViewBag.Matches += "\n";
+                        }
+                        pdbcodesgood.Add(pdbcode);
                     }
+                    catch (Exception e)
+                    {
+                        ViewBag.Error += pdbcod + " - " + e.Message + "<br/>";
+                    }
+                    
 
                     /*foreach (var al in atoms_motif)
                     {
@@ -89,7 +101,7 @@ namespace Leucippus.Controllers
                 double minL = 1000;
                 double maxL = -1000;
 
-                foreach (var pdbcode in pdbcodelist)
+                foreach (var pdbcode in pdbcodesgood)
                 {
                     bool ok = await DensitySingleton.Instance.loadFDFiles(pdbcode);
                     DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs,2);

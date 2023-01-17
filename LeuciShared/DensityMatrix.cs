@@ -193,7 +193,7 @@ namespace LeuciShared
             }
             
             if (_interp == "BSPLINEWHOLE")
-                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3,_copies);
+                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3,_copies,false,false);
             else if (_interp == "LINEAR")
                 _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 1,_copies);
             else if (_interp == "CUBIC")

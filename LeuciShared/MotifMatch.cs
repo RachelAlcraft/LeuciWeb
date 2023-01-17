@@ -24,6 +24,8 @@ namespace LeuciShared
             bool matches = false;
             string[] mtfs = _motif.Split(",");
             string atom_find = "";
+            if (atm.Occupancy < 1)
+                return false;
             foreach (string mtf in mtfs)
             {
                 string[] kv = mtf.Split(":");
@@ -61,6 +63,8 @@ namespace LeuciShared
             string atom_find = "";
             //The chain always needs to be the same
             if (atm1.Chain != atm2.Chain)
+                return false;
+            if (atm2.Occupancy < 1)
                 return false;
             foreach (string mtf in mtfs)
             {
