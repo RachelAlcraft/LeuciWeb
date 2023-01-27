@@ -171,7 +171,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.T1Display = "block";
                 ViewBag.TabAClick = "none";
                 ViewBag.TabAName = "contents";
-                ViewBag.TabName = "Atoms";
+                ViewBag.TabName = "Navigate";
             }
             else if (tabview == "N")
             {
@@ -179,14 +179,7 @@ namespace Leucippus.Controllers
                 ViewBag.TabNClick = "none";
                 ViewBag.TabNName = "contents";
                 ViewBag.TabName = "Neighbours";
-            }
-            else if (tabview == "M")
-            {
-                ViewBagMatrix.Instance.T5Display = "block";
-                ViewBag.TabMClick = "none";
-                ViewBag.TabMName = "contents";
-                ViewBag.TabName = "Motifs";
-            }
+            }            
             else if (tabview == "S")
             {
                 ViewBagMatrix.Instance.T2Display = "block";
@@ -631,145 +624,6 @@ namespace Leucippus.Controllers
 
 
             return View();
-        }
-        public async Task<IActionResult> Overlay(
-            string pdbcode = "", 
-            string update = "N",
-            int fos = 2,
-            int fcs = -1,
-            string interp = "LINEAR",
-            string motif= "C:CA:O",
-            string exclusions="A:1,A:2",
-            string inclusions = null)
-        {
-            ViewBag.Error = "";
-            ViewBag.Matches = new List<string>();
-            ViewBag.Lines = "";
-            if (update == "Y")
-            {                
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs,2);
-                List<VectorThree[]> match_coords = new List<VectorThree[]>();
-                List<string> lines = new List<string>();
-                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchMotif(motif, exclusions, inclusions, out match_coords, out lines);
-
-                double[][]? sliceDensity = null;
-                double[][]? sliceRadient = null;
-                double[][]? sliceLaplacian = null;
-
-                double minV = 1000;
-                double maxV = -1000;
-                double minL = 1000;
-                double maxL = -1000;
-
-                // create each matrix
-                foreach (VectorThree[] coord in match_coords)
-                {
-                    dm.create_scratch_slice(5, 20,
-                        true, -1, -1,
-                        coord[0], coord[1], coord[2],
-                        coord[0], coord[1], coord[2],
-                        DensitySingleton.Instance.FD.PA, -1, -1);
-
-                    if (sliceDensity == null)
-                    {
-                        sliceDensity = dm.SliceDensity;
-                        sliceRadient = dm.SliceRadient;
-                        sliceLaplacian = dm.SliceLaplacian;
-                    }
-                    else
-                    {
-                        for (int i = 0; i < sliceDensity.Length; i++)
-                        {
-                            for (int j = 0; j < sliceDensity[i].Length; j++)
-                            {
-                                sliceDensity[i][j] += dm.SliceDensity[i][j];
-                                maxV = Math.Max(maxV, sliceDensity[i][j]);
-                                minV = Math.Min(minV, sliceDensity[i][j]);
-
-                                if (sliceRadient.Length == sliceDensity.Length)
-                                    sliceRadient[i][j] += dm.SliceRadient[i][j];
-
-                                if (sliceLaplacian.Length == sliceDensity.Length)
-                                {
-                                    sliceLaplacian[i][j] += dm.SliceLaplacian[i][j];
-                                    maxL = Math.Max(maxL, sliceLaplacian[i][j]);
-                                    minL = Math.Min(minL, sliceLaplacian[i][j]);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // matrix
-                ViewBag.SliceDensity = sliceDensity;
-                ViewBag.SliceRadient = sliceRadient;
-                ViewBag.SliceLaplacian = sliceLaplacian;
-                ViewBag.MinV = minV;
-                ViewBag.MaxV = maxV;
-                ViewBag.MinL = minL;
-                ViewBag.MaxL = maxL;
-                ViewBag.Matches = match_motif;
-                foreach (var ln in lines)
-                {
-                    ViewBag.Lines += ln + "\n";
-                }
-            }
-
-            // View items
-            ViewBag.PdbCode = pdbcode;
-            ViewBag.Motif = motif;
-            ViewBag.Exclusions = exclusions;
-            ViewBag.Inclusions = inclusions;
-            ViewBag.Fos = fos;
-            ViewBag.Fcs = fcs;
-            ViewBag.Interp = interp;
-
-            return View();
-
-        }
-
-        public async Task<IActionResult> Motifs(
-            string pdbcode = "",
-            string update = "N",            
-            string motif = "{atom:C}{atom:CA,offset:0}{atom:O,offset:0}")
-        {
-            ViewBag.Error = "";
-            ViewBag.Matches = "";
-            ViewBag.Lines = "";
-            ViewBag.Distances = "";
-            if (update == "Y")
-            {
-                //List<string[]> lines_motif;
-                List<double[]> dis_motif;
-                List<Atom[]> atoms_motif;
-                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchesMotif(motif,out dis_motif,out atoms_motif);
-                foreach (var mm in match_motif)
-                {
-                    foreach (var m in mm)
-                        ViewBag.Matches += m + "\n";
-                    ViewBag.Matches += "\n";
-                }
-
-                foreach (var al in atoms_motif)
-                {
-                    foreach (var a in al)
-                        ViewBag.Lines += a.Line + "\n";
-                    ViewBag.Lines += "\n";
-                }
-
-                foreach (var dd in dis_motif)
-                {
-                    foreach (var d in dd)
-                        ViewBag.Distances += Convert.ToString(Math.Round(d,4)) + "\n";
-                    ViewBag.Distances += "\n";
-                }
-            }
-            // View items
-            ViewBag.PdbCode = pdbcode;
-            ViewBag.Motif = motif;                        
-            return View();
-
-        }
-
+        }        
     }
 }

@@ -124,7 +124,7 @@ namespace LeuciShared
             _B = _densityBinary.Y2_cap;
             _C = _densityBinary.X1_cap;
             Info = _densityBinary.Info;
-            ok_for_whole_spline = (_A * _B * _C) < (150 * 150 * 150);
+            ok_for_whole_spline = (_A * _B * _C) < (350 * 350 * 350);
             _cublet = new Cubelet(_A, _B, _C);
             changeInterp(interp, _copies);
             
@@ -199,7 +199,7 @@ namespace LeuciShared
             else if (_interp == "CUBIC")
                 _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, _copies);
             else if (_interp == "BSPLINE3")
-                _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64, _copies);
+                _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64, 0);
             else
                 _interpMap = new Nearest(fofc, 0, _densityBinary.Blength, _C, _B, _A, _copies);
 
@@ -523,6 +523,7 @@ namespace LeuciShared
 
             // we want to first build a smaller cube around the centre
             VectorThree crs_centre = _densityBinary.getCRSFromXYZ(central);
+            _interpMap.seedCentre(crs_centre, width); // SEED THE CENTRE OF THE INTERPOLATOR  for optimisation
             int xmin = (int)Math.Floor(crs_centre.A) - 16;
             int xmax = (int)Math.Floor(crs_centre.A) + 16;
             int ymin = (int)Math.Floor(crs_centre.B) - 16;
@@ -738,9 +739,9 @@ namespace LeuciShared
                             SliceRadient[m][n] = -1;
                         }
                     }
-
                 }
             }
+            _interpMap.unSeedCentre();
         }
 
     }

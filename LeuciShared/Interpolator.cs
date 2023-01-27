@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace LeuciShared
 {
@@ -17,9 +18,38 @@ namespace LeuciShared
         protected bool _reflect;
         protected int _copies;
         protected int _buffer = 28;
+        protected VectorThree _seed = new VectorThree();
+        protected int _seedWidth = -1;
 
         // ABSTRACT INTERFACE ------------------------------------------------
         public abstract double getValue(double x, double y, double z);
+        
+        // Implemented in a factory style ---------------------------------------
+        public void seedCentre(VectorThree crs, double width)
+        {
+            if (this is OptBSpline)
+            {                                    
+                double[] xyz = adjustReflection(crs.A, crs.B, crs.C);
+                double x = xyz[0];
+                double y = xyz[1];
+                double z = xyz[2];
+
+                _seed = new VectorThree(x,y,z);
+                // i'm going to make a really bad guess that every Angstrom has 3 points
+                _seedWidth = (int)width * 4;
+                (this as OptBSpline).makeCentreBSpline(x, y, z, _seedWidth);
+            }
+            else
+            {
+                _seed = new VectorThree();
+                _seedWidth = -1;
+            }
+        }
+        public void unSeedCentre()
+        {                        
+            _seed = new VectorThree();
+            _seedWidth = -1;            
+        }
 
         //--------------------------------------------------------------------
 
@@ -38,7 +68,7 @@ namespace LeuciShared
             _reflect = true;
             _copies = copies;
         }
-
+        
         public void setReflect(bool reflect)
         {
             _reflect = reflect;
@@ -169,21 +199,16 @@ namespace LeuciShared
         }
 
         protected Single[] getSmallerCubeThevenaz(int x, int y, int z, int width)
-        {
-            if (x < 0 || y < 0 || z < 0)
-            {
-                int bp = 0;
-            }
-
+        {            
             // 1. Build the points around the centre as a cube - 8 points
             Single[] vals = new Single[width * width * width];
 
             int count = 0;
-            for (int i = z; i < z + width; ++i)
+            for (int i = z; i < z + width; ++i)            
             {
-                for (int j = y; j < y + width; ++j)
+                for (int j = y; j < y + width; ++j)                
                 {
-                    for (int k = x; k < x + width; ++k)
+                    for (int k = x; k < x + width; ++k)                    
                     {
                         Single p = getExactValueBinary(k, j, i);
                         vals[count] = p;
@@ -511,11 +536,16 @@ namespace LeuciShared
     {
         protected int _degree;
         protected int _dimsize;
-        protected int _points;
+        protected int _points;        
+        protected int _opt_count = 2;
         protected BetaSpline? _bsp;
+        //protected List<Tuple<int[], BetaSpline>> _cubeList = new List<Tuple<int[], BetaSpline>>();
         protected int _xFloor = 0;
         protected int _yFloor = 0;
         protected int _zFloor = 0;
+        protected int _xCeil = 0;
+        protected int _yCeil = 0;
+        protected int _zCeil = 0;
 
         // ****** Linear Implementation ****************************************
         public OptBSpline(Single[] bytes, int start, int length, int x, int y, int z, int degree, int points, int copies) : base(bytes, start, length, x, y, z,copies)
@@ -532,7 +562,7 @@ namespace LeuciShared
 
             _dimsize = (int)Math.Pow(_points, 3);
             _bsp = null;
-        }
+        }        
         public override double getValue(double xx, double yy, double zz)
         {
             if (!isValid(xx, yy, zz))
@@ -541,9 +571,6 @@ namespace LeuciShared
             double x = xyz[0];
             double y = xyz[1];
             double z = xyz[2];
-            //double x = xx;
-            //double y = yy;
-            //double z = zz; 
 
             // The method of linear interpolation is a version of my own method for multivariate fitting, instead of trilinear interpolation
             // NOTE I could extend this to be multivariate not linear but it has no advantage over bspline - and is slower and not as good 
@@ -551,67 +578,109 @@ namespace LeuciShared
 
             //1.  do we need a new cube?
             // a) we do if we don't have one
-            bool needNewMatrix = false;
-            if (_bsp == null)
-                needNewMatrix = true;
+
             // b) we do if we are within points/2 of the edges of the edges
-            int myxFloor = (int)Math.Floor(x + (-1 * _points / 2) + 1);
-            int myyFloor = (int)Math.Floor(y + (-1 * _points / 2) + 1);
-            int myzFloor = (int)Math.Floor(z + (-1 * _points / 2) + 1);
+            int myxFloor = (int)Math.Floor(x + (-1 * _buffer) + 1);
+            int myyFloor = (int)Math.Floor(y + (-1 * _buffer) + 1);
+            int myzFloor = (int)Math.Floor(z + (-1 * _buffer) + 1);            
+            //int myxFloor = (int)x - (_points / 2 + _buffer);
+            //int myyFloor = (int)y - (_points / 2 + _buffer);
+            //int myzFloor = (int)z - (_points / 2 + _buffer);
 
-            //if (myyFloor - _yFloor > _points / 4)
-            double pointsBound = _points / 2;
-            if (!(Math.Abs(myxFloor - _xFloor) < pointsBound))
-                needNewMatrix = true;
-            if (!(Math.Abs(myyFloor - _yFloor) < pointsBound))
-                needNewMatrix = true;
-            if (!(Math.Abs(myzFloor - _zFloor) < pointsBound))
-                needNewMatrix = true;
-
-            //if (_bsp != null)
-            //    needNewMatrix = false;
-
-            if (needNewMatrix)
+            if (_seedWidth == -1 || _bsp == null)
             {
-                _xFloor = (int)Math.Floor(x + (-1 * _points / 2) + 1);
-                _yFloor = (int)Math.Floor(y + (-1 * _points / 2) + 1);
-                _zFloor = (int)Math.Floor(z + (-1 * _points / 2) + 1);
-                /*if (_xFloor < 0)
-                    _xFloor = 0;
-                if (_yFloor < 0)
-                    _yFloor = 0;
-                if (_zFloor < 0)
-                    _zFloor = 0;
-                if (_xFloor + _points > XLen)
-                    _xFloor = XLen - _points;
-                if (_yFloor + _points > YLen)
-                    _yFloor = YLen - _points;
-                if (_zFloor + _points > ZLen)
-                    _zFloor = ZLen - _points;*/
-
-                // 1. Build the points around the centre as a cube - x*x*x points
-                // 
-
-                int buffered_points = _points + (_buffer * 2);
-
-                Single[] vals = getSmallerCubeThevenaz(_xFloor, _yFloor, _zFloor, buffered_points);
-                //3. Kind of recursive, make a smaller BSlipe interpolator out of this.                             
-                _bsp = new BetaSpline(vals, 0, buffered_points * buffered_points * buffered_points, buffered_points, buffered_points, buffered_points, _degree, _copies,false,true);         
+                selectBSpline(myxFloor, myyFloor, myzFloor, _points);
             }
             else
             {
-
+                checkBSpline(myxFloor, myyFloor, myzFloor);
             }
+            
 
-            //1. Find the values that would be in this cube 
-            int pstart = (-1 * _points / 2) + 1;
+            //2. Find the values that would be in this cube             
             double xn = x - _xFloor;
             double yn = y - _yFloor;
             double zn = z - _zFloor;
 
-            //5. Apply the multivariate polynomial coefficents to find the value
-            return _bsp.getValue(xn, yn, zn);
-            //return _bsp.getValue(x, y, z);
+            //3. Apply the interpolaor to find the value
+            if (_bsp != null)                
+                return _bsp.getValue(xn, yn, zn);           
+            else
+                return 0;
+        }
+
+        public void makeCentreBSpline(double x, double y, double z, int points)
+        {
+            int xFloor = (int)Math.Floor(x + (-1 * _buffer) + 1);
+            int yFloor = (int)Math.Floor(y + (-1 * _buffer) + 1);
+            int zFloor = (int)Math.Floor(z + (-1 * _buffer) + 1);
+            //int xFloor = (int)x - (points / 2 + _buffer);
+            //int yFloor = (int)y - (points / 2 + _buffer);
+            //int zFloor = (int)z - (points / 2 + _buffer);
+            _xFloor = xFloor;
+            _yFloor = yFloor;
+            _zFloor = zFloor;            
+            int buffered_points = points + (_buffer * 2);
+            _xCeil = _xFloor + buffered_points;
+            _yCeil = _yFloor + buffered_points;
+            _zCeil = _zFloor + buffered_points;
+            Single[] vals = getSmallerCubeThevenaz(xFloor, yFloor, zFloor, buffered_points);
+            //3. Kind of recursive, make a smaller BSlipe interpolator out of this.                             
+            _bsp = new BetaSpline(vals, 0, buffered_points * buffered_points * buffered_points, buffered_points, buffered_points, buffered_points, _degree, _copies, true, false);
+        }
+        private void checkBSpline(int xFloor, int yFloor, int zFloor)
+        {
+            bool need = false;
+            if (!(Math.Abs(xFloor - _xFloor) < _buffer))
+                need = true;
+            if (!(Math.Abs(yFloor - _yFloor) < _buffer))
+                need = true;
+            if (!(Math.Abs(zFloor - _zFloor) < _buffer))
+                need = true;
+        }
+        private void selectBSpline(int xFloor, int yFloor, int zFloor, int points)
+        {
+            bool need = true;            
+            //foreach (var cuver in _cubeList)
+            //{
+            //    int[] points = cuver.Item1;
+            need = false;            
+            if (!(Math.Abs(xFloor - _xFloor) < _buffer))
+                need = true;
+            if (!(Math.Abs(yFloor - _yFloor) < _buffer))
+                need = true;
+            if (!(Math.Abs(zFloor - _zFloor) < _buffer))
+                need = true;
+
+            if (!need && _bsp != null)
+            {
+                //bsp = cuver.Item2;
+                //_xFloor = points[0];
+                //_yFloor = points[1];
+                //_zFloor = points[2];
+                //return bsp;
+            }
+            //}
+            else //which it must be or it returned
+            {
+                _xFloor = xFloor;
+                _yFloor = yFloor;
+                _zFloor = zFloor;
+                int buffered_points = points + (_buffer * 2);
+                _xCeil = _xFloor + buffered_points;
+                _yCeil = _yFloor + buffered_points;
+                _zCeil = _zFloor + buffered_points;
+                Single[] vals = getSmallerCubeThevenaz(xFloor, yFloor, zFloor, buffered_points);
+                //3. Kind of recursive, make a smaller BSlipe interpolator out of this.                             
+                _bsp = new BetaSpline(vals, 0, buffered_points * buffered_points * buffered_points, buffered_points, buffered_points, buffered_points, _degree, 0, true, false);
+                //_cubeList.Add(Tuple.Create(new int[]{ xFloor, yFloor, zFloor }, bsp));
+
+                //if (_cubeList.Count > _opt_count)
+                //{
+                //    int[] vvv = _cubeList[0].Item1;
+                //    _cubeList.RemoveAt(0);
+                //}
+            }            
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

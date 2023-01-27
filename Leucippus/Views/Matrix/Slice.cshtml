@@ -7,10 +7,7 @@
     @Html.ActionLink(linkText: "Choose",actionName: "Browse",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })                                    
     @Html.ActionLink(linkText: "Slice",actionName: "Slice",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })                                    
     @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-    @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-        @Html.ActionLink(linkText: "Motifs",actionName: "Motifs",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-    @Html.ActionLink(linkText: "Overlay",actionName: "Overlay",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
-    
+    @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })            
 </span>
 </div>
 <h3>Slice though Density Matrix - @ViewBag.PdbCode</h3>
@@ -24,8 +21,7 @@
     tabview<input id="tabview"  value=@ViewBag.TabView  name="tabview"/>
     <input id="t1"  value="0"  name="t1"/>
     <input id="t2"  value="0"  name="t2"/>    
-    <input id="t3"  value="0"  name="t3"/>
-    <input id="t5"  value="0"  name="t5"/>
+    <input id="t3"  value="0"  name="t3"/>    
     <input id="t4"  value="0"  name="t4"/>
     <input id="nav"  value=""  name="nav"/>    
     denplot<input id="denplot"  value=@ViewBag.DenPlot  name="denplot"/>
@@ -70,11 +66,7 @@
     <input type  ="submit" value="Options" id="tabSettings" onclick="ChangeTab('t2')" style="border:none;display:@ViewBag.TabSClick"/>
     <span style="border:none;display:@ViewBag.TabSName;font-weight:bold">@ViewBag.TabName</span>        
     <input type="submit" value="Neighbours" id="tabNeighbours" onclick="ChangeTab('t3')" style="border:none;display:@ViewBag.TabNClick"/>
-    <span style="border:none;display:@ViewBag.TabNName;font-weight:bold">@ViewBag.TabName</span>        
-    <!--
-    <input type="submit" value="Motifs" id="tabMotifs" onclick="ChangeTab('t5')" style="border:none;display:@ViewBag.TabMClick"/>
-    <span style="border:none;display:@ViewBag.TabMName;font-weight:bold">@ViewBag.TabName</span>
-    -->
+    <span style="border:none;display:@ViewBag.TabNName;font-weight:bold">@ViewBag.TabName</span>            
     <input type="submit" value="Advanced" id="tabAdvanced" onclick="ChangeTab('t4')" style="border:none;display:@ViewBag.TabXClick"/>
     <span style="border:none;display:@ViewBag.TabXName;font-weight:bold">@ViewBag.TabName</span>    
    
@@ -213,9 +205,8 @@
     <div>
         <table>
             <tr>                
-                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Interpolation method</td>
-                <td>Interp=</td>
-                <td>@ViewBag.Interp</td>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Interpolation method</td>                
+                <td style="color=grey">@ViewBag.Interp</td>
                 <th>  <input type="submit" value="nearest" id="nearest" onclick="SubmitInterp('NEAREST')" /></th>
                 <th>  <input type="submit" value="linear" id="linear" onclick="SubmitInterp('LINEAR')" /></th>
                 <th>  <input type="submit" value="bspline" id="bspline" onclick="SubmitInterp('BSPLINE')" /></th>                                
@@ -320,13 +311,11 @@
         </tr>
     </table>            
 </div>
-<!-- ############################# TAB MOTIFS ########################################## -->
-<div id="Motifs" class="tabcontent" style="display:@ViewBag.T5Display;background-color:@ViewBag.TabBackClr">    
- </div>
 <!-- ############################# TAB ADVANCED ########################################## -->
     <div id="Admin" class="tabcontent" style="display:@ViewBag.T4Display;background-color:@ViewBag.TabBackClr">
     <table>
-    <tr>
+    <!-- COMMENT IN AND OUT EXTRA METHODS-->
+    <!--<tr>
         <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Extra Interpolation methods</td>
         <td>Interp=</td>
         <td>@ViewBag.Interp</td>                
@@ -336,13 +325,12 @@
         <th>  <input type="submit" value="bspline best" id="bspline" onclick="SubmitInterp('BSPLINE')" /></th>                                        
         <th>  <input type="submit" value="bsplineopt" id="bspline" onclick="SubmitInterp('BSPLINE3')" /></th>                                        
         <th>  <input type="submit" value="bsplinewhole" id="bspline" onclick="SubmitInterp('BSPLINEWHOLE')" /></th>                                                
-    </tr>    
+    </tr>-->
     </table>            
     <table>
     <tr>
-        <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Toggle between values and standard deviation</td>
-        <td>Density=</td>
-        <td>@ViewBag.ValSd</td>
+        <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Toggle between values and standard deviation</td>        
+        <td style="color=grey">@ViewBag.ValSd</td>
         <th><input type="submit" value="st.devs" id="st.devs" onclick="SubmitValSd('s.d.')" /></th>
         <th><input type="submit" value="electrons" id="electrons" onclick="SubmitValSd('electrons')" /></th>        
     </tr>
@@ -995,8 +983,7 @@
         
         document.getElementById("tabAtoms").style.color = "Black";
         document.getElementById("tabNeighbours").style.color = "Black";
-        document.getElementById("tabSettings").style.color = "Black";
-        //document.getElementById("tabMotifs").style.color = "Black";
+        document.getElementById("tabSettings").style.color = "Black";        
         document.getElementById("tabAdvanced").style.color = "Black";
                 
         if (tab == 't1'){
@@ -1016,13 +1003,7 @@
             document.getElementById("tabview").value = "N";            
             document.getElementById("tabNeighbours").style.color = "crimson";
             document.getElementById("refresh_mode").value = "V";
-        }
-        else if (tab == 't5'){
-            document.getElementById("t5").value = 1;
-            document.getElementById("tabview").value = "M";            
-            document.getElementById("tabMotifs").style.color = "crimson";
-            document.getElementById("refresh_mode").value = "V";
-        }
+        }        
         else if (tab == 't4'){
             document.getElementById("t4").value = 1;
             document.getElementById("tabview").value = "X";
