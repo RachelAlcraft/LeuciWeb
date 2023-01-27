@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Security.Cryptography;
 
 namespace LeuciShared
 {
@@ -83,6 +84,15 @@ namespace LeuciShared
             if (Atoms.ContainsKey(atom + ".A"))
                 return Atoms[atom + ".A"];
             return new VectorThree(0, 0, 0);
+        }
+
+        public string getAA(string atom)
+        {
+            if (_aas.ContainsKey(atom))
+                return _aas[atom];
+            if (_aas.ContainsKey(atom + ".A"))
+                return _aas[atom + ".A"];
+            return "";
         }
 
         public string getLine(string atom)
@@ -191,7 +201,148 @@ namespace LeuciShared
             }
             return ats;
 
-        }        
+        }                
+        public List<string[]> getMatchesMotif(string motif, out List<double[]> disses, out List<Atom[]> atoms)
+        {/*This tries to do something similar to my python library and follow some rules to get matches
+          * How I wish I had documented it!!!!
+          * 
+          * geoA = 'SG:{SG}+1'
+            geoB = 'SG:{N}+2'
+            geoC = 'SG:{SG@1}'
+            geoD = 'SG:{SG@2}'
+            geoE = 'SG:SG'
+            (O) means element not atom type
+
+            Redoing it for this as it does not have the same requirements or interface
+            {e:O,a:O,d:2-3,n:1,r:1,o:0,aa:} # element or atom type, distance cap, nearest number, residue offset, residues away, amino acid it needs to be
+            C:CA:O = {a:C}{a:CA}{a:O}
+            C:CA:N+1 = {a:C}{a:CA}{a:N,r:1}
+            SG:{N}+2 = {a:SG}{e:N,o:2} SGs to the nearest atom of type N that is at least 2 residues away
+            {e.N}{e.O,d:2-3}
+
+            They are both relative to the first one, not chained
+          */            
+            string[] mtfs = motif.Split("}");            
+            string anchor_motif = mtfs[0].Substring(1);
+            MotifMatch mtf_anchor = new MotifMatch(anchor_motif);
+            
+            List<string[]> motifs = new List<string[]>();
+            //lines = new List<string[]>();
+            disses = new List<double[]>();
+            //coords = new List<VectorThree[]>();
+            atoms = new List<Atom[]>();
+            List<MotifMatch> motif_matches = new List<MotifMatch>(); //these are all the criteria to apply to first atoms
+            for (int m = 1; m < mtfs.Length; ++m)
+            {
+                if (mtfs[m].Length > 5)
+                {
+                    string other_motif = mtfs[m].Substring(1);
+                    MotifMatch mtf_other = new MotifMatch(other_motif);
+                    motif_matches.Add(mtf_other);
+                }
+            }
+
+            List<string> atm_anchors = new List<string>(); //this is the list of all the atoms that match the first criteria
+            foreach (var atm in Atoms)
+            {
+                string line = Lines[atm.Key];
+                Atom a = new Atom(line);
+                if (mtf_anchor.match(a))
+                    atm_anchors.Add(atm.Key);
+            }
+
+            
+            foreach (string a_key in atm_anchors)
+            {
+                List<string> key_matches = new List<string>();
+                List<string> line_matches = new List<string>();
+                List<double> distance_matches = new List<double>();
+                //List<VectorThree> coord_matches = new List<VectorThree>();
+                List<Atom> atom_matches = new List<Atom>();
+
+                string line = Lines[a_key];
+                Atom a = new Atom(line);
+                key_matches.Add(a_key);
+                line_matches.Add(line);
+                distance_matches.Add(0);
+                //coord_matches.Add(a.coords());
+                atom_matches.Add(a);
+
+                foreach (MotifMatch mm in motif_matches)
+                {
+                    List<string> atoms_for_motif = new List<string>();
+                    List<string> lines_for_motif = new List<string>();
+                    List<Atom> atms_for_motif = new List<Atom>();
+                    List<double> distances_for_motif = new List<double>();
+
+                    foreach (var atm2 in Atoms)
+                    {
+                        string line2 = Lines[atm2.Key];
+                        Atom a2 = new Atom(line2);
+                        if (mm.matchPair(a, a2))
+                        {
+                            atoms_for_motif.Add(atm2.Key);
+                            lines_for_motif.Add(line2);
+                            atms_for_motif.Add(a2);
+                            distances_for_motif.Add(a2.distance(a));
+                        }
+                    }                    
+                    if (atoms_for_motif.Count > 0)
+                    {// at this point we need to do the distance check
+                        string mkey = atoms_for_motif[0];
+                        string mline = lines_for_motif[0];
+                        double distance = distances_for_motif[0];
+                        Atom matom = atms_for_motif[0];
+                        if (atoms_for_motif.Count > 1)
+                        {
+                            if (mm.distanceSearch(a, atms_for_motif, atoms_for_motif, lines_for_motif, out mkey, out mline, out distance, out matom))
+                            {
+                                key_matches.Add(mkey);
+                                line_matches.Add(mline);
+                                distance_matches.Add(distance);
+                                //coord_matches.Add(matom.coords());
+                                atom_matches.Add(matom);
+                            }
+                        }
+                        else
+                        {
+                            key_matches.Add(mkey);
+                            line_matches.Add(mline);
+                            distance_matches.Add(distance);
+                            //coord_matches.Add(matom.coords());
+                            atom_matches.Add(matom);
+                        }
+                    }
+                                        
+                }
+                if (key_matches.Count == motif_matches.Count+1)
+                {                    
+                    string[] a_motif = new string[key_matches.Count];
+                    string[] a_line = new string[key_matches.Count];
+                    double[] a_dis = new double[key_matches.Count];
+                    Atom[] a_atom = new Atom[atom_matches.Count];
+                    //VectorThree[] a_coord = new VectorThree[key_matches.Count];
+                    for (int i = 0; i < key_matches.Count; ++i)
+                    {
+                        a_motif[i] = key_matches[i];
+                        a_line[i] = line_matches[i];
+                        a_dis[i] = distance_matches[i];
+                        //a_coord[i] = coord_matches[i];
+                        a_atom[i] = atom_matches[i];
+                    }
+                    motifs.Add(a_motif);
+                    //lines.Add(a_line);
+                    disses.Add(a_dis);
+                    //coords.Add(a_coord);
+                    atoms.Add(a_atom);
+                }
+                else
+                {
+                    
+                }
+            }
+            return motifs;
+        }
         public List<string[]> getMatchMotif(string motif, string exclusions, string inclusions, out List<VectorThree[]> coords, out List<string> lines)
         {
             // out init

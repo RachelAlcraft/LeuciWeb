@@ -1,6 +1,7 @@
 ﻿using Leucippus.Models;
 using LeuciShared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Plotly.NET;
 
 
@@ -15,7 +16,7 @@ namespace Leucippus.Controllers
                 ViewBag.Error = "";
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1,2);
                 if (DensitySingleton.Instance.NewMatrix)
                 {
                     string[] first_three = DensitySingleton.Instance.FD.PA.getFirstThreeCoords();
@@ -64,7 +65,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.Layer = layer;
                 ViewBagMatrix.Instance.PlanePlot = planeplot;
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, ViewBagMatrix.Instance.Interp, 2, -1,2);
                 dm.calculatePlane(ViewBagMatrix.Instance.Plane, ViewBagMatrix.Instance.Layer);
 
                 if (ViewBagMatrix.Instance.EmCode == "" && layer == -1 && plane == "")
@@ -96,7 +97,7 @@ namespace Leucippus.Controllers
 
         }
         public async Task<IActionResult> Slice(
-            string tabview = "S", // A=atoms,S=settgins,N=neighbour X=advanced
+            string tabview = "A", // A=atoms,S=settgins,N=neighbour X=advanced
             string refresh_mode = "R", //V= viewbag only F = force
             string pdbcode = "",
             string c_xyz = "", string l_xyz = "", string p_xyz = "",
@@ -104,12 +105,12 @@ namespace Leucippus.Controllers
             string denplot = "", string radplot = "", string lapplot = "",
             string denhue = "", string radhue = "", string laphue = "",
             string denbar = "", string radbar = "", string lapbar = "",
-            double width = -1, double gap = -1, string interp = "",
+            double width = -1, int samples = -1, string interp = "",
             string valsd = "", double sdcap = -100, double sdfloor = -100,
-            int Fos = 2, int Fcs = -1, string ydots = "N", string gdots = "N",
+            int Fos = 2, int Fcs = -1, int copies=3,string ydots = "N", string gdots = "N",
             int t1 = 0, int t2 = 0, int t3 = 0, int t4 = 0,
             string nav = "", double nav_distance = 0.1,
-            double hover_min = 0, double hover_max = 0,string force_slow="N")
+            double hover_min = 0, double hover_max = 0)
         {
             bool view_change = false;
 
@@ -122,15 +123,18 @@ namespace Leucippus.Controllers
             ViewBagMatrix.Instance.T1Display = "none";
             ViewBagMatrix.Instance.T2Display = "none";
             ViewBagMatrix.Instance.T3Display = "none";
+            ViewBagMatrix.Instance.T5Display = "none";
             ViewBagMatrix.Instance.T4Display = "none";
             ViewBag.TabName = "Navigate";
             ViewBag.TabAClick = "inherit";
             ViewBag.TabSClick = "inherit";
             ViewBag.TabNClick = "inherit";
+            ViewBag.TabMClick = "inherit";
             ViewBag.TabXClick = "inherit";
             ViewBag.TabAName = "none";
             ViewBag.TabSName = "none";
             ViewBag.TabNName = "none";
+            ViewBag.TabMName = "none";
             ViewBag.TabXName = "none";
 
             if (view_change)//then this is a view only change
@@ -139,17 +143,17 @@ namespace Leucippus.Controllers
                 {
                     ViewBag.TabView = "A";
                     ViewBag.TabName = "Navigate";
-                    refresh_mode = "F";
+                    //refresh_mode = "F";
                 }
                 if (t2 == 1) //settings
                 {
                     ViewBag.TabView = "S";
-                    ViewBag.TabName = "Display";
+                    ViewBag.TabName = "Options";
                 }
                 if (t3 == 1) //neighbours
                 {
                     ViewBag.TabView = "N";
-                    refresh_mode = "F";
+                    //refresh_mode = "F";
                     ViewBag.TabName = "Neighbours";
                 }
                 if (t4 == 1)//advanced
@@ -167,7 +171,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.T1Display = "block";
                 ViewBag.TabAClick = "none";
                 ViewBag.TabAName = "contents";
-                ViewBag.TabName = "Atoms";
+                ViewBag.TabName = "Navigate";
             }
             else if (tabview == "N")
             {
@@ -175,13 +179,13 @@ namespace Leucippus.Controllers
                 ViewBag.TabNClick = "none";
                 ViewBag.TabNName = "contents";
                 ViewBag.TabName = "Neighbours";
-            }
+            }            
             else if (tabview == "S")
             {
                 ViewBagMatrix.Instance.T2Display = "block";
                 ViewBag.TabSClick = "none";
                 ViewBag.TabSName = "contents";
-                ViewBag.TabName = "Display";
+                ViewBag.TabName = "Options";
             }
             else if (tabview == "X")
             {
@@ -199,6 +203,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.PdbCode = pdbcode;
                 ViewBagMatrix.Instance.Interp = interp;
                 ViewBagMatrix.Instance.setFoFc(Fos, Fcs);
+                ViewBagMatrix.Instance.Copies = copies;
                 ViewBagMatrix.Instance.DenPlot = denplot;
                 ViewBagMatrix.Instance.RadPlot = radplot;
                 ViewBagMatrix.Instance.LapPlot = lapplot;
@@ -209,7 +214,7 @@ namespace Leucippus.Controllers
                 ViewBagMatrix.Instance.RadBar = radbar;
                 ViewBagMatrix.Instance.LapBar = lapbar;
                 ViewBagMatrix.Instance.Width = width;
-                ViewBagMatrix.Instance.Gap = gap;
+                ViewBagMatrix.Instance.Samples = samples;
                 ViewBagMatrix.Instance.ValSd = valsd;
                 ViewBagMatrix.Instance.SdCap = sdcap;
                 ViewBagMatrix.Instance.SdCap = Math.Round(ViewBagMatrix.Instance.SdCap, 2);
@@ -235,26 +240,25 @@ namespace Leucippus.Controllers
                         return View();
                 }
 
-                double nav_space = ViewBagMatrix.Instance.Gap;
+                int nav_samples = ViewBagMatrix.Instance.Samples;
                 double hov_min = ViewBagMatrix.Instance.HoverMin;
                 double hov_max = ViewBagMatrix.Instance.HoverMax;
                 string use_interp = ViewBagMatrix.Instance.Interp;
 
                 if (interp == "" && ViewBagMatrix.Instance.DensityType == "cryo-em")
                 {
-                    nav_space = ViewBagMatrix.Instance.Width / 25; //we reduce for cryo-em defaults like nav mode
+                    //nav_space = ViewBagMatrix.Instance.Width / 25; //we reduce for cryo-em defaults like nav mode
                     hov_min = -1;
                     hov_max = -1;
                 }
 
-                if (tabview != "S" && force_slow == "N") //for any tabview other than display we want to force a change to linear
+                if (tabview == "N") //for any tabview other than display we want to force a change to linear
                 {
-                    nav_space = ViewBagMatrix.Instance.Width / 15; //we reduce dramatically for nearest neighbor as how often do we need to look?
+                    nav_samples = Math.Min(ViewBagMatrix.Instance.Samples, 20); //we reduce dramatically for nearest neighbor as how often do we need to look?
                     if (use_interp != "NEAREST")
                     {                        
                         use_interp = "LINEAR";
                     }
-
                 }
                 else
                 {
@@ -263,29 +267,34 @@ namespace Leucippus.Controllers
                 }
                 if (atom_offset != 0)
                 {
-                    nav_space = ViewBagMatrix.Instance.Width / 20; //we dramatically reduce the pixels for navigation mode.
+                    //nav_space = ViewBagMatrix.Instance.Width / 20; //we dramatically reduce the pixels for navigation mode.
                     hov_min = -1;
                     hov_max = -1;
                 }
 
-                if (nav != "" && nav != null)
-                {
-                    if (use_interp != "NEAREST")
-                    {
-                        use_interp = "LINEAR";
-                    }
-                }
+                //if (nav != "" && nav != null)
+                //{
+                //    if (use_interp != "NEAREST")
+                //    {
+                //        use_interp = "LINEAR";
+                //    }
+                //}
 
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, use_interp, ViewBagMatrix.Instance.Fos, ViewBagMatrix.Instance.Fcs);
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, use_interp, ViewBagMatrix.Instance.Fos, ViewBagMatrix.Instance.Fcs, ViewBagMatrix.Instance.Copies);
 
                 ViewBagMatrix.Instance.SetCentral(c_xyz, ca, DensitySingleton.Instance.FD.PA, atom_offset);
                 ViewBagMatrix.Instance.SetLinear(l_xyz, la, DensitySingleton.Instance.FD.PA, atom_offset);
                 ViewBagMatrix.Instance.SetPlanar(p_xyz, pa, DensitySingleton.Instance.FD.PA, atom_offset);
 
+                if (nav == "minus")                                    
+                    ViewBagMatrix.Instance.Width -= 0.1;
+                else if (nav == "plus")
+                    ViewBagMatrix.Instance.Width += 0.1;
+
 
                 if (nav != "" && nav != null)
                 {                    
-                    if (nav == "plus")
+                    /*if (nav == "plus")
                     {
                         double ratio = ViewBagMatrix.Instance.Width / ViewBagMatrix.Instance.Gap;
                         ViewBagMatrix.Instance.Width += 0.1;
@@ -296,9 +305,9 @@ namespace Leucippus.Controllers
                         double ratio = ViewBagMatrix.Instance.Width / ViewBagMatrix.Instance.Gap;
                         ViewBagMatrix.Instance.Width -= 0.1;
                         ViewBagMatrix.Instance.Gap = ViewBagMatrix.Instance.Width / ratio;
-                    }
-                    else
-                    {
+                    }*/
+                    //else
+                    //{
                         dm.Space = new SpaceTransformation(ViewBagMatrix.Instance.CentralPosVector, ViewBagMatrix.Instance.LinearPosVector, ViewBagMatrix.Instance.PlanarPosVector);
                         ViewBagMatrix.Instance.CentralPosVector = dm.Space.extraNav(ViewBagMatrix.Instance.CentralPosVector, nav, nav_distance);
                         ViewBagMatrix.Instance.LinearPosVector = dm.Space.extraNav(ViewBagMatrix.Instance.LinearPosVector, nav, nav_distance);
@@ -311,9 +320,9 @@ namespace Leucippus.Controllers
                         ViewBagMatrix.Instance.SetCentral(cXYZ2, ca, DensitySingleton.Instance.FD.PA, atom_offset);
                         ViewBagMatrix.Instance.SetLinear(lXYZ2, la, DensitySingleton.Instance.FD.PA, atom_offset);
                         ViewBagMatrix.Instance.SetPlanar(pXYZ2, pa, DensitySingleton.Instance.FD.PA, atom_offset);
-                    }
+                    //}
 
-                    nav_space = ViewBagMatrix.Instance.Width / 25; //we dramatically reduce the pixels for navigation mode.
+                    //nav_space = ViewBagMatrix.Instance.Width / 25; //we dramatically reduce the pixels for navigation mode.
                     hov_min = -1;
                     hov_max = -1;
 
@@ -322,7 +331,7 @@ namespace Leucippus.Controllers
                 bool recalc = ViewBagMatrix.Instance.Refresh;
                 if (recalc || refresh_mode == "F")
                 {
-                    dm.create_scratch_slice(ViewBagMatrix.Instance.Width, nav_space,
+                    dm.create_scratch_slice(ViewBagMatrix.Instance.Width, nav_samples,
                     ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor,
                     ViewBagMatrix.Instance.CentralPosVector, ViewBagMatrix.Instance.LinearPosVector, ViewBagMatrix.Instance.PlanarPosVector,
                     ViewBagMatrix.Instance.CAtomStrucVector, ViewBagMatrix.Instance.LAtomStrucVector, ViewBagMatrix.Instance.PAtomStrucVector, DensitySingleton.Instance.FD.PA,
@@ -354,6 +363,9 @@ namespace Leucippus.Controllers
                 ViewBag.cAtom = ViewBagMatrix.Instance.CentralAtomStrucString;
                 ViewBag.lAtom = ViewBagMatrix.Instance.LinearAtomStrucString;
                 ViewBag.pAtom = ViewBagMatrix.Instance.PlanarAtomStrucString;
+                ViewBag.cAA = ViewBagMatrix.Instance.CAA;
+                ViewBag.lAA = ViewBagMatrix.Instance.LAA;
+                ViewBag.pAA = ViewBagMatrix.Instance.PAA;
 
                 ViewBag.cXYZ = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.CentralPosVector.A, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.CentralPosVector.B, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.CentralPosVector.C, 4)) + ")";
                 ViewBag.lXYZ = "(" + Convert.ToString(Math.Round(ViewBagMatrix.Instance.LinearPosVector.A, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.LinearPosVector.B, 4)) + "," + Convert.ToString(Math.Round(ViewBagMatrix.Instance.LinearPosVector.C, 4)) + ")";
@@ -362,6 +374,7 @@ namespace Leucippus.Controllers
                 ViewBag.PdbCode = ViewBagMatrix.Instance.PdbCode;
                 ViewBag.Fos = ViewBagMatrix.Instance.Fos;
                 ViewBag.Fcs = ViewBagMatrix.Instance.Fcs;
+                ViewBag.Copies = ViewBagMatrix.Instance.Copies;
                 ViewBag.YellowDots = ViewBagMatrix.Instance.YellowDots;
                 ViewBag.GreenDots = ViewBagMatrix.Instance.GreenDots;
                 ViewBag.HoverMin = hover_min;
@@ -379,7 +392,7 @@ namespace Leucippus.Controllers
 
 
                 ViewBag.Width = ViewBagMatrix.Instance.Width;
-                ViewBag.Gap = ViewBagMatrix.Instance.Gap;
+                ViewBag.Samples = ViewBagMatrix.Instance.Samples;
                 ViewBag.Interp = ViewBagMatrix.Instance.Interp;
                 ViewBag.BrowseAtoms = DensitySingleton.Instance.FD.PdbViewLink;
                 ViewBag.CDistance = ViewBagMatrix.Instance.CDistance;
@@ -409,8 +422,7 @@ namespace Leucippus.Controllers
                 ViewBag.NavDistance = ViewBagMatrix.Instance.NavDistance;
                 ViewBag.RefreshMode = "R";
                 ViewBag.AtomOffset = 0;
-                ViewBag.ForceSlow = force_slow;
-
+                
                 // visual
                 ViewBag.TabBackClr = "Gainsboro";
 
@@ -438,7 +450,7 @@ namespace Leucippus.Controllers
                 if (ccp4Status == "Y")
                 {
 
-                    DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, "LINEAR", 2, -1);
+                    DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, "LINEAR", 2, -1,2);
 
                     ViewBagMatrix.Instance.EmCode = DensitySingleton.Instance.FD.EmCode;
                     ViewBagMatrix.Instance.DensityType = DensitySingleton.Instance.FD.DensityType;
@@ -502,7 +514,7 @@ namespace Leucippus.Controllers
 
         public async Task<IActionResult> Projection(
             string pdbcode = "",
-            string update = "N",
+            string update = "Y",
             string symmetry = "Y",
             string atoms = "Y",
             double dmin = -1, 
@@ -517,7 +529,7 @@ namespace Leucippus.Controllers
             ViewBag.Error = "";                                    
             if (update == "Y")
             {
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, "NEAREST", 2, -1, symmetry == "Y");
+                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(ViewBagMatrix.Instance.PdbCode, "NEAREST", 2, -1, 2,symmetry == "Y");
                 VectorThree dims = dm.getMatrixDims();
                 //Symmetry sym = new Symmetry(xfac, yfac, zfac, xtran, ytran, ztran,(int)dims.A, (int)dims.B, (int)dims.C);
                 /*if (asymmetric == "Y")
@@ -612,102 +624,6 @@ namespace Leucippus.Controllers
 
 
             return View();
-        }
-        public async Task<IActionResult> Overlay(
-            string pdbcode = "", 
-            string update = "N",
-            int fos = 2,
-            int fcs = -1,
-            string interp = "LINEAR",
-            string motif= "C:CA:O",
-            string exclusions="A:1,A:2",
-            string inclusions = null)
-        {
-            ViewBag.Error = "";
-            ViewBag.Matches = new List<string>();
-            ViewBag.Lines = "";
-            if (update == "Y")
-            {                
-                DensityMatrix dm = await DensitySingleton.Instance.getMatrix(pdbcode, interp, fos, fcs);
-                List<VectorThree[]> match_coords = new List<VectorThree[]>();
-                List<string> lines = new List<string>();
-                List<string[]> match_motif = DensitySingleton.Instance.FD.PA.getMatchMotif(motif, exclusions, inclusions, out match_coords, out lines);
-
-                double[][]? sliceDensity = null;
-                double[][]? sliceRadient = null;
-                double[][]? sliceLaplacian = null;
-
-                double minV = 1000;
-                double maxV = -1000;
-                double minL = 1000;
-                double maxL = -1000;
-
-                // create each matrix
-                foreach (VectorThree[] coord in match_coords)
-                {
-                    dm.create_scratch_slice(5, 0.1,
-                        true, -1, -1,
-                        coord[0], coord[1], coord[2],
-                        coord[0], coord[1], coord[2],
-                        DensitySingleton.Instance.FD.PA, -1, -1);
-
-                    if (sliceDensity == null)
-                    {
-                        sliceDensity = dm.SliceDensity;
-                        sliceRadient = dm.SliceRadient;
-                        sliceLaplacian = dm.SliceLaplacian;
-                    }
-                    else
-                    {
-                        for (int i = 0; i < sliceDensity.Length; i++)
-                        {
-                            for (int j = 0; j < sliceDensity[i].Length; j++)
-                            {
-                                sliceDensity[i][j] += dm.SliceDensity[i][j];
-                                maxV = Math.Max(maxV, sliceDensity[i][j]);
-                                minV = Math.Min(minV, sliceDensity[i][j]);
-
-                                if (sliceRadient.Length == sliceDensity.Length)
-                                    sliceRadient[i][j] += dm.SliceRadient[i][j];
-
-                                if (sliceLaplacian.Length == sliceDensity.Length)
-                                {
-                                    sliceLaplacian[i][j] += dm.SliceLaplacian[i][j];
-                                    maxL = Math.Max(maxL, sliceLaplacian[i][j]);
-                                    minL = Math.Min(minL, sliceLaplacian[i][j]);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // matrix
-                ViewBag.SliceDensity = sliceDensity;
-                ViewBag.SliceRadient = sliceRadient;
-                ViewBag.SliceLaplacian = sliceLaplacian;
-                ViewBag.MinV = minV;
-                ViewBag.MaxV = maxV;
-                ViewBag.MinL = minL;
-                ViewBag.MaxL = maxL;
-                ViewBag.Matches = match_motif;
-                foreach (var ln in lines)
-                {
-                    ViewBag.Lines += ln + "\n";
-                }
-            }
-
-            // View items
-            ViewBag.PdbCode = pdbcode;
-            ViewBag.Motif = motif;
-            ViewBag.Exclusions = exclusions;
-            ViewBag.Inclusions = inclusions;
-            ViewBag.Fos = fos;
-            ViewBag.Fcs = fcs;
-            ViewBag.Interp = interp;
-
-            return View();
-
-        }
-
+        }        
     }
 }

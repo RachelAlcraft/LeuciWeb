@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewData["Title"] = "Matrix";
+    Layout = "~/Views/Shared/_LayoutDensity.cshtml";
+}
+<div class="subheader">
+    <span>
+        @Html.ActionLink(linkText: "Choose",actionName: "Browse",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Slice",actionName: "Slice",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Plane",actionName: "Plane",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })
+        @Html.ActionLink(linkText: "Projection",actionName: "Projection",controllerName: "Matrix",routeValues: new {pdbcode = ViewBag.PdbCode,},htmlAttributes: new { @class = "sub-header" })        
+    </span>
+</div>
+<br/>
+<h3>Overlay of Density Matrix - @ViewBag.PdbCode</h3>
+<hr />
+<div>
+    @using (Html.BeginForm("Motifs", "Matrix", FormMethod.Post))
+    {
+        <input style="display:none;visibility:collapse;" id="update" value='Y' name="update" />
+        <input style="display:none;visibility:collapse;" id="pdbcode" value=@ViewBag.PdbCode name="pdbcode" />
+        <table style="width:90%">
+            <tr>
+                <th style="width:10%">Motif finder</th>
+                <td><input type="text" id="motif" name="motif" value=@ViewBag.Motif style="height:30px;text-align:left;background-color:palegoldenrod" /></td>                
+            </tr>                                                
+        </table>
+        <input type="submit" value="find motif" />
+    }        
+</div>
+<hr />
+<div id="detls">
+    <span style="width:650px;float:left">Pdb Line</span>
+    <span style="width:150px;float:left">Distance</span>
+    <span style="width:300px;float:left">Key</span>
+    <br/>
+    <textarea rows="15" cols="80" style="float:left">@Html.Raw(@ViewBag.Lines)</textarea>
+    <textarea rows="15" cols="15" style="float:left">@Html.Raw(@ViewBag.Distances)</textarea>
+    <textarea rows="15" cols="30" style="float:left">@Html.Raw(@ViewBag.Matches)</textarea>
+</div>
+<hr />
+
+   
+<div>
+    </p>@ViewBag.Error<p>
+</div>
+

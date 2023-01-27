@@ -79,6 +79,8 @@ namespace LeuciShared
         public double[]? SliceAxis;
         private Interpolator _interpMap;
         private string _interp;
+        private int _copies;
+        private bool ok_for_whole_spline = true;
         private int _fos;
         private int _fcs;
         private bool _symmetry = true;
@@ -86,15 +88,16 @@ namespace LeuciShared
         private double _combSd;
         private double _combMin;
         private double _combMax;
+        
 
-        public static async Task<DensityMatrix> CreateAsync(string pdbcode, string empath, string diffpath, string interp, int fos, int fcs,bool symmetry)
+        public static async Task<DensityMatrix> CreateAsync(string pdbcode, string empath, string diffpath, string interp, int fos, int fcs,bool symmetry, int copies)
         {
             DensityMatrix x = new DensityMatrix();
-            x.InitializeAsync(empath, diffpath, interp, fos, fcs,symmetry);
+            x.InitializeAsync(empath, diffpath, interp, fos, fcs,symmetry,copies);
             return x;
         }
         private DensityMatrix() { }
-        private void InitializeAsync(string edFile, string difFile, string interp, int fos, int fcs, bool symmetry)
+        private void InitializeAsync(string edFile, string difFile, string interp, int fos, int fcs, bool symmetry, int copies)
         {
             //_emcode = emcode;
             //string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
@@ -102,6 +105,7 @@ namespace LeuciShared
             _fos = fos;
             _fcs = fcs;
             _symmetry = symmetry;
+            _copies = copies;
 
             _densityBinary = new DensityBinary(edFile);
             if (difFile != "")
@@ -120,8 +124,9 @@ namespace LeuciShared
             _B = _densityBinary.Y2_cap;
             _C = _densityBinary.X1_cap;
             Info = _densityBinary.Info;
+            ok_for_whole_spline = (_A * _B * _C) < (350 * 350 * 350);
             _cublet = new Cubelet(_A, _B, _C);
-            changeInterp(interp);
+            changeInterp(interp, _copies);
             
         }
 
@@ -140,10 +145,11 @@ namespace LeuciShared
             return _densityBinary.getCRSFromXYZ(XYZ);
         }
 
-        public void changeInterp(string interp)
+        public void changeInterp(string interp,int copies)
         {
             // main density is 2Fo-Fc
             // diff density is Fo-Fc
+            _copies = copies;
             int m = 0;
             int d = 0;
             m = _fos;
@@ -178,22 +184,31 @@ namespace LeuciShared
             _combSd = Math.Sqrt((sum) / (fofc.Count() - 1));
 
             _interp = interp;
+            if (_interp == "BSPLINE")
+            {
+                if (ok_for_whole_spline)
+                    _interp = "BSPLINEWHOLE";
+                else
+                    _interp = "BSPLINE3";
+            }
+            
             if (_interp == "BSPLINEWHOLE")
-                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3);
+                _interpMap = new BetaSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3,_copies,false,false);
             else if (_interp == "LINEAR")
-                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 1);
+                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 1,_copies);
             else if (_interp == "CUBIC")
-                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3);
+                _interpMap = new Multivariate(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, _copies);
             else if (_interp == "BSPLINE3")
-                _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64);
+                _interpMap = new OptBSpline(fofc, 0, _densityBinary.Blength, _C, _B, _A, 3, 64, 0);
             else
-                _interpMap = new Nearest(fofc, 0, _densityBinary.Blength, _C, _B, _A);
+                _interpMap = new Nearest(fofc, 0, _densityBinary.Blength, _C, _B, _A, _copies);
+
         }
         private void createData()
         {
             if (!_densityBinary.INIT)
             {
-                changeInterp(_interp);
+                changeInterp(_interp,_copies);
                 //projection();
             }
         }        
@@ -489,7 +504,7 @@ namespace LeuciShared
             }
             
         }
-        public void create_scratch_slice(double width, double gap, bool sd, double sdcap, double sdfloor,
+        public void create_scratch_slice(double width, int samples, bool sd, double sdcap, double sdfloor,
                                 VectorThree central, VectorThree linear, VectorThree planar,
                                 VectorThree acentral, VectorThree alinear, VectorThree aplanar,
                                 PdbAtoms PA, double hover_min, double hover_max)
@@ -503,10 +518,12 @@ namespace LeuciShared
                 DenMin = (_combMin - _combMean) / _combSd;
                 DenMax = (_combMax - _combMean) / _combSd;
             }
+            double gap = width / samples;
             ////////////////////////////////////////////////////////////////////
 
             // we want to first build a smaller cube around the centre
             VectorThree crs_centre = _densityBinary.getCRSFromXYZ(central);
+            _interpMap.seedCentre(crs_centre, width); // SEED THE CENTRE OF THE INTERPOLATOR  for optimisation
             int xmin = (int)Math.Floor(crs_centre.A) - 16;
             int xmax = (int)Math.Floor(crs_centre.A) + 16;
             int ymin = (int)Math.Floor(crs_centre.B) - 16;
@@ -528,7 +545,7 @@ namespace LeuciShared
 
 
 
-            int nums = Convert.ToInt32(width / gap);
+            int nums = samples;// Convert.ToInt32(width / gap);
             int halfLength = Convert.ToInt32((nums) / 2);
             DMin = 100;
             LMin = 100;
@@ -722,9 +739,9 @@ namespace LeuciShared
                             SliceRadient[m][n] = -1;
                         }
                     }
-
                 }
             }
+            _interpMap.unSeedCentre();
         }
 
     }

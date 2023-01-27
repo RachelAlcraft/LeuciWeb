@@ -1,6 +1,7 @@
 ﻿
 
 using LeuciShared;
+using Microsoft.Build.Framework;
 
 namespace Leucippus.Models
 {
@@ -52,6 +53,7 @@ namespace Leucippus.Models
         public string T2Display { get; set; } = "none";
         public string T3Display { get; set; } = "none";
         public string T4Display { get; set; } = "none";
+        public string T5Display { get; set; } = "none";
 
         private string _pdbcode = "6eex";
         public string PdbCode
@@ -118,7 +120,22 @@ namespace Leucippus.Models
                 incRefresh();
             Fcs = fcs;
         }
-
+        int _copies = 2;
+        public int Copies 
+        { 
+            get
+            {
+                return _copies;
+            } 
+            set
+            {
+                if (value != _copies)
+                {
+                    _copies = value;
+                    incRefresh();
+                }
+            }
+        }
         public string YellowDots { get; set; } = "checked";
         public string GreenDots { get; set; } = "checked";
 
@@ -483,41 +500,42 @@ namespace Leucippus.Models
             }
         }
 
-        private double _gap = 0.2;
-        public double Gap
+        private int _samples = 100;
+        public int Samples
         {
-            get { return _gap; }
+            get { return _samples; }
             set
             {
                 //don't maintain ratio when increasing the gap                
-                if (value == -2) // this means increase by 0.05
+                if (value == -2) // this means increase focus
                 {
-                    _gap += 0.01;
+                    _samples += 5;                    
                     incRefresh();
                 }
                 else if (value == -3)
                 {
-                    _gap -= 0.01;
-                    if (_gap <= 0.01)
-                        _gap = 0.01;
+                    _samples -= 5;                    
                     incRefresh();
                 }
                 else if (value == -1) // this means go back to default
                 {
-                    _gap = 0.1;
+                    _samples = 100;
                 }
-                else if (Math.Round(value, 4) != Math.Round(_gap, 4))
+                else if (value != _samples)
                 {
-                    _gap = value;
+                    _samples = value;
                     incRefresh();
                 }
-                if (_width / _gap > 110)
+                if (_samples > 200)
                 {
-                    _gap = _width / 110;
+                    _samples = 200;
                     incRefresh();
                 }
-                _width = Math.Round(_width, 4);
-                _gap = Math.Round(_gap, 4);
+                if (_samples < 1)
+                {
+                    _samples = 1;
+                    incRefresh();
+                }                
             }
         }
         private double _width = 6.0;
@@ -527,11 +545,11 @@ namespace Leucippus.Models
             set
             {
                 //maintain ratio
-                double nums = _width * _gap;
+                //double nums = _width * _gap;
                 if (value == -2) // this means increase by 0.5
                 {
                     _width += 0.5;
-                    _gap = nums / _width;
+                    //_gap = nums / _width;
                     incRefresh();
                 }
                 else if (value == -3) //this means decrease by 0.5
@@ -539,7 +557,7 @@ namespace Leucippus.Models
                     _width -= 0.5;
                     if (_width <= 0.5)
                         _width = 0.5;
-                    _gap = nums / _width;
+                    //_gap = nums / _width;
                     incRefresh();
                 }
                 else if (value == -1) // this means go back to default
@@ -548,29 +566,30 @@ namespace Leucippus.Models
                 }
                 else if (Math.Round(value, 4) != Math.Round(_width, 4))
                 {
-                    double aspectRatio = _width * _gap;
+                    //double aspectRatio = _width * _gap;
                     _width = value;
-                    _gap = _width / aspectRatio;
+                    //_gap = _width / aspectRatio;
                     incRefresh();
                 }
-                if (_width / _gap > 110)
-                {
-                    _gap = _width / 110;
-                    incRefresh();
-                }
+                //if (_width / _gap > 110)
+                //{
+                //    _gap = _width / 110;
+                //    incRefresh();
+                //}
                 _width = Math.Round(_width, 4);
-                _gap = Math.Round(_gap, 4);
+                //_gap = Math.Round(_gap, 4);
             }
         }
         // Handle setting the central-linear-planar
         public VectorThree CentralPosVector = new VectorThree(-1, -1, -1);
         private string _cxyz = "(-1,-1,-1)";
         public VectorThree CAtomStrucVector = new VectorThree(-1, -1, -1);
+        public string CAA = "";
         public string CentralAtomStrucString = "A:1@C";
         public double CDistance = 0;
         public void SetCentral(string cxyz, string ca, PdbAtoms pdba, int atom_offset, bool refresh = true)
         {
-            SetAtom(cxyz, ca, pdba, 0, atom_offset, ref CentralPosVector, ref CAtomStrucVector, ref CentralAtomStrucString, ref _cxyz, ref CDistance);
+            SetAtom(cxyz, ca, pdba, 0, atom_offset, ref CentralPosVector, ref CAtomStrucVector, ref CentralAtomStrucString, ref _cxyz, ref CDistance, ref CAA);
             /*
             if (cxyz == null)
                 cxyz = "";
@@ -637,10 +656,11 @@ namespace Leucippus.Models
         private string _lxyz = "(-1,-1,-1)";
         public VectorThree LAtomStrucVector = new VectorThree(-1, -1, -1);
         public string LinearAtomStrucString = "A:1@O";
+        public string LAA = "";
         public double LDistance = 0;
         public void SetLinear(string lxyz, string la, PdbAtoms pdba, int atom_offset, bool refresh = true)
         {
-            SetAtom(lxyz, la, pdba, 1, atom_offset, ref LinearPosVector, ref LAtomStrucVector, ref LinearAtomStrucString, ref _lxyz, ref LDistance);
+            SetAtom(lxyz, la, pdba, 1, atom_offset, ref LinearPosVector, ref LAtomStrucVector, ref LinearAtomStrucString, ref _lxyz, ref LDistance,ref LAA);
             /*if (lxyz == null)
                 lxyz = "";
             if (la == null)
@@ -700,11 +720,13 @@ namespace Leucippus.Models
         public VectorThree PAtomStrucVector = new VectorThree(-1, -1, -1);
         private string _pxyz = "(-1,-1,-1)";
         public string PlanarAtomStrucString = "A:2@N";
+        public string PAA = "";
         public double PDistance = 0;
 
         private void SetAtom(
             string xyz, string at, PdbAtoms pdba, int pos, int atom_offset,
-            ref VectorThree PosVec, ref VectorThree StrucVec, ref string atom, ref string coords, ref double distance)
+            ref VectorThree PosVec, ref VectorThree StrucVec, ref string atom, ref string coords, ref double distance,
+            ref string AA)
         {
             if (xyz == null)
                 xyz = "";
@@ -723,7 +745,7 @@ namespace Leucippus.Models
                 if (at != atom || atom_offset != 0)
                 {
                     atom = pdba.getIncAtom(at, atom_offset);
-                    StrucVec = pdba.getCoords(atom);
+                    StrucVec = pdba.getCoords(atom);                    
                     incRefresh();
                 }
             }
@@ -746,11 +768,12 @@ namespace Leucippus.Models
                 PosVec = new VectorThree(StrucVec.A, StrucVec.B, StrucVec.C);
                 incRefresh();
             }
+            AA = pdba.getAA(atom);
             distance = Math.Round(PosVec.distance(StrucVec), 3);
         }
         public void SetPlanar(string pxyz, string pa, PdbAtoms pdba, int atom_offset)
         {
-            SetAtom(pxyz, pa, pdba, 2, atom_offset, ref PlanarPosVector, ref PAtomStrucVector, ref PlanarAtomStrucString, ref _pxyz, ref PDistance);
+            SetAtom(pxyz, pa, pdba, 2, atom_offset, ref PlanarPosVector, ref PAtomStrucVector, ref PlanarAtomStrucString, ref _pxyz, ref PDistance,ref PAA);
             /*if (pxyz == null)
                 pxyz = "";
             if (pa == null)
