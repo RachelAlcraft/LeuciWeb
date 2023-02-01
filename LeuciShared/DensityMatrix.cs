@@ -81,8 +81,8 @@ namespace LeuciShared
         private string _interp;
         private int _copies;
         private bool ok_for_whole_spline = true;
-        private int _fos;
-        private int _fcs;
+        private double _fos;
+        private double _fcs;
         private bool _symmetry = true;
         private double _combMean;
         private double _combSd;
@@ -90,14 +90,14 @@ namespace LeuciShared
         private double _combMax;
         
 
-        public static async Task<DensityMatrix> CreateAsync(string pdbcode, string empath, string diffpath, string interp, int fos, int fcs,bool symmetry, int copies)
+        public static async Task<DensityMatrix> CreateAsync(string pdbcode, string empath, string diffpath, string interp, double fos, double fcs,bool symmetry, int copies)
         {
             DensityMatrix x = new DensityMatrix();
             x.InitializeAsync(empath, diffpath, interp, fos, fcs,symmetry,copies);
             return x;
         }
         private DensityMatrix() { }
-        private void InitializeAsync(string edFile, string difFile, string interp, int fos, int fcs, bool symmetry, int copies)
+        private void InitializeAsync(string edFile, string difFile, string interp, double fos, double fcs, bool symmetry, int copies)
         {
             //_emcode = emcode;
             //string edFile = "wwwroot/App_Data/" + _emcode + ".ccp4";
@@ -145,13 +145,28 @@ namespace LeuciShared
             return _densityBinary.getCRSFromXYZ(XYZ);
         }
 
+        public SinglePosition getSinglePosition()
+        {
+            SinglePosition sliceA = new SinglePosition();
+            sliceA.xAxis = this.SliceAxis;
+            sliceA.yAxis = this.SliceAxis;
+            sliceA.densityMatrix = this.SliceDensity;
+            sliceA.radientMatrix = this.SliceRadient;
+            sliceA.laplacianMatrix = this.SliceLaplacian;
+            sliceA.minD = this.DMin;
+            sliceA.maxD = this.DMax;
+            sliceA.minL = this.LMin;
+            sliceA.maxL = this.LMax;            
+            return sliceA;
+        }
+
         public void changeInterp(string interp,int copies)
         {
             // main density is 2Fo-Fc
             // diff density is Fo-Fc
             _copies = copies;
-            int m = 0;
-            int d = 0;
+            double m = 0;
+            double d = 0;
             m = _fos;
             d = -1 * _fos;
             m += _fcs;
@@ -166,7 +181,7 @@ namespace LeuciShared
                 {
                     Single valueM = BitConverter.ToSingle(_densityBinary.Bytes, _densityBinary.Bstart + i * 4);
                     Single valueD = BitConverter.ToSingle(_densityDiffBinary.Bytes, _densityBinary.Bstart + i * 4);
-                    fofc[i] = m * valueM + d * valueD;
+                    fofc[i] = (Single)(m * valueM + d * valueD);
                     _combMax = Math.Max(fofc[i], _combMax);
                     _combMin = Math.Min(fofc[i], _combMin);
                 }
@@ -504,7 +519,7 @@ namespace LeuciShared
             }
             
         }
-        public void create_scratch_slice(double width, int samples, bool sd, double sdcap, double sdfloor,
+        public void create_scratch_slice(double width, int samples, bool sd,
                                 VectorThree central, VectorThree linear, VectorThree planar,
                                 VectorThree acentral, VectorThree alinear, VectorThree aplanar,
                                 PdbAtoms PA, double hover_min, double hover_max)

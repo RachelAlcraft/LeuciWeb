@@ -331,8 +331,7 @@ namespace Leucippus.Controllers
                 bool recalc = ViewBagMatrix.Instance.Refresh;
                 if (recalc || refresh_mode == "F")
                 {
-                    dm.create_scratch_slice(ViewBagMatrix.Instance.Width, nav_samples,
-                    ViewBagMatrix.Instance.IsSD, ViewBagMatrix.Instance.SdCap, ViewBagMatrix.Instance.SdFloor,
+                    dm.create_scratch_slice(ViewBagMatrix.Instance.Width, nav_samples, ViewBagMatrix.Instance.IsSD, 
                     ViewBagMatrix.Instance.CentralPosVector, ViewBagMatrix.Instance.LinearPosVector, ViewBagMatrix.Instance.PlanarPosVector,
                     ViewBagMatrix.Instance.CAtomStrucVector, ViewBagMatrix.Instance.LAtomStrucVector, ViewBagMatrix.Instance.PAtomStrucVector, DensitySingleton.Instance.FD.PA,
                     hov_min, hov_max

@@ -25,6 +25,10 @@ namespace LeuciShared
         public double maxD { get; set; }
         public double minL { get; set; }
         public double maxL { get; set; }
+        public double dcap { get; set; }
+        public double dfloor { get; set; }
+        public string cbar { get; set; }
+        public string hue { get; set; }
         public double[][]? densityMatrix { get; set; }        
         public void copyDensity(double[][] den)
         {
@@ -61,6 +65,27 @@ namespace LeuciShared
                     laplacianMatrix[i][j] = lap[i][j];
                 }
             }
+        }
+ 
+        public static SinglePosition makeFromFlat(string xAxis, string yAxis, string density, string radient, string laplacian, 
+            double minD, double maxD, double minL, double maxL,
+            double dfloor, double dcap, string hue, string cbar)
+        {
+            SinglePosition sliceF = new SinglePosition();
+            sliceF.xAxis = Helper.listFromString(xAxis);
+            sliceF.yAxis = Helper.listFromString(yAxis);
+            sliceF.densityMatrix = Helper.unwrapList(density);
+            sliceF.radientMatrix = Helper.unwrapList(radient);
+            sliceF.laplacianMatrix = Helper.unwrapList(laplacian);
+            sliceF.minD = minD;
+            sliceF.minL = minL;
+            sliceF.maxD = maxD;
+            sliceF.maxL = maxL;
+            sliceF.dfloor = dfloor;
+            sliceF.dcap = dcap;
+            sliceF.hue = hue;
+            sliceF.cbar = cbar;
+            return sliceF;
         }
 
 

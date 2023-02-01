@@ -4,7 +4,748 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Compare</h1>
+<h1>Compare Two Structures</h1>
+
+@using (Html.BeginForm("Index", "Compare", FormMethod.Post))
+{
+<!--A hidden area to house all the view bag values in this where the entire body is a form-->
+<!-- Once they are used elsewhere they are removed - there MUST BE ONLY ONE FIELD for each of these in this form -->
+    <!--<div style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none">-->
+<div>
+        tabview<input id="activetab" value=@ViewBag.ActiveTab name="activetab" />
+        <br/>mode<input id="mode" value=@ViewBag.Mode name="mode" />     
+        <br/>nav<input id="nav" value=@ViewBag.Nav name="nav" />     
+        
+        <br/>slicedensityA<input id="slicedensityA" value="" name="slicedensityA" />
+        <br />minDA<input id="minDA" value="" name="minDA" />
+        <br />minLA<input id="minLA" value="" name="minLA" />
+        <br />maxDA<input id="maxDA" value="" name="maxDA" />
+        <br />maxLA<input id="maxLA" value="" name="maxLA" />
+        
+        <br/>slicedensityB<input id="slicedensityB" value="" name="slicedensityB" />
+        <br />minDB<input id="minDB" value="" name="minDB" />
+        <br />minLB<input id="minLB" value="" name="minLB" />
+        <br />maxDB<input id="maxDB" value="" name="maxDB" />
+        <br />maxLB<input id="maxLB" value="" name="maxLB" />
+
+        <br/>slicedensityB<input id="slicedensityD" value="" name="slicedensityD" />
+        <br />minDD<input id="minDD" value="" name="minDD" />
+        <br />minLD<input id="minLD" value="" name="minLD" />
+        <br />maxDD<input id="maxDD" value="" name="maxDD" />
+        <br />maxLD<input id="maxLD" value="" name="maxLD" />
+        
+        <br/>xAxis<input id="xAxis" value="" name="xAxis" />
+        <br/>yAxis<input id="yAxis" value="" name="yAxis" />
+        <br/>xAxisB<input id="xAxisB" value="" name="xAxisB" />
+        <br/>yAxisB<input id="yAxisB" value="" name="yAxisB" />
+        <br/>xAxisD<input id="xAxisD" value="" name="xAxisD" />
+        <br/>yAxisD<input id="yAxisD" value="" name="yAxisD" />
+
+        <!-- VISUAL ELEMENTS-->
+        <br/>dfloorA<input id="dfloorA" value="100" name="dfloorA" />
+        <br/>dcapA<input id="dcapA" value="100" name="dcapA" />
+        <br/>cbarA<input id="cbarA" value="Y" name="cbarA" />
+        <br/>hueA<input id="hueA" value="Best" name="hueA" />
+        <br/>plotA<input id="plotA" value="heatmap" name="plotA" />
+
+        <br/>dfloorB<input id="dfloorB" value="100" name="dfloorB" />
+        <br/>dcapB<input id="dcapB" value="100" name="dcapB" />
+        <br/>cbarB<input id="cbarB" value="Y" name="cbarB" />
+        <br/>hueB<input id="hueB" value="Best" name="hueB" />
+        <br/>plotB<input id="plotB" value="heatmap" name="plotB" />
+
+        <br/>dfloorD<input id="dfloorD" value="100" name="dfloorD" />
+        <br/>dcapD<input id="dcapD" value="100" name="dcapD" />
+        <br/>cbarD<input id="cbarD" value="Y" name="cbarD" />
+        <br/>hueD<input id="hueD" value="Best" name="hueD" />
+        <br/>plotD<input id="plotD" value="heatmap" name="plotD" />
+
+        
+        
+</div>
+
+<div class="tab">
+    <span>
+        <input type="submit" value="Structure A" id="tabA" onclick="ChangeTab('tA')" style="border:none;color:@ViewBag.ColorA" />        
+        <input type="submit" value="Structure B" id="tabB" onclick="ChangeTab('tB')" style="border:none;color:@ViewBag.ColorB" />        
+        <input type="submit" value="Options" id="tabO" onclick="ChangeTab('tO')" style="border:none;color:@ViewBag.ColorO" />
+    </span>
+</div>
+<!--##################################### TAB DISPLAY SECTION - STRUCTURE A ############################################# -->
+<div id="StrucA" class="tabcontent" style="display:@ViewBag.DisplayA;background-color:silver">
+    <h3>Structure A</h3>
+    <table>
+        <tr>
+            <td>
+                PdbCodeA:
+            </td>
+            <td>
+                <input type="text" id="pdbcodeA" name="pdbcodeA" value=@ViewBag.PdbCodeA style="height:30px;" />
+            </td>
+            <td>
+                <input type="image" src="~/images/searchv.png" style="width:30px;height:30px;vertical-align:text-bottom" />
+            </td>
+        </tr>
+    </table>
+    <!-- ########################################################################## -->
+        <div>
+        <table>
+        <tr>
+            <td style="width:85%;background-color:silver">
+                <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
+                <tr>
+                    <th style="width:20%;background:Gainsboro">
+                        <a href=@ViewBag.BrowseAtomsA target="_blank">Browse atoms</a>
+                    </th>
+                    <th style="background:Gainsboro;" colspan="1" align="center">
+                        <table style="width:100%;border:none;margin:unset;padding:unset">
+                            <tr>
+                                <td style="background:Gainsboro;"><input type="submit" value="<<"  onclick="NavPressed('A:-A')" /></td>
+                                <td style="background:Gainsboro;"><input type="submit" value="Submit Atoms"  onclick="NavPressed('A:RE')" /></td>
+                                <td style="background:Gainsboro;"><input type="submit" value=">>"  onclick="NavPressed('A:+A')" /></td>
+                            </tr>
+                        </table>                                                                                    
+                    </th>                        
+                    <th style="background:Gainsboro;color:navy;width:40px" colspan="1" align="center">aa</th>
+                                <th style="background:Gainsboro;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)" onclick="NavPressed('A:XYZ')" /></th>
+                                <th style="background:Gainsboro;color:navy" colspan="1" align="center">distance</th>                
+                    </tr>                        
+                <tr>
+                    <td>central</td>
+                    <td><input style="color:silver" type="text" id="caA" name="caA" value=@ViewBag.cAtomA></td>
+                    <td>@ViewBag.cAAA</td>
+                    <td><input type="text" id="c_xyzA" name="c_xyzA" value=@ViewBag.cXYZA></td>
+                    <td><div id="cdistance">@ViewBag.CDistanceA</div></td>                
+                </tr>
+                <tr>
+                    <td>linear</td>
+                    <td><input style="color:silver" type="text" id="laA" name="laA" value=@ViewBag.lAtomA></td>
+                    <td>@ViewBag.lAAA</td>
+                    <td><input type="text" id="l_xyzA" name="l_xyzA" value=@ViewBag.lXYZA></td>
+                    <td><div id="ldistance">@ViewBag.LDistanceA</div></td>                
+                </tr>
+                <tr>
+                    <td>planar</td>
+                    <td><input style="color:silver" type="text" id="paA" name="paA" value=@ViewBag.pAtomA></td>
+                    <td>@ViewBag.pAAA</td>
+                    <td><input type="text" id="p_xyzA" name="p_xyzA" value=@ViewBag.pXYZA></td>
+                    <td><div id="pdistance">@ViewBag.PDistanceA</div></td>                
+                </tr>   
+                <tr>
+                    <td colspan="5" style="background:Gainsboro;color:navy">Density Range (@ViewBag.ValSdA)</td>
+                </tr>
+                <tr>
+                    <td style="background:LightCyan;"><span>Min=@ViewBag.DenMinA</span>: Floor=<span><input style="width:50px" type="text" id="sdfloorA" name="sdfloorA" value=@ViewBag.SdFloorA></span></td>
+                    <td style="background:LightCyan;"><input type="range" min=@ViewBag.DenMinA max=0 value=@ViewBag.SdFloorA step="0.1" style="direction:ltr" id="rangeValueMinA"></td>
+                    <td colspan="2" style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMaxA value=@ViewBag.SdCapA step="0.1" style="direction:ltr" id="rangeValueMaxA"></td>
+                    <td style="background:LightCyan;"><span>Max=@ViewBag.DenMaxA</span>: Cap=<span><input style="width:50px" type="text" id="sdcapA" name="sdcapA" value=@ViewBag.SdCapA></span></td>
+                </tr>                
+                </table>                        
+            </td>   
+            <td>
+        <!-- https://stackoverflow.com/questions/34639583/how-can-i-create-responsive-joystick-layout-buttons-in-html   -->
+        <p style="color:crimson;text-align:center">Navigation</p>
+        <!-- JOY STICK OBJECT -->
+        <div id="joystick" style="width:100%;text-align:center;align-content:center">            
+            <div>                                    
+                <label style="width:100%;align-content:center">
+                <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="submit" name="image" value="x">
+                    <svg width="100%" height="100%" viewBox="0 0 100 100" style="text-align:center;">
+                    <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgb(168,168,168);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgb(239,239,239);stop-opacity:1" />
+                    </linearGradient>
+                    </defs>
+
+                    <circle cx="50" cy="50" r="38" fill="url(#grad1)" />
+                    <circle cx="50" cy="50" r="38" fill="url(#grad2)" stroke="black" stroke-width="1.5px" />
+                    <circle cx="50" cy="50" r="38" fill="url(#grad3)" />
+                    <circle cx="50" cy="50" r="20" fill="#cccccc" stroke="black" stroke-width="2px" />
+
+                    <path onclick="NavPressed('A:TO')" style="cursor:pointer" d="M50,0 54,8 46,8Z" fill="rgba(0,0,0,0.8)"><title>tilt over</title></path>
+                    <path onclick="NavPressed('A:UP')" style="cursor:pointer" d="M50,14 54,22 46,22Z" fill="rgba(0,0,0,0.8)"><title>up</title></path>                        
+                    <path onclick="NavPressed('A:DN')" style="cursor:pointer" d="M50,86 54,78 46,78Z" fill="rgba(0,0,0,0.8)"><title>down</title></path>
+                    <path onclick="NavPressed('A:TU')" style="cursor:pointer" d="M50,100 54,92 46,92Z" fill="rgba(0,0,0,0.8)"><title>tilt under</title></path>
+                    <path onclick="NavPressed('A:LE')" style="cursor:pointer" d="M14,50 22,54 22,46Z" fill="rgba(0,0,0,0.8)"><title>left</title></path>
+                    <path onclick="NavPressed('A:TL')" style="cursor:pointer" d="M0,50 8,54 8,46Z" fill="rgba(0,0,0,0.8)"><title>tilt left</title></path>
+                    <path onclick="NavPressed('A:RI')" style="cursor:pointer" d="M86,50 78,54 78,46Z" fill="rgba(0,0,0,0.8)"><title>right</title></path>
+                    <path onclick="NavPressed('A:TR')" style="cursor:pointer" d="M100,50 92,54 92,46Z" fill="rgba(0,0,0,0.8)"><title>tilt right</title></path>
+                    <path onclick="NavPressed('A:AC')" style="cursor:pointer" d="M20,20 15,15 10,25Z" fill="rgba(0,0,0,0.8)"><title>anti-clockwise</title></path>
+                    <path onclick="NavPressed('A:CL')" style="cursor:pointer" d="M80,20 85,15 90,25Z" fill="rgba(0,0,0,0.8)"><title>clockwise</title></path>
+                    <clipPath id="cut-off">
+                    <rect x="0" y="0" width="70" height="50"/>
+                    </clipPath>
+                    <circle onclick="NavPressed('A:BA')" style="cursor:pointer" cx="50" cy="50" r="20" fill="darkseagreen"><title>back</title></circle>
+                    <circle onclick="NavPressed('A:FW')" style="cursor:pointer" cx="50" cy="50" r="20" fill="lightseagreen" clip-path="url(#cut-off)"><title>fwd</title></circle>
+                </svg>                        
+                </label>                    
+            </div>                                                         
+        </div>
+        <!-- UN-JOY STICK OBJECT -->
+        </td>
+        </tr>
+        </table>        
+    </div>
+    <!-- ########################################################################## -->
+</div>
+<!--##################################### TAB DISPLAY SECTION - STRUCTURE B ############################################# -->
+<div id="StrucB" class="tabcontent" style="display:@ViewBag.DisplayB;background-color:silver">
+    <h3>Structure B</h3>
+    <table>
+        <tr>
+            <td>
+                PdbCodeB:
+            </td>
+            <td>
+                <input type="text" id="pdbcodeB" name="pdbcodeB" value=@ViewBag.PdbCodeB style="height:30px;" />
+            </td>
+            <td>
+                <input type="image" src="~/images/searchv.png" style="width:30px;height:30px;vertical-align:text-bottom" />
+            </td>
+        </tr>
+    </table>
+    <!-- ########################################################################## -->
+        <div>
+        <table>
+        <tr>
+            <td style="width:85%;background-color:silver">
+                <table cellpadding="0" cellspacing="0" style="width:100%;table-layout: fixed;">
+                <tr>
+                    <th style="width:20%;background:Gainsboro">
+                        <a href=@ViewBag.BrowseAtomsB target="_blank">Browse atoms</a>
+                    </th>
+                    <th style="background:Gainsboro;" colspan="1" align="center">
+                        <table style="width:100%;border:none;margin:unset;padding:unset">
+                            <tr>
+                                <td style="background:Gainsboro;"><input type="submit" value="<<"  onclick="NavPressed('B:-A')" /></td>
+                                <td style="background:Gainsboro;"><input type="submit" value="Submit Atoms"  onclick="NavPressed('B:RE')" /></td>
+                                <td style="background:Gainsboro;"><input type="submit" value=">>"  onclick="NavPressed('B:+A')" /></td>
+                            </tr>
+                        </table>                                                                                    
+                    </th>                        
+                    <th style="background:Gainsboro;color:navy;width:40px" colspan="1" align="center">aa</th>
+                    <th style="background:Gainsboro;" colspan="1" align="center"><input type="submit" value="Submit (x,y,z)" onclick="NavPressed('B:XYZ')" /></th>
+                    <th style="background:Gainsboro;color:navy" colspan="1" align="center">distance</th>                
+                    </tr>                        
+                <tr>
+                    <td>central</td>
+                    <td><input style="color:silver" type="text" id="caB" name="caB" value=@ViewBag.cAtomB></td>
+                    <td>@ViewBag.cAAB</td>
+                    <td><input type="text" id="c_xyzB" name="c_xyzB" value=@ViewBag.cXYZB></td>
+                    <td><div id="cdistance">@ViewBag.CDistanceB</div></td>                
+                </tr>
+                <tr>
+                    <td>linear</td>
+                    <td><input style="color:silver" type="text" id="laB" name="laB" value=@ViewBag.lAtomB></td>
+                    <td>@ViewBag.lAAB</td>
+                    <td><input type="text" id="l_xyzB" name="l_xyzB" value=@ViewBag.lXYZB></td>
+                    <td><div id="ldistance">@ViewBag.LDistanceB</div></td>                
+                </tr>
+                <tr>
+                    <td>planar</td>
+                    <td><input style="color:silver" type="text" id="paB" name="paB" value=@ViewBag.pAtomB></td>
+                    <td>@ViewBag.pAAB</td>
+                    <td><input type="text" id="p_xyzB" name="p_xyzB" value=@ViewBag.pXYZB></td>
+                    <td><div id="pdistance">@ViewBag.PDistanceB</div></td>                
+                </tr>   
+                <tr>
+                    <td colspan="5" style="background:Gainsboro;color:navy">Density Range (@ViewBag.ValSdB)</td>
+                </tr>
+                <tr>
+                    <td style="background:LightCyan;"><span>Min=@ViewBag.DenMinB</span>: Floor=<span><input style="width:50px" type="text" id="sdfloorB" name="sdfloorB" value=@ViewBag.SdFloorB></span></td>
+                    <td style="background:LightCyan;"><input type="range" min=@ViewBag.DenMinB max=0 value=@ViewBag.SdFloorB step="0.1" style="direction:ltr" id="rangeValueMinB"></td>
+                    <td colspan="2" style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMaxB value=@ViewBag.SdCapB step="0.1" style="direction:ltr" id="rangeValueMaxB"></td>
+                    <td style="background:LightCyan;"><span>Max=@ViewBag.DenMaxB</span>: Cap=<span><input style="width:50px" type="text" id="sdcapB" name="sdcapB" value=@ViewBag.SdCapB></span></td>
+                </tr>                
+                </table>                        
+            </td>   
+            <td>
+        <!-- https://stackoverflow.com/questions/34639583/how-can-i-create-responsive-joystick-layout-buttons-in-html   -->
+        <p style="color:crimson;text-align:center">Navigation</p>
+        <!-- JOY STICK OBJECT -->
+        <div id="joystick" style="width:100%;text-align:center;align-content:center">            
+            <div>                                    
+                <label style="width:100%;align-content:center">
+                <input style="visibility:hidden;height:0px;width:0px;margin:0px;padding:0px;display:none" type="submit" name="image" value="x">
+                    <svg width="100%" height="100%" viewBox="0 0 100 100" style="text-align:center;">
+                    <defs>
+                    <linearGradient id="grad1b" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="grad2b" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="grad3b" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgb(168,168,168);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgb(239,239,239);stop-opacity:1" />
+                    </linearGradient>
+                    </defs>
+
+                    <circle cx="50" cy="50" r="38" fill="url(#grad1b)" />
+                    <circle cx="50" cy="50" r="38" fill="url(#grad2b)" stroke="black" stroke-width="1.5px" />
+                    <circle cx="50" cy="50" r="38" fill="url(#grad3b)" />
+                    <circle cx="50" cy="50" r="20" fill="#cccccc" stroke="black" stroke-width="2px" />
+
+                    <path onclick="NavPressed('B:TO')" style="cursor:pointer" d="M50,0 54,8 46,8Z" fill="rgba(0,0,0,0.8)"><title>tilt over</title></path>
+                    <path onclick="NavPressed('B:UP')" style="cursor:pointer" d="M50,14 54,22 46,22Z" fill="rgba(0,0,0,0.8)"><title>up</title></path>                        
+                    <path onclick="NavPressed('B:DN')" style="cursor:pointer" d="M50,86 54,78 46,78Z" fill="rgba(0,0,0,0.8)"><title>down</title></path>
+                    <path onclick="NavPressed('B:TU')" style="cursor:pointer" d="M50,100 54,92 46,92Z" fill="rgba(0,0,0,0.8)"><title>tilt under</title></path>
+                    <path onclick="NavPressed('B:LE')" style="cursor:pointer" d="M14,50 22,54 22,46Z" fill="rgba(0,0,0,0.8)"><title>left</title></path>
+                    <path onclick="NavPressed('B:TL')" style="cursor:pointer" d="M0,50 8,54 8,46Z" fill="rgba(0,0,0,0.8)"><title>tilt left</title></path>
+                    <path onclick="NavPressed('B:RI')" style="cursor:pointer" d="M86,50 78,54 78,46Z" fill="rgba(0,0,0,0.8)"><title>right</title></path>
+                    <path onclick="NavPressed('B:TR')" style="cursor:pointer" d="M100,50 92,54 92,46Z" fill="rgba(0,0,0,0.8)"><title>tilt right</title></path>
+                    <path onclick="NavPressed('B:AC')" style="cursor:pointer" d="M20,20 15,15 10,25Z" fill="rgba(0,0,0,0.8)"><title>anti-clockwise</title></path>
+                    <path onclick="NavPressed('B:CL')" style="cursor:pointer" d="M80,20 85,15 90,25Z" fill="rgba(0,0,0,0.8)"><title>clockwise</title></path>
+                    <clipPath id="cut-offb">
+                    <rect x="0" y="0" width="70" height="50"/>
+                    </clipPath>
+                    <circle onclick="NavPressed('B:BA')" style="cursor:pointer" cx="50" cy="50" r="20" fill="darkseagreen"><title>back</title></circle>
+                    <circle onclick="NavPressed('B:FW')" style="cursor:pointer" cx="50" cy="50" r="20" fill="lightseagreen" clip-path="url(#cut-offb)"><title>fwd</title></circle>
+                </svg>                        
+                </label>                    
+            </div>                                                         
+        </div>
+        <!-- UN-JOY STICK OBJECT -->
+        </td>
+        </tr>
+        </table>        
+    </div>
+    <!-- ########################################################################## -->
+</div>
+<!--##################################### TAB DISPLAY SECTION - OPTIONS ############################################# -->
+<div id="Options" class="tabcontent" style="display:@ViewBag.DisplayO;background-color:silver">
+    <h3>Options</h3>
+    <table>
+        <tr>
+            <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Width(Å)=</td>
+            <th><input type="submit" value="-0.5" id="minus" onclick="ChangeWidth('-0.5')" /></th>
+            <td><input style="width:80px;" type="text" id="width" name="width" value=@ViewBag.Width></td>
+            <th><input type="submit" value="+0.5" id="plus" onclick="ChangeWidth('0.5')" /></th>
+            <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;">Samples=</td>
+            <th><input type="submit" value="-10" id="minus" onclick="ChangeSpace('-10')" /></th>
+            <td><input style="width:80px;" type="text" id="samples" name="samples" value=@ViewBag.Samples></td>
+            <th><input type="submit" value="+10" id="plus" onclick="ChangeSpace('10')" /></th>
+            <td style="width:35px;background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-right-color:aliceblue;"> </td>            
+       </tr>
+    </table>
+    <table>
+        <tr>
+            <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Interpolation method</td>
+            <td style="color=grey">@ViewBag.Interp</td>
+            <th>  <input type="submit" value="nearest" id="nearest" onclick="SubmitInterp('NEAREST')" /></th>
+            <th>  <input type="submit" value="linear" id="linear" onclick="SubmitInterp('LINEAR')" /></th>
+            <th>  <input type="submit" value="bspline" id="bspline" onclick="SubmitInterp('BSPLINE')" /></th>                        
+        </tr>
+            <tr>
+                <td style="background-color:aliceblue;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Matrix view</td>
+                <td style="color=grey">@ViewBag.Matrix</td>
+                <th>  <input type="submit" value="density" id="density" onclick="SubmitMatrix('DENSITY')" /></th>
+                <th>  <input type="submit" value="radient" id="radient" onclick="SubmitMatrix('RADIENT')" /></th>
+                <th>  <input type="submit" value="laplacian" id="laplacian" onclick="SubmitMatrix('LAPLACIAN')" /></th>
+            </tr>
+    </table>
+    <table>
+        <tr>
+            <td colspan="5" style="background-color:silver;color:crimson;border-top-color:aliceblue;border-bottom-color:aliceblue;border-left-color:aliceblue;">Fo's and Fc's</td>            
+        </tr>
+        <tr>            
+            <td>A: @ViewBag.PdbCodeA</td>
+            <td>Fos=</td>
+            <td><input style="width:35px;" type="text" id="fosA" name="fosA" value=@ViewBag.FosA></td>
+            <td>Fcs=</td>
+            <td><input style="width:35px;" type="text" id="fcsA" name="fcsA" value=@ViewBag.FcsA></td>
+        </tr>
+        <tr>            
+            <td>B: @ViewBag.PdbCodeB</td>
+            <td>Fos=</td>
+            <td><input style="width:35px;" type="text" id="fosB" name="fosB" value=@ViewBag.FosB></td>
+            <td>Fcs=</td>
+            <td><input style="width:35px;" type="text" id="fcsB" name="fcsB" value=@ViewBag.FcsB></td>
+        </tr>
+    </table>
+</div>
+}<!-- This is the end if the clickable inputs-->
+<!-- ########################################### The actual plots################################### -->
+<hr />
+<div class="tab">
+    <table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;">
+        <tr>
+            <th style="width:33%;min-width:500px">@ViewBag.PdbCodeA</th>
+            <th style="width:33%;min-width:500px">Difference</th>
+            <th style="width:33%;min-width:500px">@ViewBag.PdbCodeB</th>
+        </tr>
+        <tr>
+            <td>
+                <table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border:none;">
+                    <tr>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Plot" id="tp" onclick="TogglePlot('A')" style="border:none;background-color:snow;" /></th>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Hue" id="th" onclick="ToggleHue('A')" style="border:none;background-color:snow;" /></th>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Bar" id="tb" onclick="ToggleBar('A')" style="border:none;background-color:snow;" /></th>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border:none;">
+                    <tr>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Plot" id="tp" onclick="TogglePlot('D')" style="border:none;background-color:snow;" /></th>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Hue" id="th" onclick="ToggleHue('D')" style="border:none;background-color:snow;" /></th>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Bar" id="tb" onclick="ToggleBar('D')" style="border:none;background-color:snow;" /></th>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border:none;">
+                    <tr>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Plot" id="tp" onclick="TogglePlot('B')" style="border:none;background-color:snow;" /></th>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Hue" id="th" onclick="ToggleHue('B')" style="border:none;background-color:snow;" /></th>
+                        <th style="border:none;background-color:snow;"><input type="submit" value="Toggle Bar" id="tb" onclick="ToggleBar('B')" style="border:none;background-color:snow;" /></th>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td><div id="myCountourA"></div></td>
+            <td><div id="myCountourD"></div></td>
+            <td><div id="myCountourB"></div></td>
+        </tr>
+    </table>
+</div>
+<hr />
+
+<!-- JAVA SCRIPT -->
+<script>
+    function ChangeTab(tab) {                
+        document.getElementById("mode").value = "VIEW";
+        if (tab == 'tA') {                        
+            document.getElementById("activetab").value = "tA";
+        }
+        else if (tab == 'tB') {                            
+            document.getElementById("activetab").value = "tB";
+        }
+        else if (tab == 'tO') {                                    
+            document.getElementById("activetab").value = "tO";
+        }        
+    }
+</script>
+<script>
+    function NavPressed(navi) {
+        document.getElementById("nav").value = navi;
+    }
+</script>
+<!-- ------------ THE MAIN PLOT FUNCTION --------------- -->
+<script>     
+    function makePlot(dfloor,dcap,cbar,hue,plot,matrix_type,slice, contourName,hand){                        
+        if (hue == "Best"){
+            if (hand == "D"){            
+                hue = "RedBlue";
+            }
+            else if (matrix_type == "DENSITY"){
+                hue = "RedBlueGrey";
+            }            
+            else if (matrix_type == "RADIENT"){
+                hue = "BlackWhite";
+            }
+            else if (matrix_type == "LAPLACIAN"){
+                hue = "RedBlue";
+            }                        
+        }        
+        
+        var jx = slice["xAxis"];        
+        var jy = slice["yAxis"];
+        
+        var jd = slice["densityMatrix"];
+        var minv = slice["minD"];
+        var maxv = slice["maxD"];        
+        
+        //alert(minv);
+        
+
+        if (matrix_type == "DENSITY"){
+            let jd = slice["densityMatrix"];
+            let minv = slice["minD"];
+            let maxv = slice["maxD"];
+            //alert(minv);
+        }
+        else if (matrix_type == "RADIENT"){
+            let jd = slice["radientMatrix"];
+            let minv = slice["minD"];
+            let maxv = slice["maxD"];
+        }
+        else{
+            let jd = slice["laplacianMatrix"];
+            let minv = slice["minL"];
+            let maxv = slice["maxL"];
+        }
+                        
+        minv = minv * dfloor / 100;                
+        maxv = maxv * dcap / 100;
+                        
+        var size = (maxv - minv) / 10;
+        var zero_frac = 0.001;
+        zero_frac = (0 - minv) / (maxv - minv);
+
+        //alert(minv);
+        //alert(maxv);
+                                                
+        col_bar = {
+            title: "",
+            thickness: 15,
+            len: 0.85,
+            x: +.95
+        }
+                        
+        if (hue == "RedBlueGrey"){
+            if (minv < 0) {
+                cs_scl = [[0, 'Grey'], [zero_frac, 'Snow'],[zero_frac + 0.01, 'LightBlue'], [zero_frac + 0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];            
+            } else {
+                cs_scl = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
+            }
+        }else if (hue == "RedBlue") {
+            //alert(zero_frac);
+            cs_scl = [[0, 'CornflowerBlue'], [zero_frac, 'Snow'], [1, 'Crimson']];
+        }else{
+            cs_scl = [[0, 'Snow'], [1, 'Black']];
+        }
+                                
+        var data = [{x: jx, y: jx, z: jd, type: 
+            plot,  
+            colorscale: cs_scl, 
+            line: { width: 0.5, color: 'Gray' },
+            showscale: cbar,
+            colorbar: col_bar, 
+            name: "XY",
+            zmin: minv,
+            zmax: maxv,
+                        }];
+                            
+        var layout = {
+            grid: { rows: 1, columns: 1, pattern: 'independent' },
+            autosize: true,
+            title: '',
+            showlegend: false,
+            xaxis: {showgrid: false,zeroline: false,visible: false,},        
+            yaxis: {scaleanchor: 'x',scaleratio: 1,visible: false,},      
+            margin: {l: 20,r: 80,b: 20,t: 20,pad: 4},
+        };
+
+        //alert("c")
+
+        var config = {
+            responsive: true,
+            toImageButtonOptions: { scale: 6, width: 540, height: 540 }
+        };
+        
+        Plotly.newPlot(contourName, data, layout,config);                
+    }
+        
+    function makePlotA(dfloor, dcap, cbar, hue, plot) {                
+        var sliceA = @Html.Raw(Json.Serialize(@ViewBag.SliceA));
+        document.getElementById("slicedensityA").value = sliceA["densityMatrix"];
+        document.getElementById("minDA").value = sliceA["minD"];
+        document.getElementById("minLA").value = sliceA["minL"];
+        document.getElementById("maxDA").value = sliceA["maxD"];
+        document.getElementById("maxLA").value = sliceA["maxL"];
+        
+        document.getElementById("xAxis").value = sliceA["xAxis"];
+        document.getElementById("yAxis").value = sliceA["yAxis"];
+
+        document.getElementById("dfloorA").value = sliceA["floor"];
+        document.getElementById("dcapA").value = sliceA["cap"];
+        document.getElementById("hueA").value = sliceA["hue"];
+        document.getElementById("cbarA").value = sliceA["bar"];
+
+        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceA,"myCountourA","A");        
+    }
+
+    function makePlotB(dfloor, dcap, cbar, hue, plot) {                
+        var sliceB = @Html.Raw(Json.Serialize(@ViewBag.SliceB));
+        document.getElementById("slicedensityB").value = sliceB["densityMatrix"];
+        document.getElementById("minDB").value = sliceB["minD"];
+        document.getElementById("minLB").value = sliceB["minL"];
+        document.getElementById("maxDB").value = sliceB["maxD"];
+        document.getElementById("maxLB").value = sliceB["maxL"];
+        document.getElementById("xAxis").value = sliceB["xAxis"];
+        document.getElementById("yAxis").value = sliceB["yAxis"];
+        document.getElementById("dfloorB").value = sliceB["floor"];
+        document.getElementById("dcapB").value = sliceB["cap"];
+        document.getElementById("hueB").value = sliceB["hue"];
+        document.getElementById("cbarB").value = sliceB["bar"];
+        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceB,"myCountourB","B");        
+    
+    }
+
+    function makePlotD(dfloor, dcap, cbar, hue, plot) {                
+        var sliceD = @Html.Raw(Json.Serialize(@ViewBag.SliceD));
+        document.getElementById("slicedensityD").value = sliceD["densityMatrix"];
+        document.getElementById("minDD").value = sliceD["minD"];
+        document.getElementById("minLD").value = sliceD["minL"];
+        document.getElementById("maxDD").value = sliceD["maxD"];
+        document.getElementById("maxLD").value = sliceD["maxL"];
+        document.getElementById("xAxis").value = sliceD["xAxis"];
+        document.getElementById("yAxis").value = sliceD["yAxis"];
+        document.getElementById("dfloorD").value = sliceD["floor"];
+        document.getElementById("dcapD").value = sliceD["cap"];
+        document.getElementById("hueD").value = sliceD["hue"];
+        document.getElementById("cbarD").value = sliceD["bar"];
+        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceD,"myCountourD","D");        
+    
+    }
+    
+    function makePlots(dfloor, dcap, cbar, hue, plot) {                
+        var sliceA = @Html.Raw(Json.Serialize(@ViewBag.SliceA));                
+        var sliceB = @Html.Raw(Json.Serialize(@ViewBag.SliceB));       
+        var sliceD = @Html.Raw(Json.Serialize(@ViewBag.SliceD));     
+        
+        document.getElementById("slicedensityA").value = sliceA["densityMatrix"];
+        document.getElementById("minDA").value = sliceA["minD"];
+        document.getElementById("minLA").value = sliceA["minL"];
+        document.getElementById("maxDA").value = sliceA["maxD"];
+        document.getElementById("maxLA").value = sliceA["maxL"];
+
+        document.getElementById("slicedensityB").value = sliceB["densityMatrix"];
+        document.getElementById("minDB").value = sliceB["minD"];
+        document.getElementById("minLB").value = sliceB["minL"];
+        document.getElementById("maxDB").value = sliceB["maxD"];
+        document.getElementById("maxLB").value = sliceB["maxL"];
+
+        document.getElementById("slicedensityD").value = sliceD["densityMatrix"];
+        document.getElementById("minDD").value = sliceD["minD"];
+        document.getElementById("minLD").value = sliceD["minL"];
+        document.getElementById("maxDD").value = sliceD["maxD"];
+        document.getElementById("maxLD").value = sliceD["maxL"];
+
+        document.getElementById("xAxis").value = sliceA["xAxis"];
+        document.getElementById("yAxis").value = sliceA["yAxis"];
+
+        document.getElementById("dfloorA").value = sliceA["floor"];
+        document.getElementById("dcapA").value = sliceA["cap"];
+        document.getElementById("hueA").value = sliceA["hue"];
+        document.getElementById("cbarA").value = sliceA["bar"];
+        
+        
+        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceA,"myCountourA","A");        
+        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceD,"myCountourD","D");        
+        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceB,"myCountourB","B");        
+        
+        
+    }
+</script>
+<script>
+    function TogglePlot(plot_char){    
+        
+        current_plot = document.getElementById("plotA").value;        
+        var cont_h = "contour";
+        if (current_plot == "heatmap"){
+            document.getElementById("plotA").value = "contour";                
+            cont_h = "contour";            
+        }else{
+            document.getElementById("plotA").value = "heatmap";            
+            cont_h = "heatmap";
+        }
+        if (plot_char == "A"){
+            makePlotA(100, 100, true,"Best",cont_h);    
+        }
+        else if (plot_char == "B"){
+            makePlotB(100, 100, true,"Best",cont_h);    
+        }
+        else{
+            makePlotD(100, 100, true,"Best",cont_h);    
+        }
+        
+    }
+    function ToggleHue(plot){
+        if (plot == "A"){
+            var slice = @Html.Raw(Json.Serialize(@ViewBag.SliceA));
+            current_plot = document.getElementById("plotA").value;
+            plotid = "plotA";
+        } else if (plot == "B"){
+            var slice = @Html.Raw(Json.Serialize(@ViewBag.SliceB));
+            current_plot = document.getElementById("plotB").value;
+            plotid = "plotB";
+        }else{
+            var slice = @Html.Raw(Json.Serialize(@ViewBag.SliceD));
+            current_plot = document.getElementById("plotD").value;
+            plotid = "plotD";
+        }
+
+        if (current_plot == "Best"){
+            document.getElementById("plotA").value = "RedBlueGrey";
+        }else if (current_plot == "RedBlueGrey"){
+            document.getElementById("plotA").value = "RedBlue";
+        }else if (current_plot == "RedBlue"){
+            document.getElementById("plotA").value = "BlackWhite";
+        }else{
+            document.getElementById("plotA").value = "Best";
+        }
+        new_pot = document.getElementById("plotA").value;
+        makePlot(dfloor, dcap, cbar, hue, plot, "DENSITY", sliceA, "myCountourA", "A");
+
+    }
+    function ToggleBar(plot){
+        
+    }
+</script>
+<script>
+    function viewBagA(){
+        document.getElementById("slicedensityA").value = sliceA["densityMatrix"];
+        document.getElementById("minDA").value = sliceA["minD"];
+        document.getElementById("minLA").value = sliceA["minL"];
+        document.getElementById("maxDA").value = sliceA["maxD"];
+        document.getElementById("maxLA").value = sliceA["maxL"];        
+        document.getElementById("xAxis").value = sliceA["xAxis"];
+        document.getElementById("yAxis").value = sliceA["yAxis"];
+        document.getElementById("dfloorA").value = sliceA["floor"];
+        document.getElementById("dcapA").value = sliceA["cap"];
+        document.getElementById("hueA").value = sliceA["hue"];
+        document.getElementById("cbarA").value = sliceA["bar"];
+    }
+    function viewBagB(){
+        document.getElementById("slicedensityB").value = sliceB["densityMatrix"];
+        document.getElementById("minDB").value = sliceB["minD"];
+        document.getElementById("minLB").value = sliceB["minL"];
+        document.getElementById("maxDB").value = sliceB["maxD"];
+        document.getElementById("maxLB").value = sliceB["maxL"];                
+        
+        document.getElementById("dfloorB").value = sliceB["floor"];
+        document.getElementById("dcapB").value = sliceB["cap"];
+        document.getElementById("hueB").value = sliceB["hue"];
+        document.getElementById("cbarB").value = sliceB["bar"];
+    }
+    function viewBagD(){
+        document.getElementById("slicedensityD").value = sliceD["densityMatrix"];
+        document.getElementById("minDD").value = sliceD["minD"];
+        document.getElementById("minLD").value = sliceD["minL"];
+        document.getElementById("maxDD").value = sliceD["maxD"];
+        document.getElementById("maxLD").value = sliceD["maxL"];        
+        
+        document.getElementById("dfloorD").value = sliceD["floor"];
+        document.getElementById("dcapD").value = sliceD["cap"];
+        document.getElementById("hueD").value = sliceD["hue"];
+        document.getElementById("cbarD").value = sliceD["bar"];
+    }        
+</script>
+<!-- -------------------- PAGE INIT ---------------------------- -->
+<script>    
+    //viewBagA();
+    //viewBagB();
+    //viewBagD();
+    makePlotA(100, 100, true,"Best","heatmap");    
+    makePlotB(100, 100, true,"Best","heatmap");    
+    makePlotD(100, 100, true,"Best","heatmap");    
+    
+    ChangeTab(@ViewBag.ActiveTab);
+</script>
 
 
 

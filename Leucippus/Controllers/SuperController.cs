@@ -122,8 +122,7 @@ namespace Leucippus.Controllers
                         VectorThree coordP = atoms[2].coords();
                         
                         SinglePosition singleP = new SinglePosition();
-                        dm.create_scratch_slice(width, samples,
-                            true, -1, -1,
+                        dm.create_scratch_slice(width, samples,  true, 
                             coordC, coordL, coordP,
                             coordC, coordL, coordP,
                             DensitySingleton.Instance.FD.PA, -1, -1);

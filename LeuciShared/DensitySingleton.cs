@@ -25,8 +25,8 @@
         private DensityMatrix _dm;
         public FileDownloads FD;
         public bool NewMatrix = false;
-        private int _fos = 2;
-        private int _fcs = -1;
+        private double _fos = 2;
+        private double _fcs = -1;
         private int _copies = 2;
 
         public bool needMatrix(string pdbcode)
@@ -40,7 +40,7 @@
             return calc;
         }
 
-        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp, int fos, int fcs,int copies,bool symmetry=true)
+        public async Task<DensityMatrix> getMatrix(string pdbcode, string interp, double fos, double fcs,int copies,bool symmetry=true)
         {
             bool calc = false;
             NewMatrix = false;            
