@@ -27,12 +27,14 @@ namespace Leucippus.Controllers
             string yAxis = "",
             string slicedensityA = "",
             string slicedensityB = "",
+            string slicedensityD = "",
             double minDA = 0, double minLA = 0, double maxDA = 0, double maxLA = 0,
             double minDB = 0, double minLB = 0, double maxDB = 0, double maxLB = 0,
-               // visual elements
-           double dfloorA = 100, double dcapA = 100, string hueA = "Best", string cbarA = "Y",
-           double dfloorB = 100, double dcapB = 100, string hueB = "Best", string cbarB = "Y",
-           double dfloorD = 100, double dcapD = 100, string hueD = "Best", string cbarD = "Y"
+            double minDD = 0, double minLD = 0, double maxDD = 0, double maxLD = 0,
+           // visual elements
+           string dfloorA = "100", string dcapA = "100", string hueA = "Best", string cbarA = "Y", string plotA = "heatmap",
+           string dfloorB = "100", string dcapB = "100", string hueB = "Best", string cbarB = "Y", string plotB = "heatmap",
+           string dfloorD = "100", string dcapD = "100", string hueD = "Best", string cbarD = "Y", string plotD = "heatmap"
         )
         {
             //get any data to display
@@ -47,12 +49,16 @@ namespace Leucippus.Controllers
             ViewBag.FosB = fosB;
             ViewBag.FcsB = fcsB;
 
-            ViewBag.SliceA = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityA, slicedensityA, slicedensityA, minDA, maxDA, minLA, maxLA, dfloorA, dcapA, hueA, cbarA);
-            ViewBag.SliceB = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityB, slicedensityB, slicedensityB, minDB, maxDB, minLB, maxLB, dfloorB, dcapB, hueB, cbarB);
+            SinglePosition sliceA = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityA, slicedensityA, slicedensityA, minDA, maxDA, minLA, maxLA, dfloorA, dcapA, hueA, cbarA,plotA);
+            SinglePosition sliceB = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityB, slicedensityB, slicedensityB, minDB, maxDB, minLB, maxLB, dfloorB, dcapB, hueB, cbarB, plotB);
+            SinglePosition sliceD = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityD, slicedensityD, slicedensityD, minDD, maxDD, minLD, maxLD, dfloorD, dcapD, hueD, cbarD, plotD);
 
-            ViewBag.SliceD = Helper.singlePosDiff(ViewBag.SliceA, ViewBag.SliceB);
-            ViewBag.SliceD.cbar = cbarD;
-            ViewBag.SliceD.hue = hueD;
+            sliceD.matricesDiff(sliceA, sliceB);
+            
+
+            ViewBag.SliceA = sliceA;
+            ViewBag.SliceB = sliceB;
+            ViewBag.SliceD = sliceD;
 
             // Tab defaults
             ViewBag.ActiveTab = activetab;
@@ -90,12 +96,15 @@ namespace Leucippus.Controllers
                 await applyRefresh(pdbcodeA, interp, fosA, fcsA, width, samples);
                 DensityMatrix dmA = await DensitySingleton.Instance.getMatrix(pdbcodeA, interp, fosA, fcsA, 3);                                
                 ViewBag.SliceA = dmA.getSinglePosition();
+                ViewBag.SliceA.addVisual(sliceA);
 
                 await applyRefresh(pdbcodeB, interp, fosB, fcsB, width, samples);
                 DensityMatrix dmB = await DensitySingleton.Instance.getMatrix(pdbcodeB, interp, fosB, fcsB, 3);
                 ViewBag.SliceB = dmB.getSinglePosition();
+                ViewBag.SliceB.addVisual(sliceB);
 
                 ViewBag.SliceD = Helper.singlePosDiff(ViewBag.SliceA,ViewBag.SliceB);
+                ViewBag.SliceD.addVisual(sliceD);
             }
 
             

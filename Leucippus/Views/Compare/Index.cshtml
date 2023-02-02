@@ -36,11 +36,7 @@
         
         <br/>xAxis<input id="xAxis" value="" name="xAxis" />
         <br/>yAxis<input id="yAxis" value="" name="yAxis" />
-        <br/>xAxisB<input id="xAxisB" value="" name="xAxisB" />
-        <br/>yAxisB<input id="yAxisB" value="" name="yAxisB" />
-        <br/>xAxisD<input id="xAxisD" value="" name="xAxisD" />
-        <br/>yAxisD<input id="yAxisD" value="" name="yAxisD" />
-
+        
         <!-- VISUAL ELEMENTS-->
         <br/>dfloorA<input id="dfloorA" value="100" name="dfloorA" />
         <br/>dcapA<input id="dcapA" value="100" name="dcapA" />
@@ -132,13 +128,13 @@
                     <td><div id="pdistance">@ViewBag.PDistanceA</div></td>                
                 </tr>   
                 <tr>
-                    <td colspan="5" style="background:Gainsboro;color:navy">Density Range (@ViewBag.ValSdA)</td>
+                    <td colspan="5" style="background:Gainsboro;color:navy">Density Range</td>
                 </tr>
                 <tr>
                     <td style="background:LightCyan;"><span>Min=@ViewBag.DenMinA</span>: Floor=<span><input style="width:50px" type="text" id="sdfloorA" name="sdfloorA" value=@ViewBag.SdFloorA></span></td>
-                    <td style="background:LightCyan;"><input type="range" min=@ViewBag.DenMinA max=0 value=@ViewBag.SdFloorA step="0.1" style="direction:ltr" id="rangeValueMinA"></td>
-                    <td colspan="2" style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMaxA value=@ViewBag.SdCapA step="0.1" style="direction:ltr" id="rangeValueMaxA"></td>
-                    <td style="background:LightCyan;"><span>Max=@ViewBag.DenMaxA</span>: Cap=<span><input style="width:50px" type="text" id="sdcapA" name="sdcapA" value=@ViewBag.SdCapA></span></td>
+                    <td style="background:LightCyan;"><input type="range" min=0 max=100 value=@ViewBag.SdFloorA step="1" style="direction:ltr" id="rangeValueMinA"></td>
+                    <td colspan="2" style="background:LightCyan;"><input type="range" min=0 max=100 value=@ViewBag.SdCapA step="1" style="direction:ltr" id="rangeValueMaxA"></td>
+                    <td style="background:LightCyan;"><span>Max=100</span>: Cap=<span><input style="width:50px" type="text" id="sdcapA" name="sdcapA" value=@ViewBag.SdCapA></span></td>
                 </tr>                
                 </table>                        
             </td>   
@@ -488,14 +484,14 @@
             let maxv = slice["maxL"];
         }
                         
-        minv = minv * dfloor / 100;                
-        maxv = maxv * dcap / 100;
+        minv = minv * parseFloat(dfloor) / 100;                
+        maxv = maxv * parseFloat(dcap) / 100;
                         
         var size = (maxv - minv) / 10;
         var zero_frac = 0.001;
         zero_frac = (0 - minv) / (maxv - minv);
 
-        //alert(minv);
+        //alert(zero_frac);
         //alert(maxv);
                                                 
         col_bar = {
@@ -507,7 +503,10 @@
                         
         if (hue == "RedBlueGrey"){
             if (minv < 0) {
-                cs_scl = [[0, 'Grey'], [zero_frac, 'Snow'],[zero_frac + 0.01, 'LightBlue'], [zero_frac + 0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];            
+                zero_frac1 = zero_frac + (1-zero_frac)/20;
+                zero_frac2 = zero_frac + (1-zero_frac)/10;
+                zero_frac3 = zero_frac + (1-zero_frac)/3;
+                cs_scl = [[0, 'Grey'], [zero_frac, 'Snow'],[zero_frac1, 'LightBlue'], [zero_frac2, 'CornflowerBlue'], [zero_frac3, 'Crimson'], [1, 'rgb(100, 0, 0)']];            
             } else {
                 cs_scl = [[0, 'AliceBlue'], [0.01, 'LightBlue'], [0.2, 'CornflowerBlue'], [0.8, 'Crimson'], [1, 'rgb(100, 0, 0)']];
             }
@@ -549,155 +548,130 @@
         Plotly.newPlot(contourName, data, layout,config);                
     }
         
-    function makePlotA(dfloor, dcap, cbar, hue, plot) {                
+    function makePlotA() {
+        dfloor = document.getElementById("dfloorA").value;
+        dcap = document.getElementById("dcapA").value;
+        hue = document.getElementById("hueA").value;
+        cbar = document.getElementById("cbarA").value;
+        plot = document.getElementById("plotA").value;    
         var sliceA = @Html.Raw(Json.Serialize(@ViewBag.SliceA));
-        document.getElementById("slicedensityA").value = sliceA["densityMatrix"];
-        document.getElementById("minDA").value = sliceA["minD"];
-        document.getElementById("minLA").value = sliceA["minL"];
-        document.getElementById("maxDA").value = sliceA["maxD"];
-        document.getElementById("maxLA").value = sliceA["maxL"];
-        
-        document.getElementById("xAxis").value = sliceA["xAxis"];
-        document.getElementById("yAxis").value = sliceA["yAxis"];
-
-        document.getElementById("dfloorA").value = sliceA["floor"];
-        document.getElementById("dcapA").value = sliceA["cap"];
-        document.getElementById("hueA").value = sliceA["hue"];
-        document.getElementById("cbarA").value = sliceA["bar"];
-
-        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceA,"myCountourA","A");        
+        makePlot(dfloor, dcap, cbar=="Y", hue, plot,"DENSITY",sliceA,"myCountourA","A");        
     }
 
-    function makePlotB(dfloor, dcap, cbar, hue, plot) {                
-        var sliceB = @Html.Raw(Json.Serialize(@ViewBag.SliceB));
-        document.getElementById("slicedensityB").value = sliceB["densityMatrix"];
-        document.getElementById("minDB").value = sliceB["minD"];
-        document.getElementById("minLB").value = sliceB["minL"];
-        document.getElementById("maxDB").value = sliceB["maxD"];
-        document.getElementById("maxLB").value = sliceB["maxL"];
-        document.getElementById("xAxis").value = sliceB["xAxis"];
-        document.getElementById("yAxis").value = sliceB["yAxis"];
-        document.getElementById("dfloorB").value = sliceB["floor"];
-        document.getElementById("dcapB").value = sliceB["cap"];
-        document.getElementById("hueB").value = sliceB["hue"];
-        document.getElementById("cbarB").value = sliceB["bar"];
-        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceB,"myCountourB","B");        
-    
+    function makePlotB() {                
+        dfloor = document.getElementById("dfloorB").value;
+        dcap = document.getElementById("dcapB").value;
+        hue = document.getElementById("hueB").value;
+        cbar = document.getElementById("cbarB").value;
+        plot = document.getElementById("plotB").value;    
+        var sliceB = @Html.Raw(Json.Serialize(@ViewBag.SliceB));                        
+        makePlot(dfloor, dcap, cbar == "Y", hue, plot, "DENSITY", sliceB, "myCountourB", "B");
+
     }
 
-    function makePlotD(dfloor, dcap, cbar, hue, plot) {                
-        var sliceD = @Html.Raw(Json.Serialize(@ViewBag.SliceD));
-        document.getElementById("slicedensityD").value = sliceD["densityMatrix"];
-        document.getElementById("minDD").value = sliceD["minD"];
-        document.getElementById("minLD").value = sliceD["minL"];
-        document.getElementById("maxDD").value = sliceD["maxD"];
-        document.getElementById("maxLD").value = sliceD["maxL"];
-        document.getElementById("xAxis").value = sliceD["xAxis"];
-        document.getElementById("yAxis").value = sliceD["yAxis"];
-        document.getElementById("dfloorD").value = sliceD["floor"];
-        document.getElementById("dcapD").value = sliceD["cap"];
-        document.getElementById("hueD").value = sliceD["hue"];
-        document.getElementById("cbarD").value = sliceD["bar"];
-        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceD,"myCountourD","D");        
-    
+    function makePlotD() {   
+        dfloor = document.getElementById("dfloorD").value;
+        dcap = document.getElementById("dcapD").value;
+        hue = document.getElementById("hueD").value;
+        cbar = document.getElementById("cbarD").value;
+        plot = document.getElementById("plotD").value;    
+        var sliceD = @Html.Raw(Json.Serialize(@ViewBag.SliceD));                
+        makePlot(dfloor, dcap, cbar == "Y", hue, plot, "DENSITY", sliceD, "myCountourD", "D");
     }
-    
-    function makePlots(dfloor, dcap, cbar, hue, plot) {                
-        var sliceA = @Html.Raw(Json.Serialize(@ViewBag.SliceA));                
-        var sliceB = @Html.Raw(Json.Serialize(@ViewBag.SliceB));       
-        var sliceD = @Html.Raw(Json.Serialize(@ViewBag.SliceD));     
         
-        document.getElementById("slicedensityA").value = sliceA["densityMatrix"];
-        document.getElementById("minDA").value = sliceA["minD"];
-        document.getElementById("minLA").value = sliceA["minL"];
-        document.getElementById("maxDA").value = sliceA["maxD"];
-        document.getElementById("maxLA").value = sliceA["maxL"];
-
-        document.getElementById("slicedensityB").value = sliceB["densityMatrix"];
-        document.getElementById("minDB").value = sliceB["minD"];
-        document.getElementById("minLB").value = sliceB["minL"];
-        document.getElementById("maxDB").value = sliceB["maxD"];
-        document.getElementById("maxLB").value = sliceB["maxL"];
-
-        document.getElementById("slicedensityD").value = sliceD["densityMatrix"];
-        document.getElementById("minDD").value = sliceD["minD"];
-        document.getElementById("minLD").value = sliceD["minL"];
-        document.getElementById("maxDD").value = sliceD["maxD"];
-        document.getElementById("maxLD").value = sliceD["maxL"];
-
-        document.getElementById("xAxis").value = sliceA["xAxis"];
-        document.getElementById("yAxis").value = sliceA["yAxis"];
-
-        document.getElementById("dfloorA").value = sliceA["floor"];
-        document.getElementById("dcapA").value = sliceA["cap"];
-        document.getElementById("hueA").value = sliceA["hue"];
-        document.getElementById("cbarA").value = sliceA["bar"];
-        
-        
-        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceA,"myCountourA","A");        
-        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceD,"myCountourD","D");        
-        makePlot(dfloor, dcap, cbar, hue, plot,"DENSITY",sliceB,"myCountourB","B");        
-        
-        
-    }
 </script>
 <script>
-    function TogglePlot(plot_char){    
-        
-        current_plot = document.getElementById("plotA").value;        
-        var cont_h = "contour";
-        if (current_plot == "heatmap"){
-            document.getElementById("plotA").value = "contour";                
-            cont_h = "contour";            
-        }else{
-            document.getElementById("plotA").value = "heatmap";            
-            cont_h = "heatmap";
-        }
+    function TogglePlot(plot_char){                    
+        var cont_h = "contour";                
         if (plot_char == "A"){
-            makePlotA(100, 100, true,"Best",cont_h);    
-        }
-        else if (plot_char == "B"){
-            makePlotB(100, 100, true,"Best",cont_h);    
-        }
-        else{
-            makePlotD(100, 100, true,"Best",cont_h);    
-        }
-        
-    }
-    function ToggleHue(plot){
-        if (plot == "A"){
-            var slice = @Html.Raw(Json.Serialize(@ViewBag.SliceA));
             current_plot = document.getElementById("plotA").value;
-            plotid = "plotA";
-        } else if (plot == "B"){
-            var slice = @Html.Raw(Json.Serialize(@ViewBag.SliceB));
-            current_plot = document.getElementById("plotB").value;
-            plotid = "plotB";
+            if (current_plot == "heatmap") {
+                document.getElementById("plotA").value = "contour";
+            }else{
+                document.getElementById("plotA").value = "heatmap";
+            }
+            makePlotA();    
+        }else if (plot_char == "B"){
+            current_plot = document.getElementById("plotB").value;            
+            if (current_plot == "heatmap") {
+                document.getElementById("plotB").value = "contour";
+            }else{
+                document.getElementById("plotB").value = "heatmap";
+            }
+            makePlotB();    
         }else{
-            var slice = @Html.Raw(Json.Serialize(@ViewBag.SliceD));
             current_plot = document.getElementById("plotD").value;
-            plotid = "plotD";
-        }
-
-        if (current_plot == "Best"){
-            document.getElementById("plotA").value = "RedBlueGrey";
-        }else if (current_plot == "RedBlueGrey"){
-            document.getElementById("plotA").value = "RedBlue";
-        }else if (current_plot == "RedBlue"){
-            document.getElementById("plotA").value = "BlackWhite";
-        }else{
-            document.getElementById("plotA").value = "Best";
-        }
-        new_pot = document.getElementById("plotA").value;
-        makePlot(dfloor, dcap, cbar, hue, plot, "DENSITY", sliceA, "myCountourA", "A");
-
+            if (current_plot == "heatmap") {
+                document.getElementById("plotD").value = "contour";
+            }else{
+                document.getElementById("plotD").value = "heatmap";
+            }
+            makePlotD();    
+        }                
     }
-    function ToggleBar(plot){
-        
+    function ToggleHue(plot_char) {        
+        var cont_h = "contour";                
+        if (plot_char == "A"){
+            current_hue = document.getElementById("hueA").value;
+            element_id = "hueA";                                    
+        } else if (plot_char == "B") {
+            current_hue = document.getElementById("hueB").value;            
+            element_id = "hueB";                                    
+        }else{
+            current_hue = document.getElementById("hueD").value;
+            element_id = "hueD";                                    
+        }
+                
+        if (current_hue == "Best") {
+            document.getElementById(element_id).value = "RedBlueGrey";
+        }else if (current_hue == "RedBlueGrey") {
+            document.getElementById(element_id).value = "RedBlue";
+        }else if (current_hue == "RedBlue") {
+            document.getElementById(element_id).value = "BlackWhite";
+        }else if (current_hue == "BlackWhite") {
+            document.getElementById(element_id).value = "RedBlueGrey";
+        }
+
+        if (plot_char == "A"){            
+            makePlotA();
+        }else if (plot_char == "B"){
+            makePlotB();
+        }else{
+            makePlotD();
+        }
+                
+    }
+    function ToggleBar(plot_char) {
+        var cont_h = "contour";
+        if (plot_char == "A") {
+            current_bar = document.getElementById("cbarA").value;
+            element_id = "cbarA";
+        } else if (plot_char == "B") {
+            current_bar = document.getElementById("cbarB").value;
+            element_id = "cbarB";
+        } else {
+            current_bar = document.getElementById("cbarD").value;
+            element_id = "cbarD";
+        }
+
+        if (current_bar == "Y") {
+            document.getElementById(element_id).value = "N";        
+        } else {
+            document.getElementById(element_id).value = "Y";
+        }
+
+        if (plot_char == "A") {
+            makePlotA();
+        } else if (plot_char == "B") {
+            makePlotB();
+        } else {
+            makePlotD();
+        }
     }
 </script>
 <script>
     function viewBagA(){
+        var sliceA = @Html.Raw(Json.Serialize(@ViewBag.SliceA));                
         document.getElementById("slicedensityA").value = sliceA["densityMatrix"];
         document.getElementById("minDA").value = sliceA["minD"];
         document.getElementById("minLA").value = sliceA["minL"];
@@ -705,44 +679,49 @@
         document.getElementById("maxLA").value = sliceA["maxL"];        
         document.getElementById("xAxis").value = sliceA["xAxis"];
         document.getElementById("yAxis").value = sliceA["yAxis"];
-        document.getElementById("dfloorA").value = sliceA["floor"];
-        document.getElementById("dcapA").value = sliceA["cap"];
+        document.getElementById("dfloorA").value = sliceA["dfloor"];
+        document.getElementById("dcapA").value = sliceA["dcap"];
         document.getElementById("hueA").value = sliceA["hue"];
         document.getElementById("cbarA").value = sliceA["bar"];
+        document.getElementById("plotA").value = sliceA["plot"];
     }
     function viewBagB(){
+        var sliceB = @Html.Raw(Json.Serialize(@ViewBag.SliceB));                
         document.getElementById("slicedensityB").value = sliceB["densityMatrix"];
         document.getElementById("minDB").value = sliceB["minD"];
         document.getElementById("minLB").value = sliceB["minL"];
         document.getElementById("maxDB").value = sliceB["maxD"];
         document.getElementById("maxLB").value = sliceB["maxL"];                
         
-        document.getElementById("dfloorB").value = sliceB["floor"];
-        document.getElementById("dcapB").value = sliceB["cap"];
+        document.getElementById("dfloorB").value = sliceB["dfloor"];
+        document.getElementById("dcapB").value = sliceB["dcap"];
         document.getElementById("hueB").value = sliceB["hue"];
         document.getElementById("cbarB").value = sliceB["bar"];
+        document.getElementById("plotB").value = sliceB["plot"];
     }
     function viewBagD(){
+        var sliceD = @Html.Raw(Json.Serialize(@ViewBag.SliceD));                
         document.getElementById("slicedensityD").value = sliceD["densityMatrix"];
         document.getElementById("minDD").value = sliceD["minD"];
         document.getElementById("minLD").value = sliceD["minL"];
         document.getElementById("maxDD").value = sliceD["maxD"];
         document.getElementById("maxLD").value = sliceD["maxL"];        
         
-        document.getElementById("dfloorD").value = sliceD["floor"];
-        document.getElementById("dcapD").value = sliceD["cap"];
+        document.getElementById("dfloorD").value = sliceD["dfloor"];
+        document.getElementById("dcapD").value = sliceD["dcap"];
         document.getElementById("hueD").value = sliceD["hue"];
         document.getElementById("cbarD").value = sliceD["bar"];
+        document.getElementById("plotD").value = sliceD["plot"];
     }        
 </script>
 <!-- -------------------- PAGE INIT ---------------------------- -->
 <script>    
-    //viewBagA();
-    //viewBagB();
-    //viewBagD();
-    makePlotA(100, 100, true,"Best","heatmap");    
-    makePlotB(100, 100, true,"Best","heatmap");    
-    makePlotD(100, 100, true,"Best","heatmap");    
+    viewBagA();
+    viewBagB();
+    viewBagD();
+    makePlotA();    
+    makePlotB();    
+    makePlotD();    
     
     ChangeTab(@ViewBag.ActiveTab);
 </script>

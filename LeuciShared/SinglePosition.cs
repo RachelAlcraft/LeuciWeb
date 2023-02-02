@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,10 +26,11 @@ namespace LeuciShared
         public double maxD { get; set; }
         public double minL { get; set; }
         public double maxL { get; set; }
-        public double dcap { get; set; }
-        public double dfloor { get; set; }
+        public string dcap { get; set; }
+        public string dfloor { get; set; }
         public string cbar { get; set; }
         public string hue { get; set; }
+        public string plot { get; set; }
         public double[][]? densityMatrix { get; set; }        
         public void copyDensity(double[][] den)
         {
@@ -69,7 +71,7 @@ namespace LeuciShared
  
         public static SinglePosition makeFromFlat(string xAxis, string yAxis, string density, string radient, string laplacian, 
             double minD, double maxD, double minL, double maxL,
-            double dfloor, double dcap, string hue, string cbar)
+            string dfloor, string dcap, string hue, string cbar, string plot)
         {
             SinglePosition sliceF = new SinglePosition();
             sliceF.xAxis = Helper.listFromString(xAxis);
@@ -85,7 +87,30 @@ namespace LeuciShared
             sliceF.dcap = dcap;
             sliceF.hue = hue;
             sliceF.cbar = cbar;
+            sliceF.plot = plot;
             return sliceF;
+        }
+        public void addVisual(SinglePosition vis)
+        {
+            this.dfloor = vis.dfloor;
+            this.dcap = vis.dcap;
+            this.hue = vis.hue;
+            this.cbar = vis.cbar;
+            this.plot = vis.plot;
+        }
+
+        public void matricesDiff(SinglePosition p, SinglePosition q)
+        {                     
+            this.densityMatrix = Helper.subtractArrays(p.densityMatrix, q.densityMatrix);
+            this.radientMatrix = Helper.subtractArrays(p.radientMatrix, q.radientMatrix);
+            this.laplacianMatrix = Helper.subtractArrays(p.laplacianMatrix, q.laplacianMatrix);
+            if (this.xAxis.Length > 0)
+            {
+                this.minD = Helper.minmaxMatrix(this.densityMatrix, true);
+                this.maxD = Helper.minmaxMatrix(this.densityMatrix, false);
+                this.minL = Helper.minmaxMatrix(this.laplacianMatrix, true);
+                this.maxL = Helper.minmaxMatrix(this.laplacianMatrix, false);
+            }            
         }
 
 
