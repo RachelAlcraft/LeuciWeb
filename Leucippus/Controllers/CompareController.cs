@@ -32,9 +32,9 @@ namespace Leucippus.Controllers
             double minDB = 0, double minLB = 0, double maxDB = 0, double maxLB = 0,
             double minDD = 0, double minLD = 0, double maxDD = 0, double maxLD = 0,
            // visual elements
-           string dfloorA = "100", string dcapA = "100", string hueA = "Best", string cbarA = "Y", string plotA = "heatmap",
-           string dfloorB = "100", string dcapB = "100", string hueB = "Best", string cbarB = "Y", string plotB = "heatmap",
-           string dfloorD = "100", string dcapD = "100", string hueD = "Best", string cbarD = "Y", string plotD = "heatmap"
+           string floorA = "100", string capA = "100", string hueA = "Best", string cbarA = "Y", string plotA = "heatmap",
+           string floorB = "100", string capB = "100", string hueB = "Best", string cbarB = "Y", string plotB = "heatmap",
+           string floorD = "100", string capD = "100", string hueD = "Best", string cbarD = "Y", string plotD = "heatmap"
         )
         {
             //get any data to display
@@ -49,9 +49,9 @@ namespace Leucippus.Controllers
             ViewBag.FosB = fosB;
             ViewBag.FcsB = fcsB;
 
-            SinglePosition sliceA = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityA, slicedensityA, slicedensityA, minDA, maxDA, minLA, maxLA, dfloorA, dcapA, hueA, cbarA,plotA);
-            SinglePosition sliceB = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityB, slicedensityB, slicedensityB, minDB, maxDB, minLB, maxLB, dfloorB, dcapB, hueB, cbarB, plotB);
-            SinglePosition sliceD = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityD, slicedensityD, slicedensityD, minDD, maxDD, minLD, maxLD, dfloorD, dcapD, hueD, cbarD, plotD);
+            SinglePosition sliceA = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityA, slicedensityA, slicedensityA, minDA, maxDA, minLA, maxLA, floorA, capA, hueA, cbarA,plotA);
+            SinglePosition sliceB = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityB, slicedensityB, slicedensityB, minDB, maxDB, minLB, maxLB, floorB, capB, hueB, cbarB, plotB);
+            SinglePosition sliceD = SinglePosition.makeFromFlat(xAxis, yAxis, slicedensityD, slicedensityD, slicedensityD, minDD, maxDD, minLD, maxLD, floorD, capD, hueD, cbarD, plotD);
 
             sliceD.matricesDiff(sliceA, sliceB);
             

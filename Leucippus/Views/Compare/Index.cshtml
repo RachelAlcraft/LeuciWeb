@@ -38,14 +38,14 @@
         <br/>yAxis<input id="yAxis" value="" name="yAxis" />
         
         <!-- VISUAL ELEMENTS-->
-        <br/>dfloorA<input id="dfloorA" value="100" name="dfloorA" />
-        <br/>dcapA<input id="dcapA" value="100" name="dcapA" />
+        <!--floorA-->
+        <!--capA-->        
         <br/>cbarA<input id="cbarA" value="Y" name="cbarA" />
         <br/>hueA<input id="hueA" value="Best" name="hueA" />
         <br/>plotA<input id="plotA" value="heatmap" name="plotA" />
 
-        <br/>dfloorB<input id="dfloorB" value="100" name="dfloorB" />
-        <br/>dcapB<input id="dcapB" value="100" name="dcapB" />
+        <!--floorB-->
+        <!--capB-->        
         <br/>cbarB<input id="cbarB" value="Y" name="cbarB" />
         <br/>hueB<input id="hueB" value="Best" name="hueB" />
         <br/>plotB<input id="plotB" value="heatmap" name="plotB" />
@@ -131,10 +131,10 @@
                     <td colspan="5" style="background:Gainsboro;color:navy">Density Range</td>
                 </tr>
                 <tr>
-                    <td style="background:LightCyan;"><span>Min=@ViewBag.DenMinA</span>: Floor=<span><input style="width:50px" type="text" id="sdfloorA" name="sdfloorA" value=@ViewBag.SdFloorA></span></td>
-                    <td style="background:LightCyan;"><input type="range" min=0 max=100 value=@ViewBag.SdFloorA step="1" style="direction:ltr" id="rangeValueMinA"></td>
-                    <td colspan="2" style="background:LightCyan;"><input type="range" min=0 max=100 value=@ViewBag.SdCapA step="1" style="direction:ltr" id="rangeValueMaxA"></td>
-                    <td style="background:LightCyan;"><span>Max=100</span>: Cap=<span><input style="width:50px" type="text" id="sdcapA" name="sdcapA" value=@ViewBag.SdCapA></span></td>
+                    <td style="background:LightCyan;">Floor%=<span><input style="width:50px" type="text" id="floorA" name="floorA" value=100></span></td>
+                    <td style="background:LightCyan;"><input type="range" min=0 max=100 value=100 step="1" style="direction:ltr" id="rangeValueMinA"></td>
+                    <td colspan="2" style="background:LightCyan;"><input type="range" min=0 max=100 value=100 step="1" style="direction:ltr" id="rangeValueMaxA"></td>
+                    <td style="background:LightCyan;">Cap%=<span><input style="width:50px" type="text" id="capA" name="capA" value=100></span></td>
                 </tr>                
                 </table>                        
             </td>   
@@ -257,10 +257,10 @@
                     <td colspan="5" style="background:Gainsboro;color:navy">Density Range (@ViewBag.ValSdB)</td>
                 </tr>
                 <tr>
-                    <td style="background:LightCyan;"><span>Min=@ViewBag.DenMinB</span>: Floor=<span><input style="width:50px" type="text" id="sdfloorB" name="sdfloorB" value=@ViewBag.SdFloorB></span></td>
-                    <td style="background:LightCyan;"><input type="range" min=@ViewBag.DenMinB max=0 value=@ViewBag.SdFloorB step="0.1" style="direction:ltr" id="rangeValueMinB"></td>
-                    <td colspan="2" style="background:LightCyan;"><input type="range" min=0 max=@ViewBag.DenMaxB value=@ViewBag.SdCapB step="0.1" style="direction:ltr" id="rangeValueMaxB"></td>
-                    <td style="background:LightCyan;"><span>Max=@ViewBag.DenMaxB</span>: Cap=<span><input style="width:50px" type="text" id="sdcapB" name="sdcapB" value=@ViewBag.SdCapB></span></td>
+                    <td style="background:LightCyan;">Floor%=<span><input style="width:50px" type="text" id="floorB" name="floorB" value=100></span></td>
+                    <td style="background:LightCyan;"><input type="range" min=0 max=100 value=100 step="1" style="direction:ltr" id="rangeValueMinB"></td>
+                    <td colspan="2" style="background:LightCyan;"><input type="range" min=0 max=100 value=100 step="1" style="direction:ltr" id="rangeValueMaxB"></td>
+                    <td style="background:LightCyan;">Cap%=<span><input style="width:50px" type="text" id="capB" name="capB" value=100></span></td>
                 </tr>                
                 </table>                        
             </td>   
@@ -549,8 +549,8 @@
     }
         
     function makePlotA() {
-        dfloor = document.getElementById("dfloorA").value;
-        dcap = document.getElementById("dcapA").value;
+        dfloor = document.getElementById("floorA").value;
+        dcap = document.getElementById("capA").value;
         hue = document.getElementById("hueA").value;
         cbar = document.getElementById("cbarA").value;
         plot = document.getElementById("plotA").value;    
@@ -559,8 +559,8 @@
     }
 
     function makePlotB() {                
-        dfloor = document.getElementById("dfloorB").value;
-        dcap = document.getElementById("dcapB").value;
+        dfloor = document.getElementById("floorB").value;
+        dcap = document.getElementById("capB").value;
         hue = document.getElementById("hueB").value;
         cbar = document.getElementById("cbarB").value;
         plot = document.getElementById("plotB").value;    
@@ -669,6 +669,45 @@
         }
     }
 </script>
+<script>    
+    var sliderMinA = document.getElementById("rangeValueMinA");    
+    var sliderMaxA = document.getElementById("rangeValueMaxA");
+    var sliderMinB = document.getElementById("rangeValueMinB");    
+    var sliderMaxB = document.getElementById("rangeValueMaxB");
+
+    sliderMinA.oninput = function () {        
+        outputMinA.value = this.value;
+        alert(this.value);
+        document.getElementById("floorA").value = this.value;
+        var outputMaxA = document.getElementById("capA");        
+        makePlotA();
+    }
+    sliderMaxA.oninput = function () {
+        outputMaxA.value = this.value;
+        alert(this.value);
+        document.getElementById("capA").value = this.value;        
+        alert(document.getElementById("capA").value);
+        alert(document.getElementById("floorA").value);
+        var outputMinA = document.getElementById("floorA");        
+        makePlotA();
+    }
+    sliderMinB.oninput = function () {
+        alert(this.value);
+        outputMinB.value = this.value;
+        document.getElementById("floorB").value = this.value;
+        var outputMaxB = document.getElementById("capB");        
+        makePlotB();
+    }
+    sliderMaxB.oninput = function () {
+        alert(this.value);
+        outputMaxB.value = this.value;
+        document.getElementById("capB").value = this.value;
+        var outputMinB = document.getElementById("floorB");
+        makePlotB();
+    }
+        
+</script>
+<!-- -------------------- PAGE INIT ---------------------------- -->
 <script>
     function viewBagA(){
         var sliceA = @Html.Raw(Json.Serialize(@ViewBag.SliceA));                
@@ -679,8 +718,8 @@
         document.getElementById("maxLA").value = sliceA["maxL"];        
         document.getElementById("xAxis").value = sliceA["xAxis"];
         document.getElementById("yAxis").value = sliceA["yAxis"];
-        document.getElementById("dfloorA").value = sliceA["dfloor"];
-        document.getElementById("dcapA").value = sliceA["dcap"];
+        document.getElementById("floorA").value = sliceA["dfloor"];
+        document.getElementById("capA").value = sliceA["dcap"];
         document.getElementById("hueA").value = sliceA["hue"];
         document.getElementById("cbarA").value = sliceA["bar"];
         document.getElementById("plotA").value = sliceA["plot"];
@@ -693,8 +732,8 @@
         document.getElementById("maxDB").value = sliceB["maxD"];
         document.getElementById("maxLB").value = sliceB["maxL"];                
         
-        document.getElementById("dfloorB").value = sliceB["dfloor"];
-        document.getElementById("dcapB").value = sliceB["dcap"];
+        document.getElementById("floorB").value = sliceB["dfloor"];
+        document.getElementById("capB").value = sliceB["dcap"];
         document.getElementById("hueB").value = sliceB["hue"];
         document.getElementById("cbarB").value = sliceB["bar"];
         document.getElementById("plotB").value = sliceB["plot"];
@@ -714,7 +753,6 @@
         document.getElementById("plotD").value = sliceD["plot"];
     }        
 </script>
-<!-- -------------------- PAGE INIT ---------------------------- -->
 <script>    
     viewBagA();
     viewBagB();
